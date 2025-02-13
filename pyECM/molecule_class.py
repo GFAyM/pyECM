@@ -646,12 +646,6 @@ class molecula:
                 mf_chiral.xc = DFT
                 mf_chiral.kernel()
 
-            from pyscf import dft
-
-            mf_chiral = dft.RKS(mol_chiral)
-            mf_chiral.xc = "pbe0"
-            mf_chiral.kernel()
-
             overlap_chiral = mol_chiral.intor("int1e_ovlp")
 
             # Cantidad de orbitales atómicos
@@ -694,17 +688,19 @@ class molecula:
         if X2C:
 
             start_X2Ctime = time.time()
+#            mf_chiral_x2c = mol_chiral.X2C()
+#            mf_chiral_x2c.kernel()
             if DFT is False:
                 # UHF X2C (with_soc)
                 mf_chiral_x2c = mol_chiral.X2C()
                 mf_chiral_x2c.kernel()
             else:
-                # For x2c+dft
+#                # For x2c+dft
                 from pyscf.x2c import dft as x2c_dft
 
                 mf_chiral_x2c = x2c_dft.UKS(mol_chiral)
                 mf_chiral_x2c.xc = DFT
-                # mf_chiral_x2c.verbose=4
+#                # mf_chiral_x2c.verbose=4
                 mf_chiral_x2c.kernel()
 
             overlap_chiral_x2c = mol_chiral.intor(
