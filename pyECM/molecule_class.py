@@ -613,11 +613,17 @@ class molecula:
             )  # Get 'X2C' from dict. False as default.
             X2C = method_dict.get(
                 "X2C", False
+            )  # Get "DFT" from dict. False as default.
+            DFT = method_dict.get(
+                "DFT", False
             )  # Get 'debug' from dict. Zero as default.
             debug = method_dict.get(
                 "debug", 0
             )  # Get 'cvalue' from dict. 137.03599967994 as default.
             cvalue = method_dict.get("cvalue", 137.03599967994)
+
+        if fourcomp is not False and DFT is not False:
+            raise NotImplementedError("4c-DFT not available yet.")
 
         mol_chiral = gto.M(
             atom=name + "_" + "{:.2f}".format(z_coordinate) + ".xyz",
@@ -630,13 +636,21 @@ class molecula:
 
         if NR:
             start_NRtime = time.time()
-            mf_chiral = scf.RHF(mol_chiral)
-            mf_chiral.kernel()
+            if DFT is None:
+                mf_chiral = scf.RHF(mol_chiral)
+                mf_chiral.kernel()
+            else:
+                from pyscf import dft
 
-            # from pyscf import dft
-            # mf_chiral = dft.RKS(mol_chiral)
-            # mf_chiral.xc = 'b3lyp'
-            # mf_chiral.kernel()
+                mf_chiral = dft.RKS(mol_chiral)
+                mf_chiral.xc = DFT
+                mf_chiral.kernel()
+
+            from pyscf import dft
+
+            mf_chiral = dft.RKS(mol_chiral)
+            mf_chiral.xc = "pbe0"
+            mf_chiral.kernel()
 
             overlap_chiral = mol_chiral.intor("int1e_ovlp")
 
@@ -669,6 +683,7 @@ class molecula:
                 print("norma WF (original molecule):", norma)
                 print("NR energy", mf_chiral.e_tot)
                 print("NR time (min):", (end_NRtime - start_NRtime) / 60)
+                sys.stdout.flush()
 
             self.NR_Noccupied_MO_alpha = nelec_alpha
             self.NR_Noccupied_MO_beta = nelec_beta
@@ -679,16 +694,18 @@ class molecula:
         if X2C:
 
             start_X2Ctime = time.time()
+            if DFT is None:
+                # UHF X2C (with_soc)
+                mf_chiral_x2c = mol_chiral.X2C()
+                mf_chiral_x2c.kernel()
+            else:
+                # For x2c+dft
+                from pyscf.x2c import dft as x2c_dft
 
-            # For x2c+dft
-            # m pyscf.x2c import dft as x2c_dft
-            # mf_chiral_x2c_dft = x2c_dft.UKS(mol_chiral)
-            # mf_chiral_x2c_dft.verbose=4
-            # mf_chiral_x2c_dft.kernel()
-
-            # UHF X2C (with_soc)
-            mf_chiral_x2c = mol_chiral.X2C()
-            mf_chiral_x2c.kernel()
+                mf_chiral_x2c = x2c_dft.UKS(mol_chiral)
+                mf_chiral_x2c.xc = DFT
+                # mf_chiral_x2c.verbose=4
+                mf_chiral_x2c.kernel()
 
             overlap_chiral_x2c = mol_chiral.intor(
                 "int1e_ovlp_spinor"
@@ -747,6 +764,7 @@ class molecula:
                 print("X2C energy", mf_chiral_x2c.e_tot)
                 print("Electrones alpha y beta:", nelec_alpha, nelec_beta)
                 print("X2C time (min):", (end_X2Ctime - start_X2Ctime) / 60)
+                sys.stdout.flush()
 
             self.x2c_MO = all_mo_coef_x2c
             self.x2c_occup_MO = all_mo_coef_x2c[:, : nelec_alpha + nelec_beta]
