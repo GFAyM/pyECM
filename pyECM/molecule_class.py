@@ -636,7 +636,7 @@ class molecula:
 
         if NR:
             start_NRtime = time.time()
-            if DFT is None:
+            if DFT is False:
                 mf_chiral = scf.RHF(mol_chiral)
                 mf_chiral.kernel()
             else:
@@ -694,7 +694,7 @@ class molecula:
         if X2C:
 
             start_X2Ctime = time.time()
-            if DFT is None:
+            if DFT is False:
                 # UHF X2C (with_soc)
                 mf_chiral_x2c = mol_chiral.X2C()
                 mf_chiral_x2c.kernel()
