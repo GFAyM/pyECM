@@ -3,7 +3,7 @@
 ## Description
 The Electronic Chirality Measure (ECM) is a quantity that measures the chirality of any (chiral) molecular system. It was proposed by Luca Bellarosa and Francesco Zerbetto in 2003 [[1]](#1). In 2023 [[2]](#2), J. J. Aucar, A. Stroppa, and G. A. Aucar showed a novel, strong, and positive correlation between the energy difference of the total electronic energies of two enantiomers and ECM, supporting a subtle interplay between the weak forces acting within the nuclei of a given molecule and its chirality.
 
-The Electronic Chirality Measure (ECM) is an end-to-end package implemented in Python 3.9 to measure the mentioned quantity. It also has some development interface with the [PySCF](https://pyscf.org/) and [DIRAC](https://www.diracprogram.org) packages.
+The Electronic Chirality Measure (ECM) is an end-to-end package implemented in Python 3.10 to measure the mentioned quantity. It also has some development interface with the [PySCF](https://pyscf.org/) and [DIRAC](https://www.diracprogram.org) packages.
 
 The ecm package uses simple input files in xyz format. The so-called nearest asymmetric structure is also needed. It can be easily obtained from [this website](https://csm.ouproj.org.il/molecule). The package also allows the user to perform some simple plots to have a better understanding of the geometry of the systems under study.
 
@@ -26,13 +26,13 @@ Read more on [ECM publications](https://pubs.acs.org/doi/pdf/10.1021/ja028646%2B
 First, you should install the required python packages. They can be found in the file `requirements.txt`. Developers should install `requirements_dev.txt`.
 
 ## Installation
-pyECM is a **Python 3.9** package
+pyECM is a **Python 3.10** package
 
 1. Download this Git Repository
 
 2. It is recommended to install a virtual environment:
 
-    ```python -m venv venv_pyecm```
+    ```python3.10 -m venv venv_pyecm```
 
 3. Activate the virtual environment:
 
@@ -55,9 +55,12 @@ For developers,
 
 2. Run all test:
 
-      ``tox==3.24.3``
-
       ``tox``
+
+3. To update requirements.txt and requierements_dev.txt dependencies, 
+
+      ``pip-compile requirements.in``
+      ``pip-compile requirements_dev.in``
 
 
 <br/><br/>
@@ -80,9 +83,9 @@ A detailed workflow is provided in the `workflow` directory. It has a list of Ju
       - `04.ECM_several-molecules.ipynb` 
 
 ## Roadmap
-Some of the ideas to keep growing are:
+Ideas under consideration:
 
-* Obtain the nearest achiral structure within the code.
+* Import and export molden files.
 
 ## Contributing
 The easiest way to get help with the project is through the github project.
