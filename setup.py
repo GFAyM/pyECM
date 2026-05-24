@@ -11,19 +11,15 @@ from setuptools import setup
 
 PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
-
+# From requirements.in
 REQUIREMENTS = [
-	"jupyterlab==3.1.13",
-	"jupyter==1.0.0",
-	"ipython[all]",
-	"attrs==22.2.0",
-	"numpy==1.22.0",
-	"pyscf==2.1.1",
-	"matplotlib==3.4.2",
-	"mendeleev==0.12.1",
-    "sphinxcontrib-bibtex==2.5.0",
-    "scipy==1.10.1",
-    "openpyxl==3.1.2"
+    "attrs>=22,<27",
+    "numpy>=1.23,<2.0",
+    "scipy>=1.10,<1.11",
+    "pyscf==2.1.1",
+    "matplotlib>=3.7,<3.11",
+    "mendeleev==0.12.1",
+    "openpyxl==3.1.2",
 ]
 
 with open(PATH / "pyECM" / "__init__.py") as fp:
@@ -42,7 +38,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name="pyECM",
-    version="0.1.1",
+    version="0.3.1",
     author="""
     Juan José Aucar
     """,
