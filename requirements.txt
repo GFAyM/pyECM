@@ -4,19 +4,20 @@
 # >>> pipdeptree | sed "s/^.* - .*//g" | sed "/^$/d"
 # -----------------------------------------------------------------------------------------------------
 # for jupyter notebook
-jupyterlab==3.1.13
-jupyter==1.0.0
-ipython[all]
+jupyterlab
+jupyter
+#ipython[all]
+ipython
 
 # pyECM requirements
 attrs==22.2.0
-numpy==1.22.0
-pyscf==2.1.1
-matplotlib==3.4.2
-mendeleev==0.12.1
-sphinxcontrib-bibtex==2.5.0
+numpy>=1.23,<2.0
 scipy==1.10.1
+pyscf==2.1.1
+matplotlib>=3.7
+mendeleev==0.12.1
 openpyxl==3.1.2
 PyQt5==5.15.10
 selenium==4.25.0
 chromedriver-autoinstaller==0.6.4
+sphinxcontrib-bibtex

@@ -184,7 +184,7 @@ class molecula:
             ax = self.fig.add_subplot(projection="3d")
 
         for i in range(self.nro_atoms):
-            (xs, ys, zs) = define_sphere(
+            xs, ys, zs = define_sphere(
                 self.positions[i][0], self.positions[i][1], self.positions[i][2], r
             )
             ax.plot_wireframe(xs, ys, zs, color=self.atoms[3][i])
@@ -688,19 +688,19 @@ class molecula:
         if X2C:
 
             start_X2Ctime = time.time()
-#            mf_chiral_x2c = mol_chiral.X2C()
-#            mf_chiral_x2c.kernel()
+            #            mf_chiral_x2c = mol_chiral.X2C()
+            #            mf_chiral_x2c.kernel()
             if DFT is False:
                 # UHF X2C (with_soc)
                 mf_chiral_x2c = mol_chiral.X2C()
                 mf_chiral_x2c.kernel()
             else:
-#                # For x2c+dft
+                #                # For x2c+dft
                 from pyscf.x2c import dft as x2c_dft
 
                 mf_chiral_x2c = x2c_dft.UKS(mol_chiral)
                 mf_chiral_x2c.xc = DFT
-#                # mf_chiral_x2c.verbose=4
+                #                # mf_chiral_x2c.verbose=4
                 mf_chiral_x2c.kernel()
 
             overlap_chiral_x2c = mol_chiral.intor(

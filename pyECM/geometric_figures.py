@@ -68,8 +68,9 @@ def pathpatch_2d_to_3d(pathpatch, z, normal):
     path = trans.transform_path(path)  # Apply the transform
 
     pathpatch.__class__ = art3d.PathPatch3D  # Change the class
+    pathpatch._axlim_clip = False  # matplotlib >=3.9 compatibility
     pathpatch._code3d = path.codes  # Copy the codes
-    pathpatch._facecolor3d = pathpatch.get_facecolor  # Get the face color
+    pathpatch._facecolor3d = pathpatch.get_facecolor()  # Get the face color
 
     verts = path.vertices  # Get the vertices in 2D
 
