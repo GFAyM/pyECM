@@ -77,7 +77,7 @@ class molecula:
 
         # self.validar()
         self.atoms_positions()
-        self.coordenadas_central()
+        self.reference_coordinate()
 
         if self.origen is not None:
             self.origin_on_atom()
@@ -109,7 +109,7 @@ class molecula:
                 )
             self.positions_achiral = np.array(positions_achiral)
 
-    def coordenadas_central(self):
+    def reference_coordinate(self):
         """Defines central point."""
         if self.origen is None:
             pass
@@ -144,7 +144,7 @@ class molecula:
         for i in range(self.nro_atoms):
             new_line = self.positions[i] - coordenadas_punto_central
             new_positions = np.vstack([new_positions, new_line])
-        new_positions = np.delete(new_positions, (0), axis=0)  # Borro fila 1 de ceros
+        new_positions = np.delete(new_positions, (0), axis=0)  # Delete first row (full of zeros)
         self.positions = new_positions
         self.coordenadas_punto_central = coordenadas_punto_central
 
@@ -158,14 +158,14 @@ class molecula:
                 self.positions[i] = matrix @ self.positions[i]
             self.direction = matrix @ self.direction
 
-    def plot_dipolo(self):
+    def plot_dipole(self):
         """Plots the molecule dipole (if direction is replaced
         by the molecule dipole)."""
         point = np.array([0, 0, 0])
         dipolo = np.array([self.direction[0], self.direction[1], self.direction[2]])
         plot_vector(self.fig, point, dipolo)
 
-    def plot_plano(self):
+    def plot_plane(self):
         """Plots the plane normal to the molecule direction."""
         point = np.array([0.0, 0.0, 0.0])
         dipolo = np.array([self.direction[0], self.direction[1], self.direction[2]])
@@ -207,7 +207,7 @@ class molecula:
 
             ax.plot([Ax, Bx], [Ay, By], zs=[Az, Bz])
 
-    def plot_opciones(self):
+    def plot_options(self):
         """Options plots."""
         if self.fig.get_axes():
             ax = self.fig.gca()
@@ -232,10 +232,10 @@ class molecula:
             atoms_name_xyz.append(atom_name_xyz)
             atoms_Z.append(eval("mendeleev." + atom_name_xyz + ".atomic_number"))
 
-        # filas =  np.zeros(4)
-        fila_0 = [self.nro_atoms, "", "", ""]
-        fila_1 = ["XYZ file", "", "", ""]
-        filas = np.vstack([fila_0, fila_1])
+        # rows =  np.zeros(4)
+        row_0 = [self.nro_atoms, "", "", ""]
+        row_1 = ["XYZ file", "", "", ""]
+        rows = np.vstack([row_0, row_1])
         for j in range(self.nro_atoms):
             new_line = np.array(
                 [
@@ -245,9 +245,9 @@ class molecula:
                     self.positions[j][2],
                 ]
             )
-            filas = np.vstack([filas, new_line])
+            rows = np.vstack([rows, new_line])
         # with open(filename, "ab") as f:
-        #    np.savetxt(f, filas, fmt="%s")
+        #    np.savetxt(f, rows, fmt="%s")
 
         with open(filename, "w") as f:
             f.write(str(self.nro_atoms) + "\n")
@@ -348,9 +348,9 @@ class molecula:
             pass
 
         if achiral is None:
-            fila_0 = [self.nro_atoms, "", "", ""]
-            fila_1 = ["XYZ file", "", "", ""]
-            filas = np.vstack([fila_0, fila_1])
+            row_0 = [self.nro_atoms, "", "", ""]
+            row_1 = ["XYZ file", "", "", ""]
+            rows = np.vstack([row_0, row_1])
             for j in range(self.nro_atoms):
                 new_line = np.array(
                     [
@@ -360,10 +360,10 @@ class molecula:
                         self.positions[j][2] * 0,
                     ]
                 )
-                filas = np.vstack([filas, new_line])
+                rows = np.vstack([rows, new_line])
 
             with open(filename, "ab") as f:
-                np.savetxt(f, filas, fmt="%s")
+                np.savetxt(f, rows, fmt="%s")
         else:
             import shutil
 
@@ -371,9 +371,9 @@ class molecula:
 
         # Export the (rotated) chiral molecule
         filename = folder + prefix_name + "_" + "{:.2f}".format(z_coordinate) + ".xyz"
-        fila_0 = [self.nro_atoms, "", "", ""]
-        fila_1 = ["XYZ file", "", "", ""]
-        filas = np.vstack([fila_0, fila_1])
+        row_0 = [self.nro_atoms, "", "", ""]
+        row_1 = ["XYZ file", "", "", ""]
+        rows = np.vstack([row_0, row_1])
         for j in range(self.nro_atoms):
             new_line = np.array(
                 [
@@ -383,7 +383,7 @@ class molecula:
                     self.positions[j][2] * z_coordinate,
                 ]
             )
-            filas = np.vstack([filas, new_line])
+            rows = np.vstack([rows, new_line])
 
             # Remove xyz files if they exist
             try:
@@ -802,19 +802,19 @@ class molecula:
                 # Unnused:
                 overlap_chiral = mol_chiral.intor("int1e_ovlp_spinor")
 
-                norma_LoLo_chiral = np.trace(
+                LoLo_chiral_norm = np.trace(
                     mm(mm(tp(Lo).conjugate(), overlap_chiral_large), Lo)
                 )
-                norma_SoSo_chiral = np.trace(
+                SoSo_chiral_norm = np.trace(
                     mm(mm(tp(So).conjugate(), overlap_chiral_small), So)
                 )
-                norma_total_chiral = norma_LoLo_chiral + norma_SoSo_chiral
+                chiral_norm = LoLo_chiral_norm + SoSo_chiral_norm
 
                 end_4ctime = time.time()
                 if debug > 0:
-                    print("LoLo Norm:", norma_LoLo_chiral)
-                    print("SoSo Norm:", norma_SoSo_chiral)
-                    print("Total (chiral) Norm:", norma_total_chiral)
+                    print("LoLo Norm:", LoLo_chiral_norm)
+                    print("SoSo Norm:", SoSo_chiral_norm)
+                    print("Total (chiral) Norm:", chiral_norm)
                     print("cvalue", c)
                     print("4c energy", mf_chiral_rel.e_tot)
                     print("4c time (min):", (end_4ctime - start_4ctime) / 60)
@@ -942,8 +942,8 @@ class molecula:
 
             achiral_norm_alpha = 0
             achiral_norm_beta = 0
-            solapamiento_NR_alpha = 0
-            solapamiento_NR_beta = 0
+            overlap_NR_alpha = 0
+            overlap_NR_beta = 0
 
             for k in range(Noccupied_MO_alpha):
                 achiral_norm_alpha = (
@@ -953,8 +953,8 @@ class molecula:
                         C_achiral_newbasis,
                     )[k, k]
                 )
-                solapamiento_NR_alpha = (
-                    solapamiento_NR_alpha
+                overlap_NR_alpha = (
+                    overlap_NR_alpha
                     + mm(
                         mm(tp(self.NR_all_MO).conjugate(), overlap_mixed),
                         C_achiral_newbasis,
@@ -982,8 +982,8 @@ class molecula:
                         C_achiral_newbasis,
                     )[k, k]
                 )
-                solapamiento_NR_beta = (
-                    solapamiento_NR_beta
+                overlap_NR_beta = (
+                    overlap_NR_beta
                     + mm(
                         mm(tp(self.NR_all_MO).conjugate(), overlap_mixed),
                         C_achiral_newbasis,
@@ -1006,11 +1006,11 @@ class molecula:
             # ,mm(mm(tp(mf_chiral.mo_coeff),overlap_mixed),C_achiral_newbasis)[k,k])
             #     print(" ")
 
-            solapamiento_NR = solapamiento_NR_alpha + solapamiento_NR_beta
+            overlap_NR = overlap_NR_alpha + overlap_NR_beta
 
             achiral_norm = achiral_norm_alpha + achiral_norm_beta
 
-            ECM_NR = 100 * (1 - np.abs(solapamiento_NR) / norma_chiral)
+            ECM_NR = 100 * (1 - np.abs(overlap_NR) / norma_chiral)
 
             ECM_NR_molcontr_alpha = np.transpose(
                 np.reshape(np.ravel(ECM_molcontr_alpha), (Noccupied_MO_alpha))
@@ -1037,7 +1037,7 @@ class molecula:
                 print("naos_sph:", naos_sph)
                 print("norma WF chiral (chiral basis):", norma_chiral)
                 print("norma WF achiral (achiral basis):", achiral_norm)
-                print("NR overlap (normalized):", solapamiento_NR / norma_chiral)
+                print("NR overlap (normalized):", overlap_NR / norma_chiral)
                 print("NR time (min):", (end_NRtime - start_NRtime) / 60)
 
         if X2C:
@@ -1180,13 +1180,13 @@ class molecula:
                 overlap_ll_pot_chiral = matrix_power(overlap_chiral_large, 0.5)
                 overlap_ss_pot_chiral = matrix_power(overlap_chiral_small, 0.5)
 
-                norma_LoLo_chiral = np.trace(
+                LoLo_chiral_norm = np.trace(
                     mm(mm(tp(Lo).conjugate(), overlap_chiral_large), Lo)
                 )
-                norma_SoSo_chiral = np.trace(
+                SoSo_chiral_norm = np.trace(
                     mm(mm(tp(So).conjugate(), overlap_chiral_small), So)
                 )
-                norma_total_chiral = norma_LoLo_chiral + norma_SoSo_chiral
+                chiral_norm = LoLo_chiral_norm + SoSo_chiral_norm
 
                 # MCOEFF new basis:
                 # C_Lo_achiral_newbasis =
@@ -1202,8 +1202,8 @@ class molecula:
 
                 achiral_norm_So = 0
                 achiral_norm_Lo = 0
-                solapamiento_LoLo = 0
-                solapamiento_SoSo = 0
+                overlap_LoLo = 0
+                overlap_SoSo = 0
                 ECM_4c_molcontr = []
 
                 for k in range(nocc):
@@ -1227,15 +1227,15 @@ class molecula:
                             C_So_achiral_newbasis,
                         )[k, k]
                     )
-                    solapamiento_LoLo = (
-                        solapamiento_LoLo
+                    overlap_LoLo = (
+                        overlap_LoLo
                         + mm(
                             mm(tp(Lo).conjugate(), overlap_mixed_LchiralLachiral),
                             C_Lo_achiral_newbasis,
                         )[k, k]
                     )
-                    solapamiento_SoSo = (
-                        solapamiento_SoSo
+                    overlap_SoSo = (
+                        overlap_SoSo
                         + mm(
                             mm(tp(So).conjugate(), overlap_mixed_SchiralSachiral),
                             C_So_achiral_newbasis,
@@ -1253,24 +1253,24 @@ class molecula:
                         )[k, k]
                     )
 
-                solapamiento_total = (solapamiento_LoLo + solapamiento_SoSo).real
+                solapamiento_total = (overlap_LoLo + overlap_SoSo).real
                 ECM_4c_molcontr = np.array(ECM_4c_molcontr).real
                 ECM_4c_molcontr = (
-                    100 * (1 - ECM_4c_molcontr) / np.abs(norma_total_chiral)
+                    100 * (1 - ECM_4c_molcontr) / np.abs(chiral_norm)
                 )
 
                 ECM_4c = 100 * (
-                    1 - np.abs(solapamiento_total) / np.abs(norma_total_chiral)
+                    1 - np.abs(solapamiento_total) / np.abs(chiral_norm)
                 )
 
                 if debug > 0:
-                    print("LoLo Norm:", norma_LoLo_chiral)
-                    print("SoSo Norm:", norma_SoSo_chiral)
-                    print("Total (chiral) Norm:", norma_total_chiral)
+                    print("LoLo Norm:", LoLo_chiral_norm)
+                    print("SoSo Norm:", SoSo_chiral_norm)
+                    print("Total (chiral) Norm:", chiral_norm)
                     print("Achiral LoLo Norm:", achiral_norm_Lo)
                     print("Achiral SoSo Norm:", achiral_norm_So)
-                    print("LoLo chiral/achiral overlap:", solapamiento_LoLo / nocc)
-                    print("SoSo chiral/achiral overlap:", solapamiento_SoSo / nocc)
+                    print("LoLo chiral/achiral overlap:", overlap_LoLo / nocc)
+                    print("SoSo chiral/achiral overlap:", overlap_SoSo / nocc)
                     print("Total overlap (normalized):", solapamiento_total / nocc)
                     print("ECM LL+SS:", ECM_4c)
 
@@ -1426,34 +1426,34 @@ class molecula:
         overlap_chiral_large = s1e[:n2c, :n2c]
         overlap_chiral_small = s1e[n2c:, n2c:]
 
-        norma_LoLo_chiral = np.trace(
+        LoLo_chiral_norm = np.trace(
             mm(mm(tp(Lo).conjugate(), overlap_chiral_large), Lo)
         )
-        norma_SoSo_chiral = np.trace(
+        SoSo_chiral_norm = np.trace(
             mm(mm(tp(So).conjugate(), overlap_chiral_small), So)
         )
-        norma_total_chiral = norma_LoLo_chiral + norma_SoSo_chiral
+        chiral_norm = LoLo_chiral_norm + SoSo_chiral_norm
 
-        valor1 = 0
-        valor2 = 0
+        term_1 = 0
+        term_2 = 0
 
         for k in range(nocc):
             large_on_small = mm(mm(tp(So).conjugate(), s1e[n2c:, :n2c]), Lo)[k, k]
             small_on_large = mm(mm(tp(Lo).conjugate(), s1e[:n2c, n2c:]), So)[k, k]
 
-            valor1 = valor1 + large_on_small
-            valor2 = valor2 + small_on_large
+            term_1 = term_1 + large_on_small
+            term_2 = term_2 + small_on_large
 
             # Molecular Contributions
             # print("mol. contr. gamma5",
             # ((large_on_small+small_on_large)*cvalue/2).real )
 
-        gamma5 = (valor1 + valor2) / norma_total_chiral.real * cvalue / 2
+        gamma5 = (term_1 + term_2) / chiral_norm.real * cvalue / 2
 
         if debug > 0:
-            print("LoLo Norm:", norma_LoLo_chiral)
-            print("SoSo Norm:", norma_SoSo_chiral)
-            print("Total (chiral) Norm:", norma_total_chiral)
+            print("LoLo Norm:", LoLo_chiral_norm)
+            print("SoSo Norm:", SoSo_chiral_norm)
+            print("Total (chiral) Norm:", chiral_norm)
             print("cvalue", cvalue)
             print("4c energy", self.rel_energy)
 
