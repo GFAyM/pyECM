@@ -1,0 +1,21 @@
+-c requirements.txt
+
+autopep8
+black
+coverage[toml]
+flake8
+flake8-black
+flake8-builtins
+flake8-isort
+mypy
+myst-parser
+nbmake
+pip-tools
+pytest
+pytest-cov
+pytest-mpl
+sphinx
+sphinx-rtd-theme
+sphinxcontrib-bibtex
+tox
+wheel
