@@ -4,7 +4,7 @@
 cff-version: 1.2.0
 title: "pyECM"
 type: software
-version: 1.1.1
+version: 0.2.1
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -13,11 +13,18 @@ authors:
   given-names: "Juan Jose"
   affiliation: UNNE-IMIT
   orcid: 'https://orcid.org/0000-0002-9065-2242'
+- family-names: "Stroppa"
+  given-names: "Alessandro"
+  affiliation: SPIN-CNR
+  orcid: 'https://orcid.org/0000-0001-6067-0434'
+- family-names: "Aucar"
+  given-names: "Gustavo Adolfo"
+  affiliation: UNNE-IMIT
+  orcid: 'https://orcid.org/0000-0003-2547-2330'
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.10149806
-doi: 10.5281/zenodo.1234
-repository-code: 'https://doi.org/10.5281/zenodo.10149806'
+    value: 10.5281/zenodo.21540587
+repository-code: 'https://doi.org/10.5281/zenodo.21540587'
 url: 'https://github.com/GFAyM/pyECM'
 abstract: >-
   The Electronic Chirality Measure (ECM) is an end-to-end
@@ -27,4 +34,4 @@ abstract: >-
 keywords:
   - pyECM
   - ECM
-license: GPL-3.0
+license: GPL-3.0 or later
