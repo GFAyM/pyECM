@@ -2,7 +2,7 @@
 # Visit https://citation-file-format.github.io/cff-initializer-javascript/#/start to generate it
 
 cff-version: 1.2.0
-title: "pyECM"
+title: "PyECM24 (v.0.2.1)"
 type: software
 version: 0.2.1
 message: >-
