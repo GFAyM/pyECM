@@ -1,0 +1,30 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://citation-file-format.github.io/cff-initializer-javascript/#/start to generate it
+
+cff-version: 1.2.0
+title: "pyECM"
+type: software
+version: 1.1.1
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+authors:
+- family-names: "Aucar"
+  given-names: "Juan Jose"
+  affiliation: UNNE-IMIT
+  orcid: 'https://orcid.org/0000-0002-9065-2242'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.10149806
+doi: 10.5281/zenodo.1234
+repository-code: 'https://doi.org/10.5281/zenodo.10149806'
+url: 'https://github.com/GFAyM/pyECM'
+abstract: >-
+  The Electronic Chirality Measure (ECM) is an end-to-end
+  package implemented in Python 3.10 to measure such
+  quantity. It also has some development interface with the
+  PySCF and DIRAC packages.
+keywords:
+  - pyECM
+  - ECM
+license: GPL-3.0
