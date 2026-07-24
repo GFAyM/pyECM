@@ -104,21 +104,48 @@ Advisors: Gustavo A. Aucar and Alessandro Stroppa
 ## Project Status
 Under development
 
-### Citing PyECM
-The following should be cited in publications utilizing the PyECM program package:
+### Citation
+If you find this project useful in your research, please cite:
 
-[A Relationship between the Molecular Parity-Violation Energy and the Electronic Chirality Measure](https://pubs.acs.org/doi/10.1021/acs.jpclett.3c03038),
-J. J. Aucar, A. Stroppa, G. A. Aucar (2023),
-*J. Phys. Chem. Lett.*, **15**, 234-240  doi:[10.1021/acs.jpclett.3c03038](https://pubs.acs.org/doi/10.1021/acs.jpclett.3c03038)
+```bibtex
+@misc{2024PyECM,
+  title={PyECM24 (v0.2.1)},
+  author={Aucar, Juan Jose and Stroppa, Alessandro and Aucar, Gustavo Adolfo},
+  howpublished={\url{https://github.com/GFAyM/pyECM}},
+  year={2024},
+  doi={10.5281/zenodo.21540588}
+}
+```
 
-[PyECM23](https://doi.org/10.5281/zenodo.10149807)
-Aucar, J. J. (2023),
-*Zenodo*. doi: [10.5281/zenodo.10149807](https://doi.org/10.5281/zenodo.10149807)
+```bibtex
+@article{aucar2023relationship,
+  title={A relationship between the molecular parity-violation energy and the electronic chirality measure},
+  author={Aucar, Juan J and Stroppa, Alessandro and Aucar, Gustavo A},
+  journal={The Journal of Physical Chemistry Letters},
+  volume={15},
+  number={1},
+  pages={234--240},
+  year={2023},
+  doi={10.1021/acs.jpclett.3c03038},
+  publisher={ACS Publications}
+}
+```
 
-[PySCF: the Python‐based simulations of chemistry framework](https://onlinelibrary.wiley.com/doi/abs/10.1002/wcms.1340),
-Q. Sun, T. C. Berkelbach, N. S. Blunt, G. H. Booth, S. Guo, Z. Li, J. Liu,
-J. McClain, E. R. Sayfutyarova, S. Sharma, S. Wouters, G. K.-L. Chan (2018),
-*WIREs Comput. Mol. Sci.*, **8**: e1340. doi:[10.1002/wcms.1340](https://onlinelibrary.wiley.com/doi/abs/10.1002/wcms.1340)
+And please also consider cite:
+
+```bibtex
+@article{sun2018pyscf,
+  title={PySCF: the Python-based simulations of chemistry framework},
+  author={Sun, Qiming and Berkelbach, Timothy C and Blunt, Nick S and Booth, George H and Guo, Sheng and Li, Zhendong and Liu, Junzi and McClain, James D and Sayfutyarova, Elvira R and Sharma, Sandeep and others},
+  journal={Wiley Interdisciplinary Reviews: Computational Molecular Science},
+  volume={8},
+  number={1},
+  pages={e1340},
+  year={2018},
+  doi={10.1002/wcms.1340},
+  publisher={Wiley Online Library}
+}
+```
 
 ## Bug reports and feature requests
 Please submit tickets on the [issues](https://github.com/juanjoaucar/pyECM/issues) page.
