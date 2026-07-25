@@ -119,7 +119,7 @@ def test_gamma5(tmp_path, capfd):
 
     assert_almost_equal(gamma5, test_result, decimal=4)
 
-#@pytest.mark.short
+@pytest.mark.short
 def test_ecm_importing_achiral(tmp_path, capfd):
     d = tmp_path / "sub"
     d.mkdir()
