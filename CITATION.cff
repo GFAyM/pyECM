@@ -2,9 +2,9 @@
 # Visit https://citation-file-format.github.io/cff-initializer-javascript/#/start to generate it
 
 cff-version: 1.2.0
-title: "PyECM24 (v.0.2.1)"
+title: "PyECM26 (v.1.0.0)"
 type: software
-version: 0.2.1
+version: 1.0.0
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -23,8 +23,8 @@ authors:
   orcid: 'https://orcid.org/0000-0003-2547-2330'
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.21540588
-repository-code: 'https://doi.org/10.5281/zenodo.21540588'
+    value: 10.5281/zenodo.21540587
+repository-code: 'https://doi.org/10.5281/zenodo.21540587'
 url: 'https://github.com/GFAyM/pyECM'
 abstract: >-
   The Electronic Chirality Measure (ECM) is an end-to-end

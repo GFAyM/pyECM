@@ -60,6 +60,7 @@ For developers,
 3. To update requirements.txt and requierements_dev.txt dependencies, 
 
       ``pip-compile requirements.in``
+
       ``pip-compile requirements_dev.in``
 
 
@@ -108,12 +109,12 @@ Under development
 If you find this project useful in your research, please cite:
 
 ```bibtex
-@misc{2024PyECM,
-  title={PyECM24 (v0.2.1)},
+@misc{2026PyECM,
+  title={PyECM26 (v1.0.0)},
   author={Aucar, Juan Jose and Stroppa, Alessandro and Aucar, Gustavo Adolfo},
   howpublished={\url{https://github.com/GFAyM/pyECM}},
-  year={2024},
-  doi={10.5281/zenodo.21540588}
+  year={2026},
+  doi={10.5281/zenodo.21540587}
 }
 ```
 
