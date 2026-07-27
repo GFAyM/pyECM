@@ -110,7 +110,7 @@ If you find this project useful in your research, please cite:
 
 ```bibtex
 @misc{2026PyECM,
-  title={PyECM26 (v1.0.0)},
+  title={PyECM26 (v1.0.0): open-source implementation for the Electronic Chirality Measure},
   author={Aucar, Juan Jose and Stroppa, Alessandro and Aucar, Gustavo Adolfo},
   howpublished={\url{https://github.com/GFAyM/pyECM}},
   year={2026},
