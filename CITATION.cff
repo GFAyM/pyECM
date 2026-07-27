@@ -24,7 +24,7 @@ authors:
 identifiers:
   - type: doi
     value: 10.5281/zenodo.21540587
-repository-code: 'https://doi.org/10.5281/zenodo.21540587'
+repository-code: 'https://github.com/GFAyM/pyECM'
 url: 'https://github.com/GFAyM/pyECM'
 abstract: >-
   The Electronic Chirality Measure (ECM) is an end-to-end
@@ -34,4 +34,4 @@ abstract: >-
 keywords:
   - pyECM
   - ECM
-license: GPL-3.0 or later
+license: GPL-3.0-or-later
