@@ -90,8 +90,7 @@ html_theme = "sphinx_rtd_theme"
 
 html_logo = "_static/Chirality_with_hands.svg"
 html_theme_options = {
-    "logo_only": True,
-    "display_version": True,
+    "logo_only": True
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme

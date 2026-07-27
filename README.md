@@ -3,7 +3,7 @@
 ## Description
 The Electronic Chirality Measure (ECM) is a quantity that measures the chirality of any (chiral) molecular system. It was proposed by Luca Bellarosa and Francesco Zerbetto in 2003 [[1]](#1). In 2023 [[2]](#2), J. J. Aucar, A. Stroppa, and G. A. Aucar showed a novel, strong, and positive correlation between the energy difference of the total electronic energies of two enantiomers and ECM, supporting a subtle interplay between the weak forces acting within the nuclei of a given molecule and its chirality.
 
-The Electronic Chirality Measure (ECM) is an end-to-end package implemented in Python 3.9 to measure the mentioned quantity. It also has some development interface with the [PySCF](https://pyscf.org/) and [DIRAC](https://www.diracprogram.org) packages.
+The Electronic Chirality Measure (ECM) is an end-to-end package implemented in Python 3.10 to measure the mentioned quantity. It also has some development interface with the [PySCF](https://pyscf.org/) and [DIRAC](https://www.diracprogram.org) packages.
 
 The ecm package uses simple input files in xyz format. The so-called nearest asymmetric structure is also needed. It can be easily obtained from [this website](https://csm.ouproj.org.il/molecule). The package also allows the user to perform some simple plots to have a better understanding of the geometry of the systems under study.
 
@@ -26,13 +26,13 @@ Read more on [ECM publications](https://pubs.acs.org/doi/pdf/10.1021/ja028646%2B
 First, you should install the required python packages. They can be found in the file `requirements.txt`. Developers should install `requirements_dev.txt`.
 
 ## Installation
-pyECM is a **Python 3.9** package
+pyECM is a **Python 3.10** package
 
 1. Download this Git Repository
 
 2. It is recommended to install a virtual environment:
 
-    ```python -m venv venv_pyecm```
+    ```python3.10 -m venv venv_pyecm```
 
 3. Activate the virtual environment:
 
@@ -55,9 +55,13 @@ For developers,
 
 2. Run all test:
 
-      ``tox==3.24.3``
-
       ``tox``
+
+3. To update requirements.txt and requierements_dev.txt dependencies, 
+
+      ``pip-compile requirements.in``
+
+      ``pip-compile requirements_dev.in``
 
 
 <br/><br/>
@@ -80,9 +84,9 @@ A detailed workflow is provided in the `workflow` directory. It has a list of Ju
       - `04.ECM_several-molecules.ipynb` 
 
 ## Roadmap
-Some of the ideas to keep growing are:
+Ideas under consideration:
 
-* Obtain the nearest achiral structure within the code.
+* Import and export molden files.
 
 ## Contributing
 The easiest way to get help with the project is through the github project.
@@ -101,21 +105,48 @@ Advisors: Gustavo A. Aucar and Alessandro Stroppa
 ## Project Status
 Under development
 
-### Citing PyECM
-The following should be cited in publications utilizing the PyECM program package:
+### Citation
+If you find this project useful in your research, please cite:
 
-[A Relationship between the Molecular Parity-Violation Energy and the Electronic Chirality Measure](https://pubs.acs.org/doi/10.1021/acs.jpclett.3c03038),
-J. J. Aucar, A. Stroppa, G. A. Aucar (2023),
-*J. Phys. Chem. Lett.*, **15**, 234-240  doi:[10.1021/acs.jpclett.3c03038](https://pubs.acs.org/doi/10.1021/acs.jpclett.3c03038)
+```bibtex
+@misc{2026PyECM,
+  title={PyECM26 (v1.0.0): open-source implementation for the Electronic Chirality Measure},
+  author={Aucar, Juan Jose and Stroppa, Alessandro and Aucar, Gustavo Adolfo},
+  howpublished={\url{https://github.com/GFAyM/pyECM}},
+  year={2026},
+  doi={10.5281/zenodo.21540587}
+}
+```
 
-[PyECM23](https://doi.org/10.5281/zenodo.10149807)
-Aucar, J. J. (2023),
-*Zenodo*. doi: [10.5281/zenodo.10149807](https://doi.org/10.5281/zenodo.10149807)
+```bibtex
+@article{aucar2023relationship,
+  title={A relationship between the molecular parity-violation energy and the electronic chirality measure},
+  author={Aucar, Juan J and Stroppa, Alessandro and Aucar, Gustavo A},
+  journal={The Journal of Physical Chemistry Letters},
+  volume={15},
+  number={1},
+  pages={234--240},
+  year={2023},
+  doi={10.1021/acs.jpclett.3c03038},
+  publisher={ACS Publications}
+}
+```
 
-[PySCF: the Python‐based simulations of chemistry framework](https://onlinelibrary.wiley.com/doi/abs/10.1002/wcms.1340),
-Q. Sun, T. C. Berkelbach, N. S. Blunt, G. H. Booth, S. Guo, Z. Li, J. Liu,
-J. McClain, E. R. Sayfutyarova, S. Sharma, S. Wouters, G. K.-L. Chan (2018),
-*WIREs Comput. Mol. Sci.*, **8**: e1340. doi:[10.1002/wcms.1340](https://onlinelibrary.wiley.com/doi/abs/10.1002/wcms.1340)
+And please also consider cite:
+
+```bibtex
+@article{sun2018pyscf,
+  title={PySCF: the Python-based simulations of chemistry framework},
+  author={Sun, Qiming and Berkelbach, Timothy C and Blunt, Nick S and Booth, George H and Guo, Sheng and Li, Zhendong and Liu, Junzi and McClain, James D and Sayfutyarova, Elvira R and Sharma, Sandeep and others},
+  journal={Wiley Interdisciplinary Reviews: Computational Molecular Science},
+  volume={8},
+  number={1},
+  pages={e1340},
+  year={2018},
+  doi={10.1002/wcms.1340},
+  publisher={Wiley Online Library}
+}
+```
 
 ## Bug reports and feature requests
 Please submit tickets on the [issues](https://github.com/juanjoaucar/pyECM/issues) page.

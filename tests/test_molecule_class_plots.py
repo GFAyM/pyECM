@@ -19,13 +19,13 @@ def test_molecule_plot_1():
             }
     fig=plt.figure()
     vector = np.array([-0.1219, -0.7434, 0.6576]) #Normal vector that defines the plane
-    origen_achiral_atom = np.array([-1.31002, -0.33894, -0.62598]) # Point that defines the plane. Any atom of the symmetric structure
-    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origen=origen_achiral_atom,**options)
+    achiral_atom_origin = np.array([-1.31002, -0.33894, -0.62598]) # Point that defines the plane. Any atom of the symmetric structure
+    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origen=achiral_atom_origin,**options)
     c.rotate_to_align_with_z()
-    c.plot_dipolo()
-    c.plot_plano()
+    c.plot_dipole()
+    c.plot_plane()
     c.plot_sphere()
-    c.plot_opciones()
+    c.plot_options()
 
     return c.fig
 
@@ -39,13 +39,13 @@ def test_molecule_plot_2():
             }
     fig=plt.figure()
     vector = np.array([-0.1219, -0.7434, 0.6576]) #Normal vector that defines the plane
-    origen_achiral_atom = np.array([-1.31002, -0.33894, -0.62598]) # Point that defines the plane. Any atom of the symmetric structure
-    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origen=origen_achiral_atom,**options)
+    achiral_atom_origin = np.array([-1.31002, -0.33894, -0.62598]) # Point that defines the plane. Any atom of the symmetric structure
+    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origen=achiral_atom_origin,**options)
     c.rotate_to_align_with_z()
-    c.plot_plano()
-    c.plot_dipolo()
+    c.plot_plane()
+    c.plot_dipole()
     c.plot_sphere()
-    c.plot_opciones()
+    c.plot_options()
 
     return c.fig
 
@@ -59,12 +59,12 @@ def test_molecule_plot_3():
             }
     fig=plt.figure()
     vector = np.array([-0.1219, -0.7434, 0.6576]) #Normal vector that defines the plane
-    origen_achiral_atom = np.array([-1.31002, -0.33894, -0.62598]) # Point that defines the plane. Any atom of the symmetric structure
-    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origen=origen_achiral_atom,**options)
+    achiral_atom_origin = np.array([-1.31002, -0.33894, -0.62598]) # Point that defines the plane. Any atom of the symmetric structure
+    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origen=achiral_atom_origin,**options)
 #    c.rotate_to_align_with_z()
-    c.plot_opciones()
-    c.plot_plano()
-    c.plot_dipolo()
+    c.plot_options()
+    c.plot_plane()
+    c.plot_dipole()
     c.plot_sphere()
 
     return c.fig
@@ -83,7 +83,7 @@ def test_S_preloaded_molecule_plot():
     s = molecula(figure=fig, preloaded_molecule=mol_SeIClO_rotated('S'),**options)
     s.plot_sphere()
     s.plot_enlaces()
-    s.plot_opciones()
+    s.plot_options()
 
     return s.fig
 
@@ -101,6 +101,6 @@ def test_R_preloaded_molecule_plot():
     r = molecula(figure=fig, preloaded_molecule=mol_SeIClO_rotated('R'),**options)
     r.plot_enlaces()
     r.plot_sphere()
-    r.plot_opciones()
+    r.plot_options()
 
     return r.fig

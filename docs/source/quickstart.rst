@@ -66,27 +66,27 @@ calculate CCM and ECM for each structure that belongs to the path.
 	import numpy as np
 
 	# Define the mirror path interval
-	minimo = 0.50
-	maximo = 0.60
+	minimum = 0.50
+	maximum = 0.60
 	delta = 0.05
-	puntos = int (round( (maximo - minimo)/delta)) + 1
+	grid_points = int (round( (maximum - minimum)/delta)) + 1
 
 	# Define the vector that will uniquely define the virtual mirror path
 	vector = np.array([-0.1807, -0.9725, -0.1469]) #Normal vector that defines the plane
-	origen_achiral_atom = np.array([0.0000, 0.000, 0.0000]) # Point that defines the plane. Any atom of the symmetric structure
+	achiral_atom_origin = np.array([0.0000, 0.000, 0.0000]) # Point that defines the plane. Any atom of the symmetric structure
 
 	# Import the molecule from a xyz file
-	mymolecule = molecula(XYZ_file = '../pyECM/data/import/CFMAR_chiral.xyz', dipolo=vector, origen=origen_achiral_atom)
+	mymolecule = molecula(XYZ_file = '../pyECM/data/import/CFMAR_chiral.xyz', dipolo=vector, origen=achiral_atom_origin)
 	mymolecule.rotate_to_align_dipole_with_z()
 
 	# Create the files associated to the virtual mirror path
-	mymolecule.xyz_mirror_path(folder='../pyECM/data/export/', prefix_name='CFMAR_chiral', lim_inf=minimo, lim_sup=maximo, points=puntos, DIRAC = True)
+	mymolecule.xyz_mirror_path(folder='../pyECM/data/export/', prefix_name='CFMAR_chiral', lim_inf=minimum, lim_sup=maximum, points=grid_points, DIRAC = True)
 
 	# Define the options for the ECM calculations
-	options = {'cartesian' : True, 'lim_inf' : minimo, 'lim_sup' : maximo, 'points' : puntos , 'tracking' : False, 'debug' : 0}
+	options = {'cartesian' : True, 'lim_inf' : minimum, 'lim_sup' : maximum, 'points' : grid_points , 'tracking' : False, 'debug' : 0}
 
 	# Get and save CCM and ECM values
-	zrate, Norms1, CCMs1, Norms2, CCMs2 = mymolecule.CCM_on_path(lim_inf=minimo, lim_sup=maximo,points=puntos)
+	zrate, Norms1, CCMs1, Norms2, CCMs2 = mymolecule.CCM_on_path(lim_inf=minimum, lim_sup=maximum,points=grid_points)
 	zrate, ECMs_NR, ECMs_molcontr, ECMs_4c = mymolecule.ECM_on_path(name='../pyECM/data/export/CFMAR_chiral', fourcomp=False, basis_set='sto-3g', **options)
 
 	#Print section

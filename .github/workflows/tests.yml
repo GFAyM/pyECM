@@ -1,15 +1,17 @@
 name: Tox
 
 on:
-  - push
-  - pull_request
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 3 1 * *'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9']
+        python-version: ['3.10']
 
     steps:
     - uses: actions/checkout@v3
@@ -21,9 +23,9 @@ jobs:
       run: |
         echo "Testing....................."
         pwd
-        echo "listando directorio en q estoy parado"
+        echo "List of directories"
         ls
-        echo "listando directorio pyECM/data"
+        echo "Directories under pyECM/data"
         ls pyECM/data
         python -m pip install --upgrade pip
         python -m pip install tox tox-gh-actions
