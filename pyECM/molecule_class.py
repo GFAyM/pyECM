@@ -144,7 +144,9 @@ class molecula:
         for i in range(self.nro_atoms):
             new_line = self.positions[i] - coordenadas_punto_central
             new_positions = np.vstack([new_positions, new_line])
-        new_positions = np.delete(new_positions, (0), axis=0)  # Delete first row (full of zeros)
+        new_positions = np.delete(
+            new_positions, (0), axis=0
+        )  # Delete first row (full of zeros)
         self.positions = new_positions
         self.coordenadas_punto_central = coordenadas_punto_central
 
@@ -1255,13 +1257,9 @@ class molecula:
 
                 solapamiento_total = (overlap_LoLo + overlap_SoSo).real
                 ECM_4c_molcontr = np.array(ECM_4c_molcontr).real
-                ECM_4c_molcontr = (
-                    100 * (1 - ECM_4c_molcontr) / np.abs(chiral_norm)
-                )
+                ECM_4c_molcontr = 100 * (1 - ECM_4c_molcontr) / np.abs(chiral_norm)
 
-                ECM_4c = 100 * (
-                    1 - np.abs(solapamiento_total) / np.abs(chiral_norm)
-                )
+                ECM_4c = 100 * (1 - np.abs(solapamiento_total) / np.abs(chiral_norm))
 
                 if debug > 0:
                     print("LoLo Norm:", LoLo_chiral_norm)
@@ -1460,7 +1458,13 @@ class molecula:
         return gamma5.real
 
     def Epv(
-        self, name=None, cartesian=False, z_coordinate=1.00, method_dict=None, debug=0
+        self,
+        name=None,
+        cartesian=False,
+        z_coordinate=1.00,
+        method_dict=None,
+        debug=0,
+        dm=None,
     ):
 
         if not hasattr(self, "rel_MO_Lo"):
@@ -1468,4 +1472,4 @@ class molecula:
                 "The four-component wave function is not defined within the class. "
             )
 
-        self.Epv_expval = Epv_molecule(self.rel_pyscf)
+        self.Epv_expval = Epv_molecule(self.rel_pyscf.mol, self.rel_pyscf, dm)
