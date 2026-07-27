@@ -113,19 +113,23 @@ Advisors: Gustavo A. Aucar and Alessandro Stroppa
 ## Project Status
 Under development
 
-### Citation
-If you find this project useful in your research, please cite:
+## Citation
+For citing a specific release (here, v1.0.0), please export the BibTeX citation directly from the corresponding Zenodo record:
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21616439.svg)](https://doi.org/10.5281/zenodo.21616439)
+
+To cite the PyECM project independently of a specific version, use:
 ```bibtex
-@misc{2026PyECM,
-  title={PyECM26 (v1.0.0): open-source implementation for the Electronic Chirality Measure},
+@software{PyECM,
+  title={PyECM: open-source implementation for the Electronic Chirality Measure},
   author={Aucar, Juan Jose and Stroppa, Alessandro and Aucar, Gustavo Adolfo},
-  howpublished={\url{https://github.com/GFAyM/pyECM}},
   year={2026},
-  doi={10.5281/zenodo.21540587}
+  doi={10.5281/zenodo.21540587},
+  url={https://github.com/GFAyM/pyECM}
 }
 ```
 
+For our first publication describing the theoretical background of PyECM, please cite:
 ```bibtex
 @article{aucar2023relationship,
   title={A relationship between the molecular parity-violation energy and the electronic chirality measure},
