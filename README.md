@@ -18,7 +18,8 @@ This package allows to:
    1. Perform basic plots in order to analyze the systems under study.
    2. Import and export molecules from/to xyz and DIRAC format.
    3. Calculate CCM and ECM in a single structure.
-   4. Calculate CCM and ECM in several structures at once and in the virtual mirroring path of each one.
+   4. Calculate parity-violating contributions to energy in a single structure.
+   5. Calculate CCM and ECM in several structures at once and in the virtual mirroring path of each one.
 
 Read more on [ECM publications](https://pubs.acs.org/doi/pdf/10.1021/ja028646%2B).
 
@@ -78,10 +79,17 @@ A detailed workflow is provided in the `workflow` directory. It has a list of Ju
 
 1. Getting started with some basic plots.
       - `01.Plots.ipynb` 
-2. Calculation of ECM in a simple molecule. 
-      - `02.ECM_one-molecule.ipynb` 
-3. Calculation of ECM in several molecules. 
-      - `04.ECM_several-molecules.ipynb` 
+2. Calculation of ECM for a molecule.
+      - `02.ECM_one-molecule_S20symmetry.ipynb`
+      - `03.ECM_one-molecule_C1symmetry.ipynb` 
+3. Calculation of ECM in a symmetry path.
+      - `04.ECM_one-molecule_C1symmetry_path.ipynb`
+4. Calculation of ECM in several molecules. 
+      - `05.ECM_several-molecules_C1symmetry.ipynb`
+5. Calculation of ECM and PV contributions to energy for a molecule.
+      - `06.Epv.and.ECM_molecular-contributions.ipynb`
+6. Calculation of ECM for a molecule (integrated with the CSM website).
+      - `07.ECM_one-molecule_auto-generate.ipynb`
 
 ## Roadmap
 Ideas under consideration:
