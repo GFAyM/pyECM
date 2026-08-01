@@ -229,18 +229,13 @@ class molecula:
         :param folder: directory where saving the files, defaults to None
         :type folder: str, optional
         """
-        atoms_name_xyz = []
-        atoms_name_dirac = []
-        atoms_Z = []
-        for j in range(self.nro_atoms):
-            atom_name_xyz = "".join(
-                [i for i in str(self.atoms[4][j]) if not i.isdigit()]
-            )
-            atom_name_dirac = str(self.atoms[4][j])
-
-            atoms_name_xyz.append(atom_name_xyz)
-            atoms_name_dirac.append(atom_name_dirac + str(j + 1))
-            atoms_Z.append(getattr(mendeleev, atom_name_xyz).atomic_number)
+        atoms_name_xyz = [
+            xyz_io.atom_symbol(self.atoms[4][j]) for j in range(self.nro_atoms)
+        ]
+        atoms_name_dirac = [
+            str(self.atoms[4][j]) + str(j + 1) for j in range(self.nro_atoms)
+        ]
+        atoms_Z = [getattr(mendeleev, name).atomic_number for name in atoms_name_xyz]
 
         # We always need the nearest assymetric structure
         filename = folder + prefix_name + "_" + "0.00.xyz"
@@ -274,40 +269,13 @@ class molecula:
 
         # Export the (rotated) chiral molecule
         filename = folder + prefix_name + "_" + "{:.2f}".format(z_coordinate) + ".xyz"
-        row_0 = [self.nro_atoms, "", "", ""]
-        row_1 = ["XYZ file", "", "", ""]
-        rows = np.vstack([row_0, row_1])
-        for j in range(self.nro_atoms):
-            new_line = np.array(
-                [
-                    atoms_name_xyz[j],
-                    self.positions[j][0],
-                    self.positions[j][1],
-                    self.positions[j][2] * z_coordinate,
-                ]
-            )
-            rows = np.vstack([rows, new_line])
-
-            # Remove xyz files if they exist
-            try:
-                os.remove(filename)
-            except OSError:
-                pass
-
-            with open(filename, "w") as f:
-                f.write(str(self.nro_atoms) + "\n")
-                f.write("XYZ file created by pyECM\n")
-                for j in range(self.nro_atoms):
-                    f.write(
-                        atoms_name_xyz[j]
-                        + "   "
-                        + "{:.6f}".format(self.positions[j][0])
-                        + " "
-                        + "{:.6f}".format(self.positions[j][1])
-                        + " "
-                        + "{:.6f}".format(self.positions[j][2] * z_coordinate)
-                        + "\n"
-                    )
+        try:
+            os.remove(filename)
+        except OSError:
+            pass
+        xyz_io.write_xyz(
+            filename, self.nro_atoms, atoms_name_xyz, self.positions, z_coordinate
+        )
 
         if DIRAC:
             filename_DIRAC = (
