@@ -10,8 +10,10 @@ from numpy import transpose as tp
 from pyscf import gto, lib, scf
 from pyscf.lib.misc import light_speed
 from scipy.linalg import fractional_matrix_power as matrix_power
-from pyECM.geometric_figures import define_plane, define_sphere
-from pyECM.geometric_figures import plot_vector, rotation_matrix_from_vectors
+from pyECM.geometric_figures import rotation_matrix_from_vectors
+from pyECM import plotting
+
+
 from pyECM.pyscf_fc import get_ovlp_AUCAR, Epv_molecule
 
 module_path = os.path.abspath(os.path.join(".."))
@@ -163,63 +165,23 @@ class molecula:
     def plot_dipole(self):
         """Plots the molecule dipole (if direction is replaced
         by the molecule dipole)."""
-        point = np.array([0, 0, 0])
-        dipolo = np.array([self.direction[0], self.direction[1], self.direction[2]])
-        plot_vector(self.fig, point, dipolo)
+        plotting.plot_dipole(self)
 
     def plot_plane(self):
         """Plots the plane normal to the molecule direction."""
-        point = np.array([0.0, 0.0, 0.0])
-        dipolo = np.array([self.direction[0], self.direction[1], self.direction[2]])
-        if self.fig.get_axes():
-            ax = self.fig.gca()
-        else:
-            ax = self.fig.add_subplot(projection="3d")
-        define_plane(ax, point, dipolo, size=1)
+        plotting.plot_plane(self)
 
     def plot_sphere(self):
         """Plots the nuclei as spheres."""
-        r = 0.05
-        if self.fig.get_axes():
-            ax = self.fig.gca()
-        else:
-            ax = self.fig.add_subplot(projection="3d")
-
-        for i in range(self.nro_atoms):
-            xs, ys, zs = define_sphere(
-                self.positions[i][0], self.positions[i][1], self.positions[i][2], r
-            )
-            ax.plot_wireframe(xs, ys, zs, color=self.atoms[3][i])
+        plotting.plot_sphere(self)
 
     def plot_enlaces(self):
         """Plot the molecule bonds."""
-        for i in range(len(self.bonds)):
-            Ax = float(np.array(self.positions)[self.bonds[i, 0], 0])
-            Ay = float(np.array(self.positions)[self.bonds[i, 0], 1])
-            Az = float(np.array(self.positions)[self.bonds[i, 0], 2])
-            Bx = float(np.array(self.positions)[self.bonds[i, 1], 0])
-            By = float(np.array(self.positions)[self.bonds[i, 1], 1])
-            Bz = float(np.array(self.positions)[self.bonds[i, 1], 2])
-            # draw diagonal line from (Ax,Ay,Az) to (Bx,By,Bz)
-            # ax = self.fig.gca(projection="3d")
-            if self.fig.get_axes():
-                ax = self.fig.gca()
-            else:
-                ax = self.fig.add_subplot(projection="3d")
-
-            ax.plot([Ax, Bx], [Ay, By], zs=[Az, Bz])
+        plotting.plot_enlaces(self)
 
     def plot_options(self):
         """Options plots."""
-        if self.fig.get_axes():
-            ax = self.fig.gca()
-        else:
-            ax = self.fig.add_subplot(projection="3d")
-        ax.set_axis_on()
-        for i in self.opciones:
-            exec(
-                self.opciones[i], {"ax": ax, "self": self, "np": np, "__builtins__": {}}
-            )
+        plotting.plot_options(self)
 
     def save_xyz(self, filename="MOL"):
         """Saves the molecule in xyz format
