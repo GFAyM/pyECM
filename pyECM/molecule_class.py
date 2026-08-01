@@ -217,7 +217,9 @@ class molecula:
             ax = self.fig.add_subplot(projection="3d")
         ax.set_axis_on()
         for i in self.opciones:
-            exec(self.opciones[i])
+            exec(
+                self.opciones[i], {"ax": ax, "self": self, "np": np, "__builtins__": {}}
+            )
 
     def save_xyz(self, filename="MOL"):
         """Saves the molecule in xyz format
@@ -232,7 +234,7 @@ class molecula:
                 [i for i in str(self.atoms[4][j]) if not i.isdigit()]
             )
             atoms_name_xyz.append(atom_name_xyz)
-            atoms_Z.append(eval("mendeleev." + atom_name_xyz + ".atomic_number"))
+            atoms_Z.append(getattr(mendeleev, atom_name_xyz).atomic_number)
 
         # rows =  np.zeros(4)
         row_0 = [self.nro_atoms, "", "", ""]
@@ -339,7 +341,7 @@ class molecula:
 
             atoms_name_xyz.append(atom_name_xyz)
             atoms_name_dirac.append(atom_name_dirac + str(j + 1))
-            atoms_Z.append(eval("mendeleev." + atom_name_xyz + ".atomic_number"))
+            atoms_Z.append(getattr(mendeleev, atom_name_xyz).atomic_number)
 
         # We always need the nearest assymetric structure
         filename = folder + prefix_name + "_" + "0.00.xyz"
@@ -504,11 +506,10 @@ class molecula:
         # Method 1
         # https://doi.org/10.1021/ja9800941 (Eq. 1)
 
-        mendeleev.Fe.atomic_weight
         atomic_weights = np.zeros(self.nro_atoms)
         i = 0
         for name in self.atoms[4]:
-            atomic_weights[i] = eval("mendeleev." + name + ".atomic_weight")
+            atomic_weights[i] = getattr(mendeleev, name).atomic_weight
             i = i + 1
 
         total_mass = np.sum(atomic_weights)
