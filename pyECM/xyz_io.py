@@ -1,6 +1,4 @@
-"""XYZ file I/O utilities for pyECM.molecula objects.
-"""
-import os
+"""XYZ file I/O utilities for pyECM.molecula objects."""
 
 import numpy as np
 

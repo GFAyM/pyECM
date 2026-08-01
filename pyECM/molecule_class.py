@@ -13,6 +13,7 @@ from scipy.linalg import fractional_matrix_power as matrix_power
 from pyECM.geometric_figures import rotation_matrix_from_vectors
 from pyECM import plotting
 from pyECM import xyz_io
+from pyECM import ccm_metrics
 
 
 from pyECM.pyscf_fc import get_ovlp_AUCAR, Epv_molecule
@@ -376,63 +377,16 @@ class molecula:
         :rtype: float(s)
         """
 
-        coordenadas_x = self.positions[:, 0]
-        coordenadas_y = self.positions[:, 1]
-        coordenadas_z = self.positions[:, 2] * z_coordinate
-
-        # If the achiral structure was not imported, it is assumed that
-        # the molecule was rotated so that it'd defining direction
-        # lies on z-axis and the molecule lies on the z = 0 plane.
-        if self.XYZ_achiral_file is None:
-            achiral_x_coordinates = coordenadas_x
-            achiral_y_coordinates = coordenadas_y
-            achiral_z_coordinates = coordenadas_z * 0
-        else:
-            achiral_x_coordinates = self.positions_achiral[:, 0]
-            achiral_y_coordinates = self.positions_achiral[:, 1]
-            achiral_z_coordinates = self.positions_achiral[:, 2]
-
-        diff_x = coordenadas_x - achiral_x_coordinates
-        diff_y = coordenadas_y - achiral_y_coordinates
-        diff_z = coordenadas_z - achiral_z_coordinates
-        CCM_distance = np.sum(diff_x**2 + diff_y**2 + diff_z**2)
-
-        mean_x = np.average(coordenadas_x)
-        mean_y = np.average(coordenadas_y)
-        mean_z = np.average(coordenadas_z)
-
-        # Method 1
-        # https://doi.org/10.1021/ja9800941 (Eq. 1)
-
-        atomic_weights = np.zeros(self.nro_atoms)
-        i = 0
-        for name in self.atoms[4]:
-            atomic_weights[i] = getattr(mendeleev, name).atomic_weight
-            i = i + 1
-
-        total_mass = np.sum(atomic_weights)
-        center_of_mass_x = np.sum(coordenadas_x * atomic_weights) / total_mass
-        center_of_mass_y = np.sum(coordenadas_y * atomic_weights) / total_mass
-        center_of_mass_z = np.sum(coordenadas_z * atomic_weights) / total_mass
-        distances_to_CM_x = coordenadas_x - center_of_mass_x
-        distances_to_CM_y = coordenadas_y - center_of_mass_y
-        distances_to_CM_z = coordenadas_z - center_of_mass_z
-        distances_to_CM = np.sqrt(
-            distances_to_CM_x**2 + distances_to_CM_y**2 + distances_to_CM_z**2
+        positions_achiral = (
+            None if self.XYZ_achiral_file is None else self.positions_achiral
         )
 
-        D = np.max(distances_to_CM)
-        Norm_1 = D**2 * self.nro_atoms
-        CCM_1 = (1 / Norm_1) * CCM_distance * 100
-
-        # Method 2
-        # https://doi.org/10.1002/chir.20807 (Eq. 1)
-        Norm_2 = np.sum(
-            (coordenadas_x - mean_x) ** 2
-            + (coordenadas_y - mean_y) ** 2
-            + (coordenadas_z - mean_z) ** 2
+        Norm_1, CCM_1, Norm_2, CCM_2 = ccm_metrics.ccm(
+            self.positions,
+            self.atoms[4],
+            positions_achiral=positions_achiral,
+            z_coordinate=z_coordinate,
         )
-        CCM_2 = CCM_distance / Norm_2 * 100
 
         if path is False:
             self.Norm1 = Norm_1
