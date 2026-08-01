@@ -607,23 +607,12 @@ class molecula:
         # Define default values for keys in method_dict
         if method_dict is None:
             method_dict = {}
-        else:
-            NR = method_dict.get(
-                "NR", True
-            )  # Get 'fourcomp' from dict. False as default.
-            fourcomp = method_dict.get(
-                "fourcomp", False
-            )  # Get 'X2C' from dict. False as default.
-            X2C = method_dict.get(
-                "X2C", False
-            )  # Get "DFT" from dict. False as default.
-            DFT = method_dict.get(
-                "DFT", False
-            )  # Get 'debug' from dict. Zero as default.
-            debug = method_dict.get(
-                "debug", 0
-            )  # Get 'cvalue' from dict. 137.03599967994 as default.
-            cvalue = method_dict.get("cvalue", 137.03599967994)
+        NR = method_dict.get("NR", True)
+        fourcomp = method_dict.get("fourcomp", False)
+        X2C = method_dict.get("X2C", False)
+        DFT = method_dict.get("DFT", False)
+        debug = method_dict.get("debug", 0)
+        cvalue = method_dict.get("cvalue", 137.03599967994)
 
         if fourcomp is not False and DFT is not False:
             raise NotImplementedError("4c-DFT not available yet.")
@@ -859,19 +848,11 @@ class molecula:
         # Define default values for keys in method_dict
         if method_dict is None:
             method_dict = {}
-        else:
-            NR = method_dict.get(
-                "NR", True
-            )  # Get 'fourcomp' from dict. False as default.
-            fourcomp = method_dict.get(
-                "fourcomp", False
-            )  # Get 'X2C' from dict. False as default.
-            X2C = method_dict.get(
-                "X2C", False
-            )  # Get 'debug' from dict. Zero as default.
-            debug = method_dict.get("debug", 0)
-            # Get 'cvalue' from dict. 137.03599967994 as default.
-            cvalue = method_dict.get("cvalue", 137.03599967994)
+        NR = method_dict.get("NR", True)
+        fourcomp = method_dict.get("fourcomp", False)
+        X2C = method_dict.get("X2C", False)
+        debug = method_dict.get("debug", 0)
+        cvalue = method_dict.get("cvalue", 137.03599967994)
 
         ECM_NR = None
         ECM_X2C = None
@@ -1377,20 +1358,8 @@ class molecula:
         # Define default values for keys in method_dict
         if method_dict is None:
             method_dict = {}
-        else:
-            #            NR = method_dict.get(
-            #                "NR", True
-            #            )  # Get 'fourcomp' from dict. False as default.
-            #            fourcomp = method_dict.get(
-            #                "fourcomp", False
-            #            )  # Get 'X2C' from dict. False as default.
-            #            X2C = method_dict.get(
-            #                "X2C", False
-            #            )  # Get 'debug' from dict. Zero as default.
-            debug = method_dict.get(
-                "debug", 0
-            )  # Get 'cvalue' from dict. 137.03599967994 as default.
-            cvalue = method_dict.get("cvalue", 137.03599967994)
+        debug = method_dict.get("debug", 0)
+        cvalue = method_dict.get("cvalue", 137.03599967994)
 
         gamma5 = 0
         # gamma5_molcontr = []
