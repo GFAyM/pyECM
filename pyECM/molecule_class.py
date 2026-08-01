@@ -12,6 +12,7 @@ from pyscf.lib.misc import light_speed
 from scipy.linalg import fractional_matrix_power as matrix_power
 from pyECM.geometric_figures import rotation_matrix_from_vectors
 from pyECM import plotting
+from pyECM import xyz_io
 
 
 from pyECM.pyscf_fc import get_ovlp_AUCAR, Epv_molecule
@@ -189,46 +190,10 @@ class molecula:
         :param filename: xyz file name, defaults to "MOL"
         :type filename: str, optional
         """
-        atoms_name_xyz = []
-        atoms_Z = []
-        for j in range(self.nro_atoms):
-            atom_name_xyz = "".join(
-                [i for i in str(self.atoms[4][j]) if not i.isdigit()]
-            )
-            atoms_name_xyz.append(atom_name_xyz)
-            atoms_Z.append(getattr(mendeleev, atom_name_xyz).atomic_number)
-
-        # rows =  np.zeros(4)
-        row_0 = [self.nro_atoms, "", "", ""]
-        row_1 = ["XYZ file", "", "", ""]
-        rows = np.vstack([row_0, row_1])
-        for j in range(self.nro_atoms):
-            new_line = np.array(
-                [
-                    self.atoms[4][j],
-                    self.positions[j][0],
-                    self.positions[j][1],
-                    self.positions[j][2],
-                ]
-            )
-            rows = np.vstack([rows, new_line])
-        # with open(filename, "ab") as f:
-        #    np.savetxt(f, rows, fmt="%s")
-
-        with open(filename, "w") as f:
-            f.write(str(self.nro_atoms) + "\n")
-            f.write("XYZ file created by pyECM\n")
-            for j in range(self.nro_atoms):
-                f.write(
-                    atoms_name_xyz[j]
-                    + "   "
-                    + "{:.6f}".format(self.positions[j][0])
-                    + " "
-                    + "{:.6f}".format(self.positions[j][1])
-                    + " "
-                    + "{:.6f}".format(self.positions[j][2])
-                    + "\n"
-                )
+        atoms_name_xyz = [
+            xyz_io.atom_symbol(self.atoms[4][j]) for j in range(self.nro_atoms)
+        ]
+        xyz_io.write_xyz(filename, self.nro_atoms, atoms_name_xyz, self.positions)
 
     def load_from_xyz(self, filename="MOL", achiral=False):
         """Loads the molecule from a xyz file.
@@ -237,42 +202,13 @@ class molecula:
         :type filename: str, optional
         """
 
-        # Check for empty lines in xyz file.
-        xyz_check = open(filename)
-        n_atoms_check = int(xyz_check.readline())
-        xyz_check.readline()  # title
-        j = 0
-        for line in xyz_check:
-            j += 1
-            if j > n_atoms_check:
-                raise TypeError("Error in xyz file format. Check for empty lines.")
-        xyz_check.close()
-
-        xyz = open(filename)
-        n_atoms = int(xyz.readline())
-        xyz.readline()  # title
-
-        coord_x = np.zeros(n_atoms)
-        coord_y = np.zeros(n_atoms)
-        coord_z = np.zeros(n_atoms)
-        colores = ["black"] * n_atoms
-        nombres = [None] * n_atoms
-
-        i = 0
-        for line in xyz:
-            atom, x, y, z = line.split()
-            coord_x[i] = x
-            coord_y[i] = y
-            coord_z[i] = z
-            nombres[i] = atom
-            i += 1
-        xyz.close()
+        n_atoms, coord_x, coord_y, coord_z, colors, names = xyz_io.read_xyz(filename)
 
         if achiral:
-            self.achiral_atoms = (coord_x, coord_y, coord_z, colores, nombres)
+            self.achiral_atoms = (coord_x, coord_y, coord_z, colors, names)
         else:
             self.nro_atoms = n_atoms
-            self.atoms = (coord_x, coord_y, coord_z, colores, nombres)
+            self.atoms = (coord_x, coord_y, coord_z, colors, names)
 
     def export_xyz(
         self,
