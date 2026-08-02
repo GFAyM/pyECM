@@ -75,7 +75,7 @@ def test_remove_nulls(x,y,expected_result):
         ([0,0,1,-56],[0,0,-3,0],[0,53,-6,2],"(array([  0,   1, -56]), array([ 0, -3,  0]), array([53, -6,  2]), array([0]))"),
     ],
 )
-def test_borrarnulos_withz(x,y,z,expected_result):
+def test_removenulls_withz(x,y,z,expected_result):
     """Test of removing null elements
 
     Examples
