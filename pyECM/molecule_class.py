@@ -1,22 +1,17 @@
 import os
 import sys
-import time
-
 
 import mendeleev as mendeleev
 import numpy as np
 from numpy import matmul as mm
 from numpy import transpose as tp
-from pyscf import gto, lib, scf
-from pyscf.lib.misc import light_speed
-from scipy.linalg import fractional_matrix_power as matrix_power
+from pyscf import gto
+from pyECM.pyscf_fc import Epv_molecule
 from pyECM.geometric_figures import rotation_matrix_from_vectors
 from pyECM import plotting
 from pyECM import xyz_io
-from pyECM import ccm_metrics
-
-
-from pyECM.pyscf_fc import get_ovlp_AUCAR, Epv_molecule
+from pyECM import ccm_metrics, ecm_metric
+from pyECM import pyscf_wf
 
 module_path = os.path.abspath(os.path.join(".."))
 
@@ -35,17 +30,27 @@ class molecula:
     :examples: >>> vector = np.array([-0.1807, -0.9725, -0.1469])
         >>> origin_at = np.array([0.0000, 0.200, 0.1000])
         >>> file='pyECM/data/import/CFMAR_chiral.xyz'
-        >>> molecule = molecula(XYZ_file = file, directio=vector, origen=origin_at)
-    :param preloaded_molecule: _description_, defaults to None
-    :type preloaded_molecule: _type_, optional
-    :param figure: _description_, defaults to None
-    :type figure: _type_, optional
-    :param origen: _description_, defaults to None
-    :type origen: _type_, optional
-    :param XYZ_file: _description_, defaults to None
-    :type XYZ_file: _type_, optional
-    :param direction: _description_, defaults to None
-    :type direction: _type_, optional
+        >>> molecule = molecula(XYZ_file = file, direction=vector, origen=origin_at)
+    :param preloaded_molecule: tuple (nro_atoms, atoms, direction, bonds)
+        for building the molecule without reading a xyz file, defaults to None
+    :type preloaded_molecule: tuple, optional
+    :param figure: matplotlib figure where the molecule will be plotted,
+        required only if any plot_* method will be used, defaults to None
+    :type figure: matplotlib.figure.Figure, optional
+    :param origen: point (or atom name) used as origin of coordinates,
+        defaults to None (uses the first atom's position)
+    :type origen: numpy.ndarray or str, optional
+    :param XYZ_file: path to the xyz file with the chiral structure, defaults to None
+    :type XYZ_file: str, optional
+    :param XYZ_achiral_file: path to the xyz file with the achiral
+        (symmetric) reference structure, defaults to None
+    :type XYZ_achiral_file: str, optional
+    :param direction: vector defining the molecule orientation with respect to
+        the nearest achiral symmetric structure,
+        used to align it with the z axis, defaults to None
+    :type direction: numpy.ndarray, optional
+    :param kwargs: extra plotting options, stored in self.opciones and
+        evaluated by plot_options()
     """
 
     def __init__(
@@ -95,7 +100,8 @@ class molecula:
     #        raise TypeError("Type error on nro_atoms and/or atoms variable/s")
 
     def atoms_positions(self):
-        """Defines nuclei positions."""
+        """Builds self.positions (and self.positions_achiral, if an achiral
+        xyz file was loaded) as (n_atoms, 3) arrays from self.atoms."""
         positions = []
         for i in range(self.nro_atoms):
             positions.append([self.atoms[0][i], self.atoms[1][i], self.atoms[2][i]])
@@ -114,7 +120,9 @@ class molecula:
             self.positions_achiral = np.array(positions_achiral)
 
     def reference_coordinate(self):
-        """Defines central point."""
+        """Sets self.punto_central from self.origen: either the position of
+        the named atom (if origen is a string) or the given point directly
+        (if origen is a numpy array)."""
         if self.origen is None:
             pass
         elif isinstance(self.origen, str):
@@ -131,7 +139,9 @@ class molecula:
             self.punto_central = self.origen
 
     def origin_on_atom(self):
-        """Gets central point coordinates."""
+        """Shifts self.positions so that self.origen becomes the new
+        coordinate origin, and stores the original central point in
+        self.coordenadas_punto_central."""
         if isinstance(self.origen, str):
             for i in range(self.nro_atoms):
                 if self.atoms[4][i] == self.origen:
@@ -197,10 +207,14 @@ class molecula:
         xyz_io.write_xyz(filename, self.nro_atoms, atoms_name_xyz, self.positions)
 
     def load_from_xyz(self, filename="MOL", achiral=False):
-        """Loads the molecule from a xyz file.
+        """Loads atomic positions and names from a xyz file into self.atoms
+        (or self.achiral_atoms, if achiral=True).
 
         :param filename: xyz file name, defaults to "MOL"
         :type filename: str, optional
+        :param achiral: if True, stores the result in self.achiral_atoms
+            instead of self.atoms/self.nro_atoms, defaults to False
+        :type achiral: bool, optional
         """
 
         n_atoms, coord_x, coord_y, coord_z, colors, names = xyz_io.read_xyz(filename)
@@ -228,6 +242,14 @@ class molecula:
         :type DIRAC: bool, optional
         :param folder: directory where saving the files, defaults to None
         :type folder: str, optional
+        :param z_coordinate: scale factor applied to the z coordinate of the
+            chiral structure, defaults to 1.00 (unmodified structure)
+        :type z_coordinate: float, optional
+        :param achiral: path to an existing xyz file to use as the achiral
+            reference (copied as-is). If None, the achiral structure is
+            derived from the chiral one by zeroing its z coordinate,
+            defaults to None
+        :type achiral: str, optional
         """
         atoms_name_xyz = [
             xyz_io.atom_symbol(self.atoms[4][j]) for j in range(self.nro_atoms)
@@ -341,6 +363,13 @@ class molecula:
     def CCM(self, z_coordinate=1.00, path=False):
         """Calculates the CCM for the molecule.
 
+        :param z_coordinate: scale factor applied to the z coordinate,
+            defaults to 1.00
+        :type z_coordinate: float, optional
+        :param path: if True, returns the results instead of storing them
+            in self (used when called repeatedly from CCM_on_path),
+            defaults to False
+        :type path: bool, optional
         :return: NORM1, CCM1, NORM2, CCM2
         :rtype: float(s)
         """
@@ -399,19 +428,28 @@ class molecula:
         gto_dict=None,
         method_dict=None,
     ):
-        """Obtain the wave function with the pySCF code.
+        """Obtain the wave function with the pySCF code, storing the result(s)
+        as attributes of self (e.g. self.NR_all_MO, self.x2c_MO,
+        self.rel_MO_Lo/So, depending on which methods were requested).
+        NR, X2C and 4c are independent and can be combined freely in
+        a single call.
 
         :param name: name of the xyz molecule file,
             including its directory, defaults to None
+        :type name: str, optional
         :param cartesian: use cartesian basis set, defaults to False
         :type cartesian: bool, optional
-        :param cartesian: use cartesian basis set, defaults to False
-        :type cartesian: bool, optional
-        :param gto_dict: Set options for Gaussian Type Orbitals, defaults to None
+        :param z_coordinate: scale factor applied to the z coordinate of the
+            structure whose WF is computed, defaults to 1.00
+        :type z_coordinate: float, optional
+        :param gto_dict: options for Gaussian Type Orbitals (basis, charge,
+            spin, verbose), defaults to None
         :type gto_dict: dict, optional
-        :param method_dict: Set method for WF calculation
-            with the pySCF code, defaults to None
+        :param method_dict: which WF method(s) to compute and their options
+            (NR, X2C, fourcomp, DFT, debug, cvalue). Keys not given fall
+            back to defaults (NR=True, the rest False/0), defaults to None
         :type method_dict: dict, optional
+        :raises NotImplementedError: if fourcomp and DFT are both requested
         """
 
         # Define default values for keys in gto_dict
@@ -446,198 +484,41 @@ class molecula:
         if cartesian:
             mol_chiral, ctr_coeff1 = mol_chiral.to_uncontracted_cartesian_basis()
 
+        # AO_number no depende del método de WF elegido: es una propiedad
+        # de mol_chiral, así que se calcula una sola vez acá.
+        self.AO_number = mol_chiral.nao
+
         if NR:
-            start_NRtime = time.time()
-            if DFT is False:
-                mf_chiral = scf.RHF(mol_chiral)
-                mf_chiral.kernel()
-            else:
-                from pyscf import dft
-
-                mf_chiral = dft.RKS(mol_chiral)
-                mf_chiral.xc = DFT
-                mf_chiral.kernel()
-
-            overlap_chiral = mol_chiral.intor("int1e_ovlp")
-
-            # Cantidad de orbitales atómicos
-            AO_number = mol_chiral.nao
-
-            # Cantidad de MO ocupados
-            # occupied_MO = mf_chiral.mol.nelec[0]
-            nelec_alpha = mf_chiral.mol.nelec[0]
-            nelec_beta = mf_chiral.mol.nelec[1]
-            # occupied_MO = nelec_alpha + nelec_beta
-
-            # MO coeficients
-            all_mo_coef = mf_chiral.mo_coeff
-            ocupp_mo_coeff_alpha = mf_chiral.mo_coeff[0:AO_number, 0:nelec_alpha]
-            ocupp_mo_coeff_beta = mf_chiral.mo_coeff[0:AO_number, 0:nelec_beta]
-
-            norma_alpha = np.trace(
-                mm(mm(tp(ocupp_mo_coeff_alpha), overlap_chiral), ocupp_mo_coeff_alpha)
-            )
-            norma_beta = np.trace(
-                mm(mm(tp(ocupp_mo_coeff_beta), overlap_chiral), ocupp_mo_coeff_beta)
-            )
-            norma = norma_alpha + norma_beta
-
-            end_NRtime = time.time()
-            if debug > 0:
-                print("naos_cart:", mol_chiral.nao)
-                print("MO occupation", mf_chiral.mol.nelec)
-                print("norma WF (original molecule):", norma)
-                print("NR energy", mf_chiral.e_tot)
-                print("NR time (min):", (end_NRtime - start_NRtime) / 60)
-                sys.stdout.flush()
-
-            self.NR_Noccupied_MO_alpha = nelec_alpha
-            self.NR_Noccupied_MO_beta = nelec_beta
-            self.NR_all_MO = all_mo_coef
-            self.NR_occupied_MO = mf_chiral.mol.nelec
-            self.NR_pyscf = mf_chiral
+            (
+                self.NR_Noccupied_MO_alpha,
+                self.NR_Noccupied_MO_beta,
+                self.NR_all_MO,
+                self.NR_occupied_MO,
+                self.NR_pyscf,
+                _,
+            ) = pyscf_wf.compute_NR_WF(mol_chiral, DFT=DFT, debug=debug)
 
         if X2C:
-
-            start_X2Ctime = time.time()
-            #            mf_chiral_x2c = mol_chiral.X2C()
-            #            mf_chiral_x2c.kernel()
-            if DFT is False:
-                # UHF X2C (with_soc)
-                mf_chiral_x2c = mol_chiral.X2C()
-                mf_chiral_x2c.kernel()
-            else:
-                #                # For x2c+dft
-                from pyscf.x2c import dft as x2c_dft
-
-                mf_chiral_x2c = x2c_dft.UKS(mol_chiral)
-                mf_chiral_x2c.xc = DFT
-                #                # mf_chiral_x2c.verbose=4
-                mf_chiral_x2c.kernel()
-
-            overlap_chiral_x2c = mol_chiral.intor(
-                "int1e_ovlp_spinor"
-            )  # (j-adapted) spinor basis
-
-            # Number of atomic orbitals
-            AO_number = mol_chiral.nao
-
-            # Molecular coeficients. In mf_chiral_x2c.mo_coeff orbitals are
-            # ordered by: 1up, 1down, 2up, 2down, etc.
-            all_mo_coef_x2c = mf_chiral_x2c.mo_coeff
-
-            # Occupied molecular coeficients
-            nelec_alpha = mf_chiral_x2c.mol.nelec[0]
-            nelec_beta = mf_chiral_x2c.mol.nelec[1]
-
-            norm_x2c = np.trace(
-                mm(
-                    mm(
-                        tp(all_mo_coef_x2c[:, : nelec_alpha + nelec_beta]).conjugate(),
-                        overlap_chiral_x2c,
-                    ),
-                    all_mo_coef_x2c[:, : nelec_alpha + nelec_beta],
-                )
-            )
-
-            # Extracted from https://github.com/pyscf/pyscf/blob/
-            #                master/examples/x2c/03-x2c_ghf.py
-            # Using the j-adapted results to construct initial
-            # guess for X2C-GHF, SCF can be converged to the
-            # correct result in one iteration.
-
-            # Attributes for GHF method
-            # GHF orbital coefficients are 2D array.
-            # Let nao be the number of spatial AOs, mo_coeff[:nao]
-            # are the coefficients of AO with alpha spin; mo_coeff[nao:nao*2]
-            # are the coefficients of AO with beta spin
-
-            # I couldn't yet get the right norm in this way. JJA 2024.
-
-            # The transformation from spin orbital basis to spinor basis
-            # c = np.vstack(mol_chiral.sph2spinor_coeff())
-            # Construct new initial guess from the spinor basis solution
-            # mo1 = c.dot(mf_chiral_x2c.mo_coeff)
-            # dm = mf_chiral_x2c.make_rdm1(mo1, mf_chiral_x2c.mo_occ)
-
-            # x2c_ghf_mf = mol_chiral.GHF().x2c1e()
-            # x2c_ghf.verbose = 4
-            # x2c_ghf_mf.max_cycle = 10
-            # x2c_ghf_mf.kernel(dm0=dm)
-
-            end_X2Ctime = time.time()
-
-            if debug > 0:
-                print("X2C WF NORM (original molecule):", norm_x2c.real)
-                print("X2C energy", mf_chiral_x2c.e_tot)
-                print("Electrones alpha y beta:", nelec_alpha, nelec_beta)
-                print("X2C time (min):", (end_X2Ctime - start_X2Ctime) / 60)
-                sys.stdout.flush()
-
-            self.x2c_MO = all_mo_coef_x2c
-            self.x2c_occup_MO = all_mo_coef_x2c[:, : nelec_alpha + nelec_beta]
-            self.x2c_Nalphaoccupied_MO = nelec_alpha
-            self.x2c_Nbetaoccupied_MO = nelec_beta
-            self.x2c_energy = mf_chiral_x2c.e_tot
+            (
+                self.x2c_MO,
+                self.x2c_occup_MO,
+                self.x2c_Nalphaoccupied_MO,
+                self.x2c_Nbetaoccupied_MO,
+                self.x2c_energy,
+                _,
+            ) = pyscf_wf.compute_X2C_WF(mol_chiral, DFT=DFT, debug=debug)
 
         if fourcomp:
-            start_4ctime = time.time()
-            with light_speed(cvalue):
-                c = lib.param.LIGHT_SPEED
-
-                mf_chiral_rel = scf.DHF(mol_chiral)
-                mf_chiral_rel.kernel()
-
-                n4c, nmo = mf_chiral_rel.mo_coeff.shape
-                self.n4c, self.rel_nmo = n4c, nmo
-                n2c = n4c // 2
-                nNeg = nmo // 2  # molecular orbitals of negative energy
-                nocc = mol_chiral.nelectron
-                # nvir = nmo // 2 - nocc  # virtual orbitals
-                mo_pos_l = mf_chiral_rel.mo_coeff[:n2c, nNeg:]
-                mo_pos_s = mf_chiral_rel.mo_coeff[n2c:, nNeg:]  # * (.5/c)
-                Lo = mo_pos_l[:, :nocc]
-                So = mo_pos_s[:, :nocc]
-                # Lv = mo_pos_l[:,nocc:]
-                # Sv = mo_pos_s[:,nocc:]
-
-                #                from pyscf.scf.dhf import get_ovlp
-
-                # overlap_chiral_4c = get_ovlp(mol_chiral)
-                overlap_chiral_4c = get_ovlp_AUCAR(mol_chiral)
-
-                overlap_chiral_large = overlap_chiral_4c[:n2c, :n2c]
-                overlap_chiral_small = overlap_chiral_4c[n2c:, n2c:]
-
-                AO_number = mol_chiral.nao
-
-                # Unnused:
-                overlap_chiral = mol_chiral.intor("int1e_ovlp_spinor")
-
-                LoLo_chiral_norm = np.trace(
-                    mm(mm(tp(Lo).conjugate(), overlap_chiral_large), Lo)
-                )
-                SoSo_chiral_norm = np.trace(
-                    mm(mm(tp(So).conjugate(), overlap_chiral_small), So)
-                )
-                chiral_norm = LoLo_chiral_norm + SoSo_chiral_norm
-
-                end_4ctime = time.time()
-                if debug > 0:
-                    print("LoLo Norm:", LoLo_chiral_norm)
-                    print("SoSo Norm:", SoSo_chiral_norm)
-                    print("Total (chiral) Norm:", chiral_norm)
-                    print("cvalue", c)
-                    print("4c energy", mf_chiral_rel.e_tot)
-                    print("4c time (min):", (end_4ctime - start_4ctime) / 60)
-
-                self.rel_MO_Lo = Lo
-                self.rel_MO_So = So
-                self.rel_Noccupied_MO = nocc
-                self.rel_energy = mf_chiral_rel.e_tot
-                self.rel_pyscf = mf_chiral_rel
-
-        self.AO_number = AO_number
+            (
+                self.n4c,
+                self.rel_nmo,
+                self.rel_MO_Lo,
+                self.rel_MO_So,
+                self.rel_Noccupied_MO,
+                self.rel_energy,
+                self.rel_pyscf,
+                _,
+            ) = pyscf_wf.compute_4c_WF(mol_chiral, cvalue, debug=debug)
 
     def ECM(
         self,
@@ -651,6 +532,7 @@ class molecula:
 
         :param name: name of the xyz molecule file,
             including its directory, defaults to None
+        :type name: str, optional
         :param cartesian: use cartesian basis set, defaults to False
         :type cartesian: bool, optional
         :param z_coordinate: variable for ECM on path, defaults to 1.00
@@ -660,9 +542,10 @@ class molecula:
         :param method_dict: Set method for WF calculation,
             previously calculated, defaults to None
         :type method_dict: dict, optional
-        :raises AttributeError: _description_
-        :return: _description_
-        :rtype: _type_
+        :raises AttributeError: if the wave function required by
+            method_dict was not computed first with pySCF_WF
+        :return: ECM_NR, ECM_X2C, ECM_4c (only when path=True)
+        :rtype: float(s)
         """
 
         # Define default values for keys in method_dict
@@ -674,19 +557,39 @@ class molecula:
         debug = method_dict.get("debug", 0)
         cvalue = method_dict.get("cvalue", 137.03599967994)
 
+        # La WF correspondiente tiene que haber sido calculada antes con
+        # pySCF_WF(method_dict={...}). Esto ya no es solo una convención:
+        # queda garantizado acá.
+        if NR and not hasattr(self, "NR_all_MO"):
+            raise AttributeError(
+                "The non-relativistic wave function is not defined. "
+                "Run pySCF_WF(method_dict={'NR': True, ...}) first."
+            )
+        if X2C and not hasattr(self, "x2c_MO"):
+            raise AttributeError(
+                "The X2C wave function is not defined. "
+                "Run pySCF_WF(method_dict={'X2C': True, ...}) first."
+            )
+        if fourcomp and not hasattr(self, "rel_MO_Lo"):
+            raise AttributeError(
+                "The four-component wave function is not defined. "
+                "Run pySCF_WF(method_dict={'fourcomp': True, ...}) first."
+            )
+
         ECM_NR = None
         ECM_X2C = None
         ECM_4c = None
-        ECM_molcontr_alpha = []
-        ECM_molcontr_beta = []
+        ECM_NR_molcontr_alpha = []
+        ECM_NR_molcontr_beta = []
+        ECM_NR_molcontr = []
         ECM_X2C_molcontr = []
+        ECM_4c_molcontr = []
 
         mol_chiral = gto.M(
             atom=name + "_" + "{:.2f}".format(z_coordinate) + ".xyz",
             max_memory=5000.0,
             **self.gto_dict
         )
-
         mol_achiral = gto.M(atom=name + "_0.00.xyz", max_memory=5000.0, **self.gto_dict)
 
         if cartesian:
@@ -696,383 +599,44 @@ class molecula:
         mol_super = mol_chiral + mol_achiral
 
         if NR:
-            start_NRtime = time.time()
-            #            mf_chiral = scf.RHF(mol_chiral)
-            #            mf_chiral.kernel()
-
-            # from pyscf import dft
-            # mf_chiral = dft.RKS(mol_chiral)
-            # mf_chiral.xc = 'b3lyp'
-            # mf_chiral.kernel()
-
-            naos_sph = mol_chiral.intor("int1e_ovlp_sph").shape[0]
-            Noccupied_MO_alpha = self.NR_Noccupied_MO_alpha
-            Noccupied_MO_beta = self.NR_Noccupied_MO_beta
-
-            AO_number = mol_chiral.nao
-            AO_number_supermol = np.array([mol_super.nao])[0]
-
-            overlap_mixed_fullspace = mol_super.intor("int1e_ovlp")
-            overlap_mixed = overlap_mixed_fullspace[
-                0 : int(AO_number_supermol / 2),
-                int(AO_number_supermol / 2) : AO_number_supermol,
-            ]
-
-            overlap_chiral = mol_chiral.intor("int1e_ovlp")
-            overlap_achiral = mol_achiral.intor("int1e_ovlp")
-
-            overlap_pot_chiral = matrix_power(overlap_chiral, 0.5)
-            overlap_pot_achiral = matrix_power(overlap_achiral, -0.5)
-
-            # ocupp_mo_coeff = self.NR_all_MO[0:AO_number, 0:occupied_MO]
-            ocupp_mo_coeff_alpha = self.NR_all_MO[0:AO_number, 0:Noccupied_MO_alpha]
-            ocupp_mo_coeff_beta = self.NR_all_MO[0:AO_number, 0:Noccupied_MO_beta]
-            # norma_chiral = np.trace(
-            #    mm(mm(tp(ocupp_mo_coeff), overlap_chiral), ocupp_mo_coeff)
-            # )
-            norma_alpha = np.trace(
-                mm(mm(tp(ocupp_mo_coeff_alpha), overlap_chiral), ocupp_mo_coeff_alpha)
+            (
+                ECM_NR,
+                ECM_NR_molcontr_alpha,
+                ECM_NR_molcontr_beta,
+                ECM_NR_molcontr,
+            ) = ecm_metric.compute_ECM_NR(
+                mol_chiral,
+                mol_achiral,
+                mol_super,
+                self.NR_all_MO,
+                self.NR_Noccupied_MO_alpha,
+                self.NR_Noccupied_MO_beta,
+                debug=debug,
             )
-            norma_beta = np.trace(
-                mm(mm(tp(ocupp_mo_coeff_beta), overlap_chiral), ocupp_mo_coeff_beta)
-            )
-            norma_chiral = norma_alpha + norma_beta
-
-            # old basis: chiral basis set
-            # new basis: achiral basis set
-            C_achiral_newbasis = mm(
-                mm(overlap_pot_achiral, overlap_pot_chiral), self.NR_all_MO
-            )
-
-            achiral_norm_alpha = 0
-            achiral_norm_beta = 0
-            overlap_NR_alpha = 0
-            overlap_NR_beta = 0
-
-            for k in range(Noccupied_MO_alpha):
-                achiral_norm_alpha = (
-                    achiral_norm_alpha
-                    + mm(
-                        mm(tp(C_achiral_newbasis).conjugate(), overlap_achiral),
-                        C_achiral_newbasis,
-                    )[k, k]
-                )
-                overlap_NR_alpha = (
-                    overlap_NR_alpha
-                    + mm(
-                        mm(tp(self.NR_all_MO).conjugate(), overlap_mixed),
-                        C_achiral_newbasis,
-                    )[k, k]
-                )
-
-                ECM_molcontr_alpha.append(
-                    100
-                    * (
-                        1
-                        - np.abs(
-                            mm(
-                                mm(tp(self.NR_all_MO), overlap_mixed),
-                                C_achiral_newbasis,
-                            )[k, k]
-                        )
-                    )
-                )
-
-            for k in range(Noccupied_MO_beta):
-                achiral_norm_beta = (
-                    achiral_norm_beta
-                    + mm(
-                        mm(tp(C_achiral_newbasis).conjugate(), overlap_achiral),
-                        C_achiral_newbasis,
-                    )[k, k]
-                )
-                overlap_NR_beta = (
-                    overlap_NR_beta
-                    + mm(
-                        mm(tp(self.NR_all_MO).conjugate(), overlap_mixed),
-                        C_achiral_newbasis,
-                    )[k, k]
-                )
-
-                ECM_molcontr_beta.append(
-                    100
-                    * (
-                        1
-                        - np.abs(
-                            mm(
-                                mm(tp(self.NR_all_MO), overlap_mixed),
-                                C_achiral_newbasis,
-                            )[k, k]
-                        )
-                    )
-                )
-            #     print("Overlap contribution from",k,"orbital:"
-            # ,mm(mm(tp(mf_chiral.mo_coeff),overlap_mixed),C_achiral_newbasis)[k,k])
-            #     print(" ")
-
-            overlap_NR = overlap_NR_alpha + overlap_NR_beta
-
-            achiral_norm = achiral_norm_alpha + achiral_norm_beta
-
-            ECM_NR = 100 * (1 - np.abs(overlap_NR) / norma_chiral)
-
-            ECM_NR_molcontr_alpha = np.transpose(
-                np.reshape(np.ravel(ECM_molcontr_alpha), (Noccupied_MO_alpha))
-            )
-            ECM_NR_molcontr_alpha = ECM_NR_molcontr_alpha / norma_chiral
-
-            ECM_NR_molcontr_beta = np.transpose(
-                np.reshape(np.ravel(ECM_molcontr_beta), (Noccupied_MO_beta))
-            )
-            ECM_NR_molcontr_beta = ECM_NR_molcontr_beta / norma_chiral
-
-            # Fill array with zeros for total molecular contributions
-            ECM_NR_molcontr = np.zeros(
-                len(ECM_NR_molcontr_alpha) + len(ECM_NR_molcontr_beta)
-            )
-
-            # Asign elements to array
-            ECM_NR_molcontr[::2] = ECM_NR_molcontr_alpha
-            ECM_NR_molcontr[1::2] = ECM_NR_molcontr_beta
-
-            end_NRtime = time.time()
-            if debug > 0:
-                print("naos_cart:", mol_chiral.nao)
-                print("naos_sph:", naos_sph)
-                print("norma WF chiral (chiral basis):", norma_chiral)
-                print("norma WF achiral (achiral basis):", achiral_norm)
-                print("NR overlap (normalized):", overlap_NR / norma_chiral)
-                print("NR time (min):", (end_NRtime - start_NRtime) / 60)
 
         if X2C:
-            start_X2Ctime = time.time()
-
-            Noccupied_MO = self.x2c_Nalphaoccupied_MO + self.x2c_Nbetaoccupied_MO
-            AO_number = mol_chiral.nao
-            AO_number_supermol = np.array([mol_super.nao])[0]
-
-            overlap_mixed_fullspace = mol_super.intor("int1e_ovlp_spinor")
-            overlap_mixed = overlap_mixed_fullspace[
-                0 : int(AO_number_supermol),
-                int(AO_number_supermol) : 2 * AO_number_supermol,
-            ]
-
-            overlap_chiral = mol_chiral.intor("int1e_ovlp_spinor")
-            overlap_achiral = mol_achiral.intor("int1e_ovlp_spinor")
-
-            overlap_pot_chiral = matrix_power(overlap_chiral, 0.5)
-            overlap_pot_achiral = matrix_power(overlap_achiral, -0.5)
-
-            norma_x2c_chiral = np.trace(
-                mm(
-                    mm(tp(self.x2c_occup_MO).conjugate(), overlap_chiral),
-                    self.x2c_occup_MO,
-                )
+            ECM_X2C, ECM_X2C_molcontr = ecm_metric.compute_ECM_X2C(
+                mol_chiral,
+                mol_achiral,
+                mol_super,
+                self.x2c_MO,
+                self.x2c_occup_MO,
+                self.x2c_Nalphaoccupied_MO,
+                self.x2c_Nbetaoccupied_MO,
+                debug=debug,
             )
-
-            # old basis: chiral basis set
-            # new basis: achiral basis set
-            C_x2c_achiral_newbasis = mm(
-                mm(overlap_pot_achiral, overlap_pot_chiral), self.x2c_MO
-            )
-
-            achiral_x2c_norm = 0
-            solapamiento_x2c = 0
-            for k in range(Noccupied_MO):
-                achiral_x2c_norm = (
-                    achiral_x2c_norm
-                    + mm(
-                        mm(tp(C_x2c_achiral_newbasis).conjugate(), overlap_achiral),
-                        C_x2c_achiral_newbasis,
-                    )[k, k]
-                )
-
-                solapamiento_x2c = (
-                    solapamiento_x2c
-                    + mm(
-                        mm(tp(self.x2c_MO).conjugate(), overlap_mixed),
-                        C_x2c_achiral_newbasis,
-                    )[k, k]
-                )
-
-                ECM_X2C_molcontr.append(
-                    100
-                    * (
-                        1
-                        - np.abs(
-                            mm(
-                                mm(tp(self.x2c_MO), overlap_mixed),
-                                C_x2c_achiral_newbasis,
-                            )[k, k]
-                        )
-                    )
-                )
-
-            ECM_X2C = 100 * (
-                1 - np.abs(solapamiento_x2c.real) / np.abs(norma_x2c_chiral)
-            )
-
-            end_X2Ctime = time.time()
-            if debug > 0:
-                print("X2C: norma WF chiral (chiral basis):", norma_x2c_chiral)
-                print("X2C: norma WF achiral (achiral basis):", achiral_x2c_norm)
-                print("X2C: overlap (normalized):", solapamiento_x2c / norma_x2c_chiral)
-                print("X2C time (min):", (end_X2Ctime - start_X2Ctime) / 60)
 
         if fourcomp:
-            from pyscf.scf.dhf import get_ovlp
-
-            with light_speed(cvalue):
-
-                if not hasattr(self, "rel_MO_Lo"):
-                    raise AttributeError(
-                        "The four-component wave function is not defined. "
-                        "Try with fourcomp = False."
-                    )
-
-                n2c = self.n4c // 2
-                nocc = self.rel_Noccupied_MO
-
-                Lo = self.rel_MO_Lo  # Large MO coefficients
-                So = self.rel_MO_So  # Small MO coefficients
-
-                overlap_chiral_4c = get_ovlp(mol_chiral)
-                overlap_achiral_4c = get_ovlp(mol_achiral)
-
-                overlap_chiral_large = overlap_chiral_4c[:n2c, :n2c]
-                overlap_chiral_small = overlap_chiral_4c[n2c:, n2c:]
-
-                overlap_achiral_large = overlap_achiral_4c[:n2c, :n2c]
-                overlap_achiral_small = overlap_achiral_4c[n2c:, n2c:]
-
-                mol_super = mol_chiral + mol_achiral
-                overlap_supermol_4c = get_ovlp_AUCAR(mol_super)
-
-                # Its ok:
-                # overlap_chiral_large -
-                # overlap_supermol_4c[:n2c,0:n2c]
-                # overlap_achiral_large -
-                # overlap_supermol_4c[n2c:2*n2c,n2c:2*n2c]
-                # overlap_chiral_small -
-                # overlap_supermol_4c[2*n2c:3*n2c,2*n2c:3*n2c]
-                # overlap_achiral_small -
-                # overlap_supermol_4c[3*n2c:4*n2c,3*n2c:4*n2c]
-
-                overlap_mixed_SchiralSachiral = overlap_supermol_4c[
-                    2 * n2c : 3 * n2c, 3 * n2c : 4 * n2c
-                ]
-                overlap_mixed_LchiralLachiral = overlap_supermol_4c[
-                    :n2c, 1 * n2c : 2 * n2c
-                ]
-
-                AO_number = mol_chiral.nao
-                AO_number_supermol = np.array([mol_super.nao])[0]
-
-                overlap_mixed_fullspace = mol_super.intor("int1e_ovlp_spinor")
-                overlap_mixed = overlap_mixed_fullspace[
-                    0 : int(AO_number_supermol),
-                    int(AO_number_supermol) : 2 * AO_number_supermol,
-                ]
-
-                overlap_chiral = mol_chiral.intor("int1e_ovlp_spinor")
-                overlap_achiral = mol_achiral.intor("int1e_ovlp_spinor")
-
-                overlap_pot_achiral_large = matrix_power(overlap_achiral_large, -0.5)
-
-                overlap_pot_achiral_small = matrix_power(overlap_achiral_small, -0.5)
-
-                overlap_ll_pot_chiral = matrix_power(overlap_chiral_large, 0.5)
-                overlap_ss_pot_chiral = matrix_power(overlap_chiral_small, 0.5)
-
-                LoLo_chiral_norm = np.trace(
-                    mm(mm(tp(Lo).conjugate(), overlap_chiral_large), Lo)
-                )
-                SoSo_chiral_norm = np.trace(
-                    mm(mm(tp(So).conjugate(), overlap_chiral_small), So)
-                )
-                chiral_norm = LoLo_chiral_norm + SoSo_chiral_norm
-
-                # MCOEFF new basis:
-                # C_Lo_achiral_newbasis =
-                # mm(mm(overlap_pot_achiral,overlap_ll_pot_chiral),Lo)
-                # C_So_achiral_newbasis =
-                # mm(mm(overlap_pot_achiral,overlap_ss_pot_chiral),So)
-                C_Lo_achiral_newbasis = mm(
-                    mm(overlap_pot_achiral_large, overlap_ll_pot_chiral), Lo
-                )
-                C_So_achiral_newbasis = mm(
-                    mm(overlap_pot_achiral_small, overlap_ss_pot_chiral), So
-                )
-
-                achiral_norm_So = 0
-                achiral_norm_Lo = 0
-                overlap_LoLo = 0
-                overlap_SoSo = 0
-                ECM_4c_molcontr = []
-
-                for k in range(nocc):
-                    achiral_norm_Lo = (
-                        achiral_norm_Lo
-                        + mm(
-                            mm(
-                                tp(C_Lo_achiral_newbasis).conjugate(),
-                                overlap_achiral_large,
-                            ),
-                            C_Lo_achiral_newbasis,
-                        )[k, k]
-                    )
-                    achiral_norm_So = (
-                        achiral_norm_So
-                        + mm(
-                            mm(
-                                tp(C_So_achiral_newbasis).conjugate(),
-                                overlap_achiral_small,
-                            ),
-                            C_So_achiral_newbasis,
-                        )[k, k]
-                    )
-                    overlap_LoLo = (
-                        overlap_LoLo
-                        + mm(
-                            mm(tp(Lo).conjugate(), overlap_mixed_LchiralLachiral),
-                            C_Lo_achiral_newbasis,
-                        )[k, k]
-                    )
-                    overlap_SoSo = (
-                        overlap_SoSo
-                        + mm(
-                            mm(tp(So).conjugate(), overlap_mixed_SchiralSachiral),
-                            C_So_achiral_newbasis,
-                        )[k, k]
-                    )
-
-                    ECM_4c_molcontr.append(
-                        mm(
-                            mm(tp(Lo).conjugate(), overlap_mixed_LchiralLachiral),
-                            C_Lo_achiral_newbasis,
-                        )[k, k]
-                        + mm(
-                            mm(tp(So).conjugate(), overlap_mixed_SchiralSachiral),
-                            C_So_achiral_newbasis,
-                        )[k, k]
-                    )
-
-                solapamiento_total = (overlap_LoLo + overlap_SoSo).real
-                ECM_4c_molcontr = np.array(ECM_4c_molcontr).real
-                ECM_4c_molcontr = 100 * (1 - ECM_4c_molcontr) / np.abs(chiral_norm)
-
-                ECM_4c = 100 * (1 - np.abs(solapamiento_total) / np.abs(chiral_norm))
-
-                if debug > 0:
-                    print("LoLo Norm:", LoLo_chiral_norm)
-                    print("SoSo Norm:", SoSo_chiral_norm)
-                    print("Total (chiral) Norm:", chiral_norm)
-                    print("Achiral LoLo Norm:", achiral_norm_Lo)
-                    print("Achiral SoSo Norm:", achiral_norm_So)
-                    print("LoLo chiral/achiral overlap:", overlap_LoLo / nocc)
-                    print("SoSo chiral/achiral overlap:", overlap_SoSo / nocc)
-                    print("Total overlap (normalized):", solapamiento_total / nocc)
-                    print("ECM LL+SS:", ECM_4c)
+            ECM_4c, ECM_4c_molcontr = ecm_metric.compute_ECM_4c(
+                mol_chiral,
+                mol_achiral,
+                self.n4c,
+                self.rel_MO_Lo,
+                self.rel_MO_So,
+                self.rel_Noccupied_MO,
+                cvalue,
+                debug=debug,
+            )
 
         if path is False:
             if NR:
@@ -1152,22 +716,27 @@ class molecula:
     def gamma5(
         self, name=None, cartesian=False, z_coordinate=1.00, method_dict=None, debug=0
     ):
-        """Calculate Gamma5 expectation value
+        """Calculate the Gamma5 expectation value. Requires that the
+        four-component wave function was already computed with
+        pySCF_WF(method_dict={'fourcomp': True, ...}).
 
         :param name: name of the xyz molecule file,
             including its directory, defaults to None
+        :type name: str, optional
         :param cartesian: use cartesian basis set, defaults to False
         :type cartesian: bool, optional
-        :param z_coordinate: variable for ECM on path, defaults to 1.00
+        :param z_coordinate: scale factor applied to the z coordinate of the
+            structure, defaults to 1.00
         :type z_coordinate: float, optional
-        :param method_dict: Set method for WF calculation,
-            previously calculated, defaults to None
+        :param method_dict: options for the calculation (debug, cvalue),
+            defaults to None
         :type method_dict: dict, optional
-        :param debug: debugg level, defaults to 0
+        :param debug: debug level, overridden by method_dict["debug"]
+            if given, defaults to 0
         :type debug: int, optional
-        :raises AttributeError: check for 4c wave function
+        :raises AttributeError: if the four-component wave function is not defined
         :return: Gamma5 expectation value
-        :rtype: real
+        :rtype: float
         """
 
         if not hasattr(self, "rel_MO_Lo"):
@@ -1256,6 +825,32 @@ class molecula:
         debug=0,
         dm=None,
     ):
+        """Calculate the parity-violating (PV) energy contribution for each
+        atom and occupied orbital, storing the result in self.Epv_expval.
+        Requires that the four-component wave function was already computed
+        with pySCF_WF(method_dict={'fourcomp': True, ...}).
+
+        :param name: name of the xyz molecule file, including its directory.
+            Currently unused (kept for API consistency with ECM/gamma5),
+            defaults to None
+        :type name: str, optional
+        :param cartesian: use cartesian basis set. Currently unused,
+            defaults to False
+        :type cartesian: bool, optional
+        :param z_coordinate: scale factor applied to the z coordinate.
+            Currently unused, defaults to 1.00
+        :type z_coordinate: float, optional
+        :param method_dict: options for the calculation. Currently unused,
+            defaults to None
+        :type method_dict: dict, optional
+        :param debug: debug level. Currently unused, defaults to 0
+        :type debug: int, optional
+        :param dm: density matrix (AO or MO basis) to contract the PV
+            operator with. If None, uses the reference DHF orbitals directly,
+            defaults to None
+        :type dm: numpy.ndarray, optional
+        :raises AttributeError: if the four-component wave function is not defined
+        """
 
         if not hasattr(self, "rel_MO_Lo"):
             raise AttributeError(
