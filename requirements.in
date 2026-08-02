@@ -1,5 +1,6 @@
 attrs
 chromedriver-autoinstaller
+ipympl
 ipython
 jupyter
 jupyterlab
