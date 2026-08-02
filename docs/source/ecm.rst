@@ -4,7 +4,7 @@ ecm package
 pyECM.vectores module
 ----------------------
 
-.. automodule:: pyECM.vectores
+.. automodule:: pyECM.vectors
    :members:
    :undoc-members:
    :show-inheritance:

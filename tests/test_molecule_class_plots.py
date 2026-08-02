@@ -20,7 +20,7 @@ def test_molecule_plot_1():
     fig=plt.figure()
     vector = np.array([-0.1219, -0.7434, 0.6576]) #Normal vector that defines the plane
     achiral_atom_origin = np.array([-1.31002, -0.33894, -0.62598]) # Point that defines the plane. Any atom of the symmetric structure
-    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origen=achiral_atom_origin,**options)
+    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origin=achiral_atom_origin,**options)
     c.rotate_to_align_with_z()
     c.plot_dipole()
     c.plot_plane()
@@ -40,7 +40,7 @@ def test_molecule_plot_2():
     fig=plt.figure()
     vector = np.array([-0.1219, -0.7434, 0.6576]) #Normal vector that defines the plane
     achiral_atom_origin = np.array([-1.31002, -0.33894, -0.62598]) # Point that defines the plane. Any atom of the symmetric structure
-    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origen=achiral_atom_origin,**options)
+    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origin=achiral_atom_origin,**options)
     c.rotate_to_align_with_z()
     c.plot_plane()
     c.plot_dipole()
@@ -60,7 +60,7 @@ def test_molecule_plot_3():
     fig=plt.figure()
     vector = np.array([-0.1219, -0.7434, 0.6576]) #Normal vector that defines the plane
     achiral_atom_origin = np.array([-1.31002, -0.33894, -0.62598]) # Point that defines the plane. Any atom of the symmetric structure
-    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origen=achiral_atom_origin,**options)
+    c = molecula(figure = fig, XYZ_file = main_directory+'pyECM/data/import/AP1_chiral.xyz', direction=vector, origin=achiral_atom_origin,**options)
 #    c.rotate_to_align_with_z()
     c.plot_options()
     c.plot_plane()
@@ -82,7 +82,7 @@ def test_S_preloaded_molecule_plot():
             }
     s = molecula(figure=fig, preloaded_molecule=mol_SeIClO_rotated('S'),**options)
     s.plot_sphere()
-    s.plot_enlaces()
+    s.plot_bonds()
     s.plot_options()
 
     return s.fig
@@ -99,7 +99,7 @@ def test_R_preloaded_molecule_plot():
             'titulo' : 'self.fig.suptitle("SeIClO test molecule", fontsize=10)'
             }
     r = molecula(figure=fig, preloaded_molecule=mol_SeIClO_rotated('R'),**options)
-    r.plot_enlaces()
+    r.plot_bonds()
     r.plot_sphere()
     r.plot_options()
 

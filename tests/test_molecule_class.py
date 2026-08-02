@@ -24,7 +24,7 @@ def test_create_mol_files(tmp_path):
     c = molecula(
         XYZ_file=main_directory+"pyECM/data/import/AP1_chiral.xyz",
         direction=vector,
-        origen=achiral_atom_origin,
+        origin=achiral_atom_origin,
     )
     c.rotate_to_align_with_z()
 
@@ -74,7 +74,7 @@ def test_create_xyzfile(tmp_path):
     c = molecula(
         XYZ_file=main_directory+"pyECM/data/import/AP1_chiral.xyz",
         direction=vector,
-        origen=achiral_atom_origin,
+        origin=achiral_atom_origin,
     )
     c.rotate_to_align_with_z()
 
@@ -163,11 +163,12 @@ def test_ecm_importing_achiral(tmp_path, capfd):
 def test_origin():
     vector = np.array([-0.1807, -0.9725, -0.1469])
     mol_A = molecula(XYZ_file=main_directory +
-                     'pyECM/data/import/water.xyz', direction=vector, origen="O")
+                     'pyECM/data/import/water.xyz', direction=vector, origin="O")
     mol_B = molecula(XYZ_file=main_directory +
                      'pyECM/data/import/water.xyz', direction=vector)
 
 
+@pytest.mark.long
 def test_ecm_onpath_cartesian(tmp_path, capfd):
     d = tmp_path / "sub"
     d.mkdir()
@@ -180,7 +181,7 @@ def test_ecm_onpath_cartesian(tmp_path, capfd):
     vector = np.array([-0.1807, -0.9725, -0.1469])
     achiral_atom_origin = np.array([0.0000, 0.000, 0.0000])
     c = molecula(XYZ_file=main_directory+'pyECM/data/import/CFMAR_chiral.xyz',
-                 direction=vector, origen=achiral_atom_origin)
+                 direction=vector, origin=achiral_atom_origin)
     c.rotate_to_align_with_z()
 
     test_zrate = np.array([0.5,  0.55, 0.6])
@@ -219,7 +220,7 @@ def test_ecm_onpath_4c(tmp_path, capfd):
     vector = np.array([-0.1807, -0.9725, -0.1469])
     achiral_atom_origin = np.array([0.0000, 0.000, 0.0000])
     c = molecula(XYZ_file=main_directory+'pyECM/data/import/CFMAR_chiral.xyz',
-                 direction=vector, origen=achiral_atom_origin)
+                 direction=vector, origin=achiral_atom_origin)
     c.rotate_to_align_with_z()
 
     test_zrate = np.array([0.5,  0.55, 0.6])

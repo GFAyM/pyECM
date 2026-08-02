@@ -76,7 +76,7 @@ calculate CCM and ECM for each structure that belongs to the path.
 	achiral_atom_origin = np.array([0.0000, 0.000, 0.0000]) # Point that defines the plane. Any atom of the symmetric structure
 
 	# Import the molecule from a xyz file
-	mymolecule = molecula(XYZ_file = '../pyECM/data/import/CFMAR_chiral.xyz', dipolo=vector, origen=achiral_atom_origin)
+	mymolecule = molecula(XYZ_file = '../pyECM/data/import/CFMAR_chiral.xyz', dipole=vector, origin=achiral_atom_origin)
 	mymolecule.rotate_to_align_dipole_with_z()
 
 	# Create the files associated to the virtual mirror path
