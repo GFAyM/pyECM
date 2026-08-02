@@ -17,6 +17,53 @@ from scipy.linalg import fractional_matrix_power as matrix_power
 from pyECM.pyscf_fc import get_ovlp_AUCAR
 
 
+def _orbital_overlaps_and_contributions(
+    n_occupied, mo_coeff, overlap_mixed, overlap_achiral, achiral_mo_coeff
+):
+    """Accumulate, orbital by orbital, the achiral norm, the chiral/achiral
+    overlap, and each orbital's (unnormalized) ECM contribution.
+
+    Shared by compute_ECM_NR (called once per spin channel) and
+    compute_ECM_X2C (called once, over all occupied MOs).
+
+    :param n_occupied: number of occupied MOs to sum over
+    :type n_occupied: int
+    :param mo_coeff: chiral MO coefficients
+    :type mo_coeff: numpy.ndarray
+    :param overlap_mixed: cross overlap block between the chiral and
+        achiral structures (from the supermolecule)
+    :type overlap_mixed: numpy.ndarray
+    :param overlap_achiral: AO overlap matrix of the achiral structure
+    :type overlap_achiral: numpy.ndarray
+    :param achiral_mo_coeff: chiral MO coefficients already projected into
+        the achiral basis (see _achiral_basis_projection)
+    :type achiral_mo_coeff: numpy.ndarray
+    :return: (achiral_norm, overlap_sum, molcontr), where molcontr is a
+        list with each orbital's ECM contribution (not yet normalized
+        by the chiral norm)
+    :rtype: tuple(complex, complex, list)
+    """
+    achiral_norm = 0
+    overlap_sum = 0
+    molcontr = []
+    for k in range(n_occupied):
+        achiral_norm = (
+            achiral_norm
+            + mm(
+                mm(tp(achiral_mo_coeff).conjugate(), overlap_achiral), achiral_mo_coeff
+            )[k, k]
+        )
+        overlap_sum = (
+            overlap_sum
+            + mm(mm(tp(mo_coeff).conjugate(), overlap_mixed), achiral_mo_coeff)[k, k]
+        )
+        molcontr.append(
+            100
+            * (1 - np.abs(mm(mm(tp(mo_coeff), overlap_mixed), achiral_mo_coeff)[k, k]))
+        )
+    return achiral_norm, overlap_sum, molcontr
+
+
 def compute_ECM_NR(
     mol_chiral,
     mol_achiral,
@@ -86,45 +133,24 @@ def compute_ECM_NR(
     ECM_molcontr_alpha = []
     ECM_molcontr_beta = []
 
-    for k in range(Noccupied_MO_alpha):
-        achiral_norm_alpha = (
-            achiral_norm_alpha
-            + mm(
-                mm(tp(C_achiral_newbasis).conjugate(), overlap_achiral),
-                C_achiral_newbasis,
-            )[k, k]
+    achiral_norm_alpha, overlap_NR_alpha, ECM_molcontr_alpha = (
+        _orbital_overlaps_and_contributions(
+            Noccupied_MO_alpha,
+            NR_all_MO,
+            overlap_mixed,
+            overlap_achiral,
+            C_achiral_newbasis,
         )
-        overlap_NR_alpha = (
-            overlap_NR_alpha
-            + mm(mm(tp(NR_all_MO).conjugate(), overlap_mixed), C_achiral_newbasis)[k, k]
+    )
+    achiral_norm_beta, overlap_NR_beta, ECM_molcontr_beta = (
+        _orbital_overlaps_and_contributions(
+            Noccupied_MO_beta,
+            NR_all_MO,
+            overlap_mixed,
+            overlap_achiral,
+            C_achiral_newbasis,
         )
-        ECM_molcontr_alpha.append(
-            100
-            * (
-                1
-                - np.abs(mm(mm(tp(NR_all_MO), overlap_mixed), C_achiral_newbasis)[k, k])
-            )
-        )
-
-    for k in range(Noccupied_MO_beta):
-        achiral_norm_beta = (
-            achiral_norm_beta
-            + mm(
-                mm(tp(C_achiral_newbasis).conjugate(), overlap_achiral),
-                C_achiral_newbasis,
-            )[k, k]
-        )
-        overlap_NR_beta = (
-            overlap_NR_beta
-            + mm(mm(tp(NR_all_MO).conjugate(), overlap_mixed), C_achiral_newbasis)[k, k]
-        )
-        ECM_molcontr_beta.append(
-            100
-            * (
-                1
-                - np.abs(mm(mm(tp(NR_all_MO), overlap_mixed), C_achiral_newbasis)[k, k])
-            )
-        )
+    )
 
     overlap_NR = overlap_NR_alpha + overlap_NR_beta
     achiral_norm = achiral_norm_alpha + achiral_norm_beta
@@ -218,29 +244,15 @@ def compute_ECM_X2C(
     solapamiento_x2c = 0
     ECM_X2C_molcontr = []
 
-    for k in range(Noccupied_MO):
-        achiral_x2c_norm = (
-            achiral_x2c_norm
-            + mm(
-                mm(tp(C_x2c_achiral_newbasis).conjugate(), overlap_achiral),
-                C_x2c_achiral_newbasis,
-            )[k, k]
+    achiral_x2c_norm, solapamiento_x2c, ECM_X2C_molcontr = (
+        _orbital_overlaps_and_contributions(
+            Noccupied_MO,
+            x2c_MO,
+            overlap_mixed,
+            overlap_achiral,
+            C_x2c_achiral_newbasis,
         )
-        solapamiento_x2c = (
-            solapamiento_x2c
-            + mm(mm(tp(x2c_MO).conjugate(), overlap_mixed), C_x2c_achiral_newbasis)[
-                k, k
-            ]
-        )
-        ECM_X2C_molcontr.append(
-            100
-            * (
-                1
-                - np.abs(
-                    mm(mm(tp(x2c_MO), overlap_mixed), C_x2c_achiral_newbasis)[k, k]
-                )
-            )
-        )
+    )
 
     ECM_X2C = 100 * (1 - np.abs(solapamiento_x2c.real) / np.abs(norma_x2c_chiral))
 
