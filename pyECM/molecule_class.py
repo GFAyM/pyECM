@@ -6,12 +6,10 @@ import numpy as np
 from numpy import matmul as mm
 from numpy import transpose as tp
 from pyscf import gto
-from pyECM.pyscf_fc import Epv_molecule
+
+from pyECM import ccm_metrics, ecm_metric, plotting, pyscf_wf, xyz_io
 from pyECM.geometric_figures import rotation_matrix_from_vectors
-from pyECM import plotting
-from pyECM import xyz_io
-from pyECM import ccm_metrics, ecm_metric
-from pyECM import pyscf_wf
+from pyECM.pyscf_fc import Epv_molecule
 
 module_path = os.path.abspath(os.path.join(".."))
 

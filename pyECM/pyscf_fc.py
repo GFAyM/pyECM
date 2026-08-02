@@ -6,8 +6,7 @@
 """
 
 import numpy
-
-from pyscf import lib, gto
+from pyscf import gto, lib
 
 
 def fc_integrals(mol, mf, atom, **kwargs):

@@ -3,8 +3,8 @@
 The ccm function does not depend on the molecule instance.
 """
 
-import numpy as np
 import mendeleev
+import numpy as np
 
 
 def ccm(positions, atom_names, positions_achiral=None, z_coordinate=1.00):
