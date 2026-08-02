@@ -95,7 +95,7 @@ def define_plane(ax, point, normal, size=10, color="y"):
     :type point: numpy.ndarray
     :param normal: vector normal to the plane
     :type normal: numpy.ndarray
-    :param size: radio size to be plotted, defaults to 10
+    :param size: radius size to be plotted, defaults to 10
     :type size: int, optional
     :param color: plane colour, defaults to "y"
     :type color: str, optional
@@ -108,7 +108,7 @@ def define_plane(ax, point, normal, size=10, color="y"):
 
 def define_sphere(xCenter, yCenter, zCenter, r):
     """Defines the points that constitute a sphere, defined by
-    its coordinates centers and its radio size.
+    its coordinates centers and its radius size.
 
     :param xCenter: X center coordinates
     :type xCenter: numpy.float64
@@ -116,7 +116,7 @@ def define_sphere(xCenter, yCenter, zCenter, r):
     :type yCenter: numpy.float64
     :param zCenter: Z center coordinates
     :type zCenter: numpy.float64
-    :param r: radio size
+    :param r: radius size
     :type r: float
     :return: points defining the sphere volume
     :rtype: numpy.ndarray

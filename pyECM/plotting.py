@@ -60,14 +60,14 @@ def plot_sphere(mol):
     """
     r = 0.05
     ax = _get_axes(mol)
-    for i in range(mol.nro_atoms):
+    for i in range(mol.n_atoms):
         xs, ys, zs = define_sphere(
             mol.positions[i][0], mol.positions[i][1], mol.positions[i][2], r
         )
         ax.plot_wireframe(xs, ys, zs, color=mol.atoms[3][i])
 
 
-def plot_enlaces(mol):
+def plot_bonds(mol):
     """Plot the molecule bonds as straight lines between the bonded atoms
     listed in mol.bonds.
 
@@ -87,18 +87,18 @@ def plot_enlaces(mol):
 
 
 def plot_options(mol):
-    """Apply arbitrary matplotlib customization code stored in mol.opciones
+    """Apply arbitrary matplotlib customization code stored in mol.options
     (e.g. axis labels, title) to the current axes. Each value in
-    mol.opciones is a string of Python code, executed with a restricted
+    mol.options is a string of Python code, executed with a restricted
     namespace exposing only `ax` (the current axes), `self` (mol, kept
     for backward compatibility with strings referencing `self.fig`, etc.)
     and `np`; builtins are disabled to avoid arbitrary code execution
     (e.g. file access, imports) through this mechanism.
 
-    :param mol: molecule whose mol.opciones dict of code strings is executed
+    :param mol: molecule whose mol.options dict of code strings is executed
     :type mol: pyECM.molecule_class.molecula
     """
     ax = _get_axes(mol)
     ax.set_axis_on()
-    for i in mol.opciones:
-        exec(mol.opciones[i], {"ax": ax, "self": mol, "np": np, "__builtins__": {}})
+    for i in mol.options:
+        exec(mol.options[i], {"ax": ax, "self": mol, "np": np, "__builtins__": {}})

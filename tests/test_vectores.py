@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from pyECM.vectores import vector_to_versor
-from pyECM.vectores import borrar_nulos
+from pyECM.vectors import normalize_vector
+from pyECM.vectors import remove_zeros
 
 
 # ===============================================================
-# vector_to_versor function
+# normalize_vector function
 # ===============================================================
 testdata1 = [(1.232,-2.500,1.544,[0.3866696068624928, -0.7846380009385, 0.4845924293796176]),]
 
@@ -21,7 +21,7 @@ def test_vectortoversor(x,y,z, expected):
     >>>Atom('F', 0, 0, 1.97)
     {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
     """
-    input = str(vector_to_versor(x,y,z))
+    input = str(normalize_vector(x,y,z))
 
     assert input == str(expected)
 
@@ -33,7 +33,7 @@ def test_vectortoversor(x,y,z, expected):
 )
 
 # ===============================================================
-# vector_to_versor (without z) function
+# normalize_vector (without z) function
 # ===============================================================
 def test_vectortoversor_withouz_z(x,y, expected_result):
     """Testing vector conversion
@@ -43,12 +43,12 @@ def test_vectortoversor_withouz_z(x,y, expected_result):
     >>>Atom('F', 0, 0, 1.97)
     {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
     """
-    input = str(vector_to_versor(x,y))
+    input = str(normalize_vector(x,y))
 
     assert input == str(expected_result)
 
 # ===============================================================
-# borrar_nulos function
+# remove_zeros function
 # ===============================================================
 @pytest.mark.parametrize(
     "x, y, expected_result",
@@ -56,7 +56,7 @@ def test_vectortoversor_withouz_z(x,y, expected_result):
         ([5,0,9,4],[5,0,-3,0],"(array([5, 9, 4]), array([ 5, -3,  0]), array([1]))"),
     ],
 )
-def test_borrarnulos(x,y,expected_result):
+def test_remove_nulls(x,y,expected_result):
     """Test of removing null elements
 
     Examples
@@ -64,7 +64,7 @@ def test_borrarnulos(x,y,expected_result):
     >>>Atom('F', 0, 0, 1.97)
     {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
     """
-    input = str(borrar_nulos(x,y))
+    input = str(remove_zeros(x,y))
 
     assert input == str(expected_result)
 
@@ -83,6 +83,6 @@ def test_borrarnulos_withz(x,y,z,expected_result):
     >>>Atom('F', 0, 0, 1.97)
     {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
     """
-    input = str(borrar_nulos(x,y,z))
+    input = str(remove_zeros(x,y,z))
 
     assert input == str(expected_result)

@@ -38,7 +38,7 @@ def ccm(positions, atom_names, positions_achiral=None, z_coordinate=1.00):
     :rtype: tuple(float, float, float, float)
     """
 
-    nro_atoms = len(positions)
+    n_atoms = len(positions)
     x_coordinates = positions[:, 0]
     y_coordinates = positions[:, 1]
     coordenadas_z = positions[:, 2] * z_coordinate
@@ -79,7 +79,7 @@ def ccm(positions, atom_names, positions_achiral=None, z_coordinate=1.00):
     )
 
     D = np.max(distances_to_CM)
-    Norm_1 = D**2 * nro_atoms
+    Norm_1 = D**2 * n_atoms
     CCM_1 = (1 / Norm_1) * CCM_distance * 100
 
     # Method 2

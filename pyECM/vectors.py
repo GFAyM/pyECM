@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def borrar_nulos(x, y, z=None):
+def remove_zeros(x, y, z=None):
     """Removes zeros values from input arrays
 
     :param x: First array to be treated
@@ -14,36 +14,36 @@ def borrar_nulos(x, y, z=None):
     :rtype: arrays
     """
     index = 0
-    indices_borrar = np.array([])
+    indices_to_delete = np.array([])
 
     if z is None:
         for i in x:
             if (i == 0) and (y[index] == 0):
-                indices_borrar = np.append(indices_borrar, index)
+                indices_to_delete = np.append(indices_to_delete, index)
             index = index + 1
-        indices_borrar = indices_borrar.astype(int)
-        resultado = (
-            np.delete(x, indices_borrar),
-            np.delete(y, indices_borrar),
-            indices_borrar,
+        indices_to_delete = indices_to_delete.astype(int)
+        result = (
+            np.delete(x, indices_to_delete),
+            np.delete(y, indices_to_delete),
+            indices_to_delete,
         )
     else:
         for i in x:
             if (i == 0) and (y[index] == 0) and (z[index] == 0):
-                indices_borrar = np.append(indices_borrar, index)
+                indices_to_delete = np.append(indices_to_delete, index)
             index = index + 1
-        indices_borrar = indices_borrar.astype(int)
-        resultado = (
-            np.delete(x, indices_borrar),
-            np.delete(y, indices_borrar),
-            np.delete(z, indices_borrar),
-            indices_borrar,
+        indices_to_delete = indices_to_delete.astype(int)
+        result = (
+            np.delete(x, indices_to_delete),
+            np.delete(y, indices_to_delete),
+            np.delete(z, indices_to_delete),
+            indices_to_delete,
         )
 
-    return resultado
+    return result
 
 
-def vector_to_versor(x, y, z=None):
+def normalize_vector(x, y, z=None):
     """Normalize 2D/3D vector (to unity)
 
     :param x: x component/s

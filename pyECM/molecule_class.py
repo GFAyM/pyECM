@@ -30,16 +30,16 @@ class molecula:
     :examples: >>> vector = np.array([-0.1807, -0.9725, -0.1469])
         >>> origin_at = np.array([0.0000, 0.200, 0.1000])
         >>> file='pyECM/data/import/CFMAR_chiral.xyz'
-        >>> molecule = molecula(XYZ_file = file, direction=vector, origen=origin_at)
-    :param preloaded_molecule: tuple (nro_atoms, atoms, direction, bonds)
+        >>> molecule = molecula(XYZ_file = file, direction=vector, origin=origin_at)
+    :param preloaded_molecule: tuple (n_atoms, atoms, direction, bonds)
         for building the molecule without reading a xyz file, defaults to None
     :type preloaded_molecule: tuple, optional
     :param figure: matplotlib figure where the molecule will be plotted,
         required only if any plot_* method will be used, defaults to None
     :type figure: matplotlib.figure.Figure, optional
-    :param origen: point (or atom name) used as origin of coordinates,
+    :param origin: point (or atom name) used as origin of coordinates,
         defaults to None (uses the first atom's position)
-    :type origen: numpy.ndarray or str, optional
+    :type origin: numpy.ndarray or str, optional
     :param XYZ_file: path to the xyz file with the chiral structure, defaults to None
     :type XYZ_file: str, optional
     :param XYZ_achiral_file: path to the xyz file with the achiral
@@ -49,7 +49,7 @@ class molecula:
         the nearest achiral symmetric structure,
         used to align it with the z axis, defaults to None
     :type direction: numpy.ndarray, optional
-    :param kwargs: extra plotting options, stored in self.opciones and
+    :param kwargs: extra plotting options, stored in self.options and
         evaluated by plot_options()
     """
 
@@ -57,20 +57,20 @@ class molecula:
         self,
         preloaded_molecule=None,
         figure=None,
-        origen=None,
+        origin=None,
         XYZ_file=None,
         XYZ_achiral_file=None,
         direction=None,
         **kwargs
     ):
         self.fig = figure
-        self.opciones = kwargs
-        self.origen = origen
+        self.options = kwargs
+        self.origin = origin
         self.bohrtoang = 0.529177249
 
         if preloaded_molecule is not None:
             self.preloaded_molecule = preloaded_molecule
-            self.nro_atoms, self.atoms, self.direction, self.bonds = preloaded_molecule
+            self.n_atoms, self.atoms, self.direction, self.bonds = preloaded_molecule
 
         if XYZ_file is not None:
             self.XYZ_file = XYZ_file
@@ -88,28 +88,25 @@ class molecula:
         self.atoms_positions()
         self.reference_coordinate()
 
-        if self.origen is not None:
+        if self.origin is not None:
             self.origin_on_atom()
         else:
-            self.origen = np.array(
+            self.origin = np.array(
                 [self.positions[0][0], self.positions[0][1], self.positions[0][2]]
             )
 
-    # def validar(self):
-    #    if not (type(self.nro_atoms) == int and type(self.atoms) == tuple):
-    #        raise TypeError("Type error on nro_atoms and/or atoms variable/s")
 
     def atoms_positions(self):
         """Builds self.positions (and self.positions_achiral, if an achiral
         xyz file was loaded) as (n_atoms, 3) arrays from self.atoms."""
         positions = []
-        for i in range(self.nro_atoms):
+        for i in range(self.n_atoms):
             positions.append([self.atoms[0][i], self.atoms[1][i], self.atoms[2][i]])
         self.positions = np.array(positions)
 
         if self.XYZ_achiral_file is not None:
             positions_achiral = []
-            for i in range(self.nro_atoms):
+            for i in range(self.n_atoms):
                 positions_achiral.append(
                     [
                         self.achiral_atoms[0][i],
@@ -120,49 +117,49 @@ class molecula:
             self.positions_achiral = np.array(positions_achiral)
 
     def reference_coordinate(self):
-        """Sets self.punto_central from self.origen: either the position of
-        the named atom (if origen is a string) or the given point directly
-        (if origen is a numpy array)."""
-        if self.origen is None:
+        """Sets self.central_point from self.origin: either the position of
+        the named atom (if origin is a string) or the given point directly
+        (if origin is a numpy array)."""
+        if self.origin is None:
             pass
-        elif isinstance(self.origen, str):
-            for i in range(self.nro_atoms):
-                if self.atoms[4][i] == self.origen:
-                    self.punto_central = np.array(
+        elif isinstance(self.origin, str):
+            for i in range(self.n_atoms):
+                if self.atoms[4][i] == self.origin:
+                    self.central_point = np.array(
                         [
                             self.positions[i][0],
                             self.positions[i][1],
                             self.positions[i][2],
                         ]
                     )
-        elif isinstance(self.origen, np.ndarray):
-            self.punto_central = self.origen
+        elif isinstance(self.origin, np.ndarray):
+            self.central_point = self.origin
 
     def origin_on_atom(self):
-        """Shifts self.positions so that self.origen becomes the new
+        """Shifts self.positions so that self.origin becomes the new
         coordinate origin, and stores the original central point in
-        self.coordenadas_punto_central."""
-        if isinstance(self.origen, str):
-            for i in range(self.nro_atoms):
-                if self.atoms[4][i] == self.origen:
-                    coordenadas_punto_central = np.array(
+        self.central_point_coordinates."""
+        if isinstance(self.origin, str):
+            for i in range(self.n_atoms):
+                if self.atoms[4][i] == self.origin:
+                    central_point_coordinates = np.array(
                         [
                             self.positions[i][0],
                             self.positions[i][1],
                             self.positions[i][2],
                         ]
                     )
-        if isinstance(self.origen, np.ndarray):
-            coordenadas_punto_central = self.origen
+        if isinstance(self.origin, np.ndarray):
+            central_point_coordinates = self.origin
         new_positions = np.zeros(3)
-        for i in range(self.nro_atoms):
-            new_line = self.positions[i] - coordenadas_punto_central
+        for i in range(self.n_atoms):
+            new_line = self.positions[i] - central_point_coordinates
             new_positions = np.vstack([new_positions, new_line])
         new_positions = np.delete(
             new_positions, (0), axis=0
         )  # Delete first row (full of zeros)
         self.positions = new_positions
-        self.coordenadas_punto_central = coordenadas_punto_central
+        self.central_point_coordinates = central_point_coordinates
 
     def rotate_to_align_with_z(self):
         """Rotates the molecule so that its nearest symmetric
@@ -170,7 +167,7 @@ class molecula:
         z_direction = np.array([0, 0, 1])
         if z_direction.all() != self.direction.all():
             matrix = rotation_matrix_from_vectors(self.direction, z_direction)
-            for i in range(self.nro_atoms):
+            for i in range(self.n_atoms):
                 self.positions[i] = matrix @ self.positions[i]
             self.direction = matrix @ self.direction
 
@@ -187,9 +184,9 @@ class molecula:
         """Plots the nuclei as spheres."""
         plotting.plot_sphere(self)
 
-    def plot_enlaces(self):
+    def plot_bonds(self):
         """Plot the molecule bonds."""
-        plotting.plot_enlaces(self)
+        plotting.plot_bonds(self)
 
     def plot_options(self):
         """Options plots."""
@@ -202,9 +199,9 @@ class molecula:
         :type filename: str, optional
         """
         atoms_name_xyz = [
-            xyz_io.atom_symbol(self.atoms[4][j]) for j in range(self.nro_atoms)
+            xyz_io.atom_symbol(self.atoms[4][j]) for j in range(self.n_atoms)
         ]
-        xyz_io.write_xyz(filename, self.nro_atoms, atoms_name_xyz, self.positions)
+        xyz_io.write_xyz(filename, self.n_atoms, atoms_name_xyz, self.positions)
 
     def load_from_xyz(self, filename="MOL", achiral=False):
         """Loads atomic positions and names from a xyz file into self.atoms
@@ -213,16 +210,16 @@ class molecula:
         :param filename: xyz file name, defaults to "MOL"
         :type filename: str, optional
         :param achiral: if True, stores the result in self.achiral_atoms
-            instead of self.atoms/self.nro_atoms, defaults to False
+            instead of self.atoms/self.n_atoms, defaults to False
         :type achiral: bool, optional
         """
 
-        n_atoms, coord_x, coord_y, coord_z, colors, names = xyz_io.read_xyz(filename)
+        number_atoms, coord_x, coord_y, coord_z, colors, names = xyz_io.read_xyz(filename)
 
         if achiral:
             self.achiral_atoms = (coord_x, coord_y, coord_z, colors, names)
         else:
-            self.nro_atoms = n_atoms
+            self.n_atoms = number_atoms
             self.atoms = (coord_x, coord_y, coord_z, colors, names)
 
     def export_xyz(
@@ -252,10 +249,10 @@ class molecula:
         :type achiral: str, optional
         """
         atoms_name_xyz = [
-            xyz_io.atom_symbol(self.atoms[4][j]) for j in range(self.nro_atoms)
+            xyz_io.atom_symbol(self.atoms[4][j]) for j in range(self.n_atoms)
         ]
         atoms_name_dirac = [
-            str(self.atoms[4][j]) + str(j + 1) for j in range(self.nro_atoms)
+            str(self.atoms[4][j]) + str(j + 1) for j in range(self.n_atoms)
         ]
         atoms_Z = [getattr(mendeleev, name).atomic_number for name in atoms_name_xyz]
 
@@ -268,10 +265,10 @@ class molecula:
             pass
 
         if achiral is None:
-            row_0 = [self.nro_atoms, "", "", ""]
+            row_0 = [self.n_atoms, "", "", ""]
             row_1 = ["XYZ file", "", "", ""]
             rows = np.vstack([row_0, row_1])
-            for j in range(self.nro_atoms):
+            for j in range(self.n_atoms):
                 new_line = np.array(
                     [
                         atoms_name_xyz[j],
@@ -296,7 +293,7 @@ class molecula:
         except OSError:
             pass
         xyz_io.write_xyz(
-            filename, self.nro_atoms, atoms_name_xyz, self.positions, z_coordinate
+            filename, self.n_atoms, atoms_name_xyz, self.positions, z_coordinate
         )
 
         if DIRAC:
@@ -312,8 +309,8 @@ class molecula:
                 dirac.write("DIRAC\n")
                 dirac.write("\n")
                 dirac.write("\n")
-                dirac.write("C " + "{:3d}".format(self.nro_atoms) + "  0 0         A\n")
-                for j in range(self.nro_atoms):
+                dirac.write("C " + "{:3d}".format(self.n_atoms) + "  0 0         A\n")
+                for j in range(self.n_atoms):
                     dirac.write("     " + "{:3d}".format(atoms_Z[j]) + ".     1\n")
                     dirac.write(
                         atoms_name_dirac[j]
@@ -484,8 +481,6 @@ class molecula:
         if cartesian:
             mol_chiral, ctr_coeff1 = mol_chiral.to_uncontracted_cartesian_basis()
 
-        # AO_number no depende del método de WF elegido: es una propiedad
-        # de mol_chiral, así que se calcula una sola vez acá.
         self.AO_number = mol_chiral.nao
 
         if NR:
@@ -557,9 +552,6 @@ class molecula:
         debug = method_dict.get("debug", 0)
         cvalue = method_dict.get("cvalue", 137.03599967994)
 
-        # La WF correspondiente tiene que haber sido calculada antes con
-        # pySCF_WF(method_dict={...}). Esto ya no es solo una convención:
-        # queda garantizado acá.
         if NR and not hasattr(self, "NR_all_MO"):
             raise AttributeError(
                 "The non-relativistic wave function is not defined. "
