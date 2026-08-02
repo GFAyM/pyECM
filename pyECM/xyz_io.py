@@ -1,4 +1,7 @@
-"""XYZ file I/O utilities for pyECM.molecula objects."""
+"""XYZ file I/O utilities for pyECM.molecula objects.
+The functions are pure, in the sense that they receive and return
+data without reading nor writing attributes from a molecule instance.
+"""
 
 import numpy as np
 
@@ -8,6 +11,21 @@ def read_xyz(filename):
 
     :param filename: xyz file name
     :return: (n_atoms, coord_x, coord_y, coord_z, colors, names)
+    """
+
+    """Read a xyz file into plain arrays.
+
+    :param filename: path to the xyz file
+    :type filename: str
+    :raises TypeError: if the file has empty lines between the header
+        and the last atom line (a common formatting error that silently
+        breaks column-based readers)
+    :return: (n_atoms, coord_x, coord_y, coord_z, colors, names).
+        `colors` is initialized to "black" for every atom
+        (colors are not stored in the xyz format itself;
+        they are assigned elsewhere)
+    :rtype: tuple(int, numpy.ndarray, numpy.ndarray, numpy.ndarray,
+        list of str, list of str)
     """
     # Check for empty lines in xyz file.
     with open(filename) as xyz_check:
@@ -42,12 +60,34 @@ def read_xyz(filename):
 
 
 def atom_symbol(raw_name):
-    """Remove numbers from atom names (e.g. 'H1' -> 'H')."""
+    """Remove trailing digits from an atom label (e.g. 'H1' -> 'H'),
+    typically used to turn a per-atom identifier (unique within a
+    molecule) back into its chemical element symbol.
+
+    :param raw_name: atom label, possibly with a trailing index number
+    :type raw_name: str or any type convertible to str
+    :return: the label with all digit characters removed
+    :rtype: str
+    """
     return "".join([c for c in str(raw_name) if not c.isdigit()])
 
 
 def write_xyz(filename, nro_atoms, atom_names, positions, z_coordinate=1.0):
-    """Writes xyz files from corresponding atomic names and positions."""
+    """Write a xyz file from atom names and positions.
+
+    :param filename: path of the xyz file to create
+        (overwritten if it already exists)
+    :type filename: str
+    :param nro_atoms: number of atoms to write
+    :type nro_atoms: int
+    :param atom_names: atom symbols, in the same order as `positions`
+    :type atom_names: sequence of str
+    :param positions: nuclear positions to write
+    :type positions: numpy.ndarray or sequence, shape (nro_atoms, 3)
+    :param z_coordinate: scale factor applied to the z coordinate of each
+        atom before writing it, defaults to 1.0 (unmodified structure)
+    :type z_coordinate: float, optional
+    """
     with open(filename, "w") as f:
         f.write(str(nro_atoms) + "\n")
         f.write("XYZ file created by pyECM\n")

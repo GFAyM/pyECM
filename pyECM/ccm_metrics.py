@@ -1,7 +1,6 @@
-"""Chirality/continuous-symmetry metrics for pyECM.
+"""Continuous Chirality Measure for pyECM.
 
-Extracted from molecule_class.py (Paso 3 del refactor). ccm() es una
-función pura: no depende de una instancia de molecula, solo de arrays.
+The ccm function does not depend on the molecule instance.
 """
 
 import numpy as np
@@ -18,6 +17,27 @@ def ccm(positions, atom_names, positions_achiral=None, z_coordinate=1.00):
     :param z_coordinate: scale factor over z coordinate
     :return: Norm_1, CCM_1, Norm_2, CCM_2
     """
+
+    """Obtain the CCM (Continuous Chirality Measure) for a molecule, using
+    two different normalization definitions.
+
+    :param positions: nuclear positions of the (chiral) structure
+    :type positions: numpy.ndarray, shape (n_atoms, 3)
+    :param atom_names: atom names, used to look up atomic weights
+        (e.g. "H", "O") for the center-of-mass calculation
+    :type atom_names: sequence of str
+    :param positions_achiral: nuclear positions of the reference achiral
+        structure. If None, the achiral reference is derived from
+        `positions` by zeroing its z coordinate, defaults to None
+    :type positions_achiral: numpy.ndarray, shape (n_atoms, 3), optional
+    :param z_coordinate: scale factor applied to the z coordinate of
+        `positions` before computing the distance to the achiral
+        reference, defaults to 1.00
+    :type z_coordinate: float, optional
+    :return: Norm_1, CCM_1 (1998), Norm_2, CCM_2 (2010)
+    :rtype: tuple(float, float, float, float)
+    """
+
     nro_atoms = len(positions)
     x_coordinates = positions[:, 0]
     y_coordinates = positions[:, 1]
