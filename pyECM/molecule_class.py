@@ -95,7 +95,6 @@ class molecula:
                 [self.positions[0][0], self.positions[0][1], self.positions[0][2]]
             )
 
-
     def atoms_positions(self):
         """Builds self.positions (and self.positions_achiral, if an achiral
         xyz file was loaded) as (n_atoms, 3) arrays from self.atoms."""
@@ -214,7 +213,9 @@ class molecula:
         :type achiral: bool, optional
         """
 
-        number_atoms, coord_x, coord_y, coord_z, colors, names = xyz_io.read_xyz(filename)
+        number_atoms, coord_x, coord_y, coord_z, colors, names = xyz_io.read_xyz(
+            filename
+        )
 
         if achiral:
             self.achiral_atoms = (coord_x, coord_y, coord_z, colors, names)
