@@ -6,15 +6,13 @@ and returns ECM (including orbital contributions).
 It does not read neither write self attributes.
 """
 
-import time
-
 import numpy as np
 from numpy import matmul as mm
 from numpy import transpose as tp
 from pyscf.lib.misc import light_speed
 from scipy.linalg import fractional_matrix_power as matrix_power
-from pyECM.decorators import debug_timed
 
+from pyECM.decorators import debug_timed
 from pyECM.pyscf_fc import get_ovlp_AUCAR
 
 
