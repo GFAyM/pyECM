@@ -3,11 +3,9 @@ import sys
 
 import mendeleev as mendeleev
 import numpy as np
-from numpy import matmul as mm
-from numpy import transpose as tp
 from pyscf import gto
 
-from pyECM import ccm_metrics, ecm_metric, plotting, pyscf_wf, xyz_io
+from pyECM import ccm_metrics, ecm_metric, gamma5, geometry, plotting, pyscf_wf, xyz_io
 from pyECM.geometric_figures import rotation_matrix_from_vectors
 from pyECM.pyscf_fc import Epv_molecule
 
@@ -96,67 +94,32 @@ class molecula:
     def atoms_positions(self):
         """Builds self.positions (and self.positions_achiral, if an achiral
         xyz file was loaded) as (n_atoms, 3) arrays from self.atoms."""
-        positions = []
-        for i in range(self.n_atoms):
-            positions.append([self.atoms[0][i], self.atoms[1][i], self.atoms[2][i]])
-        self.positions = np.array(positions)
+        self.positions = geometry.build_positions(self.n_atoms, self.atoms)
 
         if self.XYZ_achiral_file is not None:
-            positions_achiral = []
-            for i in range(self.n_atoms):
-                positions_achiral.append(
-                    [
-                        self.achiral_atoms[0][i],
-                        self.achiral_atoms[1][i],
-                        self.achiral_atoms[2][i],
-                    ]
-                )
-            self.positions_achiral = np.array(positions_achiral)
+            self.positions_achiral = geometry.build_positions(
+                self.n_atoms, self.achiral_atoms
+            )
 
     def reference_coordinate(self):
         """Sets self.central_point from self.origin: either the position of
         the named atom (if origin is a string) or the given point directly
         (if origin is a numpy array)."""
-        if self.origin is None:
-            pass
-        elif isinstance(self.origin, str):
-            for i in range(self.n_atoms):
-                if self.atoms[4][i] == self.origin:
-                    self.central_point = np.array(
-                        [
-                            self.positions[i][0],
-                            self.positions[i][1],
-                            self.positions[i][2],
-                        ]
-                    )
-        elif isinstance(self.origin, np.ndarray):
-            self.central_point = self.origin
+        central_point = geometry.central_point_from_origin(
+            self.n_atoms, self.positions, self.atoms[4], self.origin
+        )
+        if central_point is not None:
+            self.central_point = central_point
 
     def origin_on_atom(self):
         """Shifts self.positions so that self.origin becomes the new
         coordinate origin, and stores the original central point in
         self.central_point_coordinates."""
-        if isinstance(self.origin, str):
-            for i in range(self.n_atoms):
-                if self.atoms[4][i] == self.origin:
-                    central_point_coordinates = np.array(
-                        [
-                            self.positions[i][0],
-                            self.positions[i][1],
-                            self.positions[i][2],
-                        ]
-                    )
-        if isinstance(self.origin, np.ndarray):
-            central_point_coordinates = self.origin
-        new_positions = np.zeros(3)
-        for i in range(self.n_atoms):
-            new_line = self.positions[i] - central_point_coordinates
-            new_positions = np.vstack([new_positions, new_line])
-        new_positions = np.delete(
-            new_positions, (0), axis=0
-        )  # Delete first row (full of zeros)
-        self.positions = new_positions
-        self.central_point_coordinates = central_point_coordinates
+        self.positions, self.central_point_coordinates = (
+            geometry.shift_positions_to_origin(
+                self.n_atoms, self.positions, self.atoms[4], self.origin
+            )
+        )
 
     def rotate_to_align_with_z(self):
         """Rotates the molecule so that its nearest symmetric
@@ -304,25 +267,14 @@ class molecula:
                 + "{:.2f}".format(z_coordinate)
                 + ".mol"
             )
-            with open(filename_DIRAC, "w") as dirac:
-                dirac.write("DIRAC\n")
-                dirac.write("\n")
-                dirac.write("\n")
-                dirac.write("C " + "{:3d}".format(self.n_atoms) + "  0 0         A\n")
-                for j in range(self.n_atoms):
-                    dirac.write("     " + "{:3d}".format(atoms_Z[j]) + ".     1\n")
-                    dirac.write(
-                        atoms_name_dirac[j]
-                        + "   "
-                        + "{:.6f}".format(self.positions[j][0])
-                        + " "
-                        + "{:.6f}".format(self.positions[j][1])
-                        + " "
-                        + "{:.6f}".format(self.positions[j][2] * z_coordinate)
-                        + "\n"
-                    )
-                    dirac.write("LARGE BASIS base\n")
-                dirac.write("FINISH")
+            xyz_io.write_dirac_mol(
+                filename_DIRAC,
+                self.n_atoms,
+                atoms_name_dirac,
+                atoms_Z,
+                self.positions,
+                z_coordinate,
+            )
 
     def xyz_mirror_path(
         self,
@@ -471,14 +423,7 @@ class molecula:
         if fourcomp is not False and DFT is not False:
             raise NotImplementedError("4c-DFT not available yet.")
 
-        mol_chiral = gto.M(
-            atom=name + "_" + "{:.2f}".format(z_coordinate) + ".xyz",
-            max_memory=5000.0,
-            **self.gto_dict
-        )
-
-        if cartesian:
-            mol_chiral, ctr_coeff1 = mol_chiral.to_uncontracted_cartesian_basis()
+        mol_chiral = self._build_mol_chiral(name, z_coordinate, cartesian)
 
         self.AO_number = mol_chiral.nao
 
@@ -513,6 +458,44 @@ class molecula:
                 self.rel_pyscf,
                 _,
             ) = pyscf_wf.compute_4c_WF(mol_chiral, cvalue, debug=debug)
+
+    def _build_mol_chiral(self, name, z_coordinate, cartesian):
+        """Build the pyscf.gto.Mole for the chiral structure, scaled on
+        the z-axis by the given z_coordinate, using self.gto_dict (set by pySCF_WF).
+
+        :param name: name of the xyz molecule file, including its directory
+        :type name: str
+        :param z_coordinate: scale factor applied to the z coordinate
+        :type z_coordinate: float
+        :param cartesian: use cartesian basis set
+        :type cartesian: bool
+        :return: the built molecule
+        :rtype: pyscf.gto.Mole
+        """
+        mol_chiral = gto.M(
+            atom=name + "_" + "{:.2f}".format(z_coordinate) + ".xyz",
+            max_memory=5000.0,
+            **self.gto_dict
+        )
+        if cartesian:
+            mol_chiral, _ = mol_chiral.to_uncontracted_cartesian_basis()
+        return mol_chiral
+
+    def _build_mol_achiral(self, name, cartesian):
+        """Build the pyscf.gto.Mole for the achiral reference structure,
+        using self.gto_dict (set by pySCF_WF).
+
+        :param name: name of the xyz molecule file, including its directory
+        :type name: str
+        :param cartesian: use cartesian basis set
+        :type cartesian: bool
+        :return: the built molecule
+        :rtype: pyscf.gto.Mole
+        """
+        mol_achiral = gto.M(atom=name + "_0.00.xyz", max_memory=5000.0, **self.gto_dict)
+        if cartesian:
+            mol_achiral, _ = mol_achiral.to_uncontracted_cartesian_basis()
+        return mol_achiral
 
     def ECM(
         self,
@@ -576,16 +559,8 @@ class molecula:
         ECM_X2C_molcontr = []
         ECM_4c_molcontr = []
 
-        mol_chiral = gto.M(
-            atom=name + "_" + "{:.2f}".format(z_coordinate) + ".xyz",
-            max_memory=5000.0,
-            **self.gto_dict
-        )
-        mol_achiral = gto.M(atom=name + "_0.00.xyz", max_memory=5000.0, **self.gto_dict)
-
-        if cartesian:
-            mol_chiral, ctr_coeff1 = mol_chiral.to_uncontracted_cartesian_basis()
-            mol_achiral, ctr_coeff2 = mol_achiral.to_uncontracted_cartesian_basis()
+        mol_chiral = self._build_mol_chiral(name, z_coordinate, cartesian)
+        mol_achiral = self._build_mol_achiral(name, cartesian)
 
         mol_super = mol_chiral + mol_achiral
 
@@ -741,71 +716,18 @@ class molecula:
         debug = method_dict.get("debug", 0)
         cvalue = method_dict.get("cvalue", 137.03599967994)
 
-        gamma5 = 0
-        # gamma5_molcontr = []
+        mol_chiral = self._build_mol_chiral(name, z_coordinate, cartesian)
 
-        mol_chiral = gto.M(
-            atom=name + "_" + "{:.2f}".format(z_coordinate) + ".xyz",
-            max_memory=5000.0,
-            **self.gto_dict
+        return gamma5.compute_gamma5(
+            mol_chiral,
+            self.n4c,
+            self.rel_Noccupied_MO,
+            self.rel_MO_Lo,
+            self.rel_MO_So,
+            cvalue,
+            self.rel_energy,
+            debug=debug,
         )
-
-        if cartesian:
-            mol_chiral, ctr_coeff1 = mol_chiral.to_uncontracted_cartesian_basis()
-
-        n4c = self.n4c
-        n2c = n4c // 2
-        nocc = self.rel_Noccupied_MO
-
-        Lo = self.rel_MO_Lo
-        So = self.rel_MO_So
-
-        # Taken from https://pyscf.org/_modules/pyscf/scf/dhf.html#DHF.
-        s = mol_chiral.intor_symmetric("int1e_ovlp_spinor")
-        t = mol_chiral.intor_symmetric("int1e_spsp_spinor")
-        u = mol_chiral.intor_symmetric("int1e_sp_spinor")
-        s1e = np.zeros((n4c, n4c), np.complex128)
-        s1e[:n2c, :n2c] = s
-        s1e[n2c:, n2c:] = t * (0.5 / cvalue) ** 2
-        s1e[:n2c, n2c:] = u * (0.5 / cvalue)  # Small (ket) over large (bra)
-        s1e[n2c:, :n2c] = u.conj().T * (0.5 / cvalue)  # Large (ket) over small (bra)
-        # s1e is what we should get when calling to get_ovlp(mol_chiral)
-
-        overlap_chiral_large = s1e[:n2c, :n2c]
-        overlap_chiral_small = s1e[n2c:, n2c:]
-
-        LoLo_chiral_norm = np.trace(
-            mm(mm(tp(Lo).conjugate(), overlap_chiral_large), Lo)
-        )
-        SoSo_chiral_norm = np.trace(
-            mm(mm(tp(So).conjugate(), overlap_chiral_small), So)
-        )
-        chiral_norm = LoLo_chiral_norm + SoSo_chiral_norm
-
-        term_1 = 0
-        term_2 = 0
-
-        for k in range(nocc):
-            large_on_small = mm(mm(tp(So).conjugate(), s1e[n2c:, :n2c]), Lo)[k, k]
-            small_on_large = mm(mm(tp(Lo).conjugate(), s1e[:n2c, n2c:]), So)[k, k]
-
-            term_1 = term_1 + large_on_small
-            term_2 = term_2 + small_on_large
-
-            # Molecular Contributions
-            # print("mol. contr. gamma5",
-            # ((large_on_small+small_on_large)*cvalue/2).real )
-
-        gamma5 = (term_1 + term_2) / chiral_norm.real * cvalue / 2
-
-        if debug > 0:
-            print("LoLo Norm:", LoLo_chiral_norm)
-            print("SoSo Norm:", SoSo_chiral_norm)
-            print("Total (chiral) Norm:", chiral_norm)
-            print("cvalue", cvalue)
-            print("4c energy", self.rel_energy)
-
-        return gamma5.real
 
     def Epv(
         self,
