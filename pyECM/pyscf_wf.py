@@ -7,17 +7,18 @@ attributes will save each result.
 """
 
 import sys
-import time
 
 import numpy as np
 from numpy import matmul as mm
 from numpy import transpose as tp
 from pyscf import lib, scf
 from pyscf.lib.misc import light_speed
+from pyECM.decorators import debug_timed
 
 from pyECM.pyscf_fc import get_ovlp_AUCAR
 
 
+@debug_timed("NR")
 def compute_NR_WF(mol_chiral, DFT=False, debug=0):
     """Compute the non-relativistic wave function (RHF, or RKS if a
     DFT functional is given).
@@ -33,7 +34,6 @@ def compute_NR_WF(mol_chiral, DFT=False, debug=0):
     :rtype: tuple(int, int, numpy.ndarray, tuple, pyscf.scf.hf.SCF, int)
     """
 
-    start_NRtime = time.time()
     if DFT is False:
         mf_chiral = scf.RHF(mol_chiral)
         mf_chiral.kernel()
@@ -62,13 +62,11 @@ def compute_NR_WF(mol_chiral, DFT=False, debug=0):
     )
     norma = norma_alpha + norma_beta
 
-    end_NRtime = time.time()
     if debug > 0:
         print("naos_cart:", mol_chiral.nao)
         print("MO occupation", mf_chiral.mol.nelec)
         print("norma WF (original molecule):", norma)
         print("NR energy", mf_chiral.e_tot)
-        print("NR time (min):", (end_NRtime - start_NRtime) / 60)
         sys.stdout.flush()
 
     return (
@@ -81,6 +79,7 @@ def compute_NR_WF(mol_chiral, DFT=False, debug=0):
     )
 
 
+@debug_timed("X2C")
 def compute_X2C_WF(mol_chiral, DFT=False, debug=0):
     """Compute the X2C (exact two-component) relativistic wave function.
 
@@ -95,7 +94,6 @@ def compute_X2C_WF(mol_chiral, DFT=False, debug=0):
     :rtype: tuple(numpy.ndarray, numpy.ndarray, int, int, float, int)
     """
 
-    start_X2Ctime = time.time()
     if DFT is False:
         mf_chiral_x2c = mol_chiral.X2C()
         mf_chiral_x2c.kernel()
@@ -148,12 +146,10 @@ def compute_X2C_WF(mol_chiral, DFT=False, debug=0):
     # x2c_ghf_mf.max_cycle = 10
     # x2c_ghf_mf.kernel(dm0=dm)
 
-    end_X2Ctime = time.time()
     if debug > 0:
         print("X2C WF NORM (original molecule):", norm_x2c.real)
         print("X2C energy", mf_chiral_x2c.e_tot)
         print("Electrones alpha y beta:", nelec_alpha, nelec_beta)
-        print("X2C time (min):", (end_X2Ctime - start_X2Ctime) / 60)
         sys.stdout.flush()
 
     x2c_occup_MO = all_mo_coef_x2c[:, : nelec_alpha + nelec_beta]
@@ -167,6 +163,7 @@ def compute_X2C_WF(mol_chiral, DFT=False, debug=0):
     )
 
 
+@debug_timed("4c")
 def compute_4c_WF(mol_chiral, cvalue, debug=0):
     """Compute the four-component relativistic wave function (DHF).
 
@@ -182,7 +179,6 @@ def compute_4c_WF(mol_chiral, cvalue, debug=0):
         pyscf.scf.dhf.DHF, int)
     """
 
-    start_4ctime = time.time()
     with light_speed(cvalue):
         c = lib.param.LIGHT_SPEED
 
@@ -212,13 +208,11 @@ def compute_4c_WF(mol_chiral, cvalue, debug=0):
         )
         chiral_norm = LoLo_chiral_norm + SoSo_chiral_norm
 
-        end_4ctime = time.time()
         if debug > 0:
             print("LoLo Norm:", LoLo_chiral_norm)
             print("SoSo Norm:", SoSo_chiral_norm)
             print("Total (chiral) Norm:", chiral_norm)
             print("cvalue", c)
             print("4c energy", mf_chiral_rel.e_tot)
-            print("4c time (min):", (end_4ctime - start_4ctime) / 60)
 
     return n4c, nmo, Lo, So, nocc, mf_chiral_rel.e_tot, mf_chiral_rel, AO_number

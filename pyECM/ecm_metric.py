@@ -13,6 +13,7 @@ from numpy import matmul as mm
 from numpy import transpose as tp
 from pyscf.lib.misc import light_speed
 from scipy.linalg import fractional_matrix_power as matrix_power
+from pyECM.decorators import debug_timed
 
 from pyECM.pyscf_fc import get_ovlp_AUCAR
 
@@ -64,6 +65,7 @@ def _orbital_overlaps_and_contributions(
     return achiral_norm, overlap_sum, molcontr
 
 
+@debug_timed("NR")
 def compute_ECM_NR(
     mol_chiral,
     mol_achiral,
@@ -94,8 +96,6 @@ def compute_ECM_NR(
     :return: (ECM_NR, ECM_NR_molcontr_alpha, ECM_NR_molcontr_beta, ECM_NR_molcontr)
     :rtype: tuple(float, numpy.ndarray, numpy.ndarray, numpy.ndarray)
     """
-
-    start_NRtime = time.time()
 
     naos_sph = mol_chiral.intor("int1e_ovlp_sph").shape[0]
 
@@ -171,18 +171,17 @@ def compute_ECM_NR(
     ECM_NR_molcontr[::2] = ECM_NR_molcontr_alpha
     ECM_NR_molcontr[1::2] = ECM_NR_molcontr_beta
 
-    end_NRtime = time.time()
     if debug > 0:
         print("naos_cart:", mol_chiral.nao)
         print("naos_sph:", naos_sph)
         print("norma WF chiral (chiral basis):", norma_chiral)
         print("norma WF achiral (achiral basis):", achiral_norm)
         print("NR overlap (normalized):", overlap_NR / norma_chiral)
-        print("NR time (min):", (end_NRtime - start_NRtime) / 60)
 
     return ECM_NR, ECM_NR_molcontr_alpha, ECM_NR_molcontr_beta, ECM_NR_molcontr
 
 
+@debug_timed("X2C")
 def compute_ECM_X2C(
     mol_chiral,
     mol_achiral,
@@ -217,7 +216,6 @@ def compute_ECM_X2C(
     :rtype: tuple(float, list)
 
     """
-    start_X2Ctime = time.time()
 
     Noccupied_MO = Nalphaoccupied_MO + Nbetaoccupied_MO
     AO_number_supermol = np.array([mol_super.nao])[0]
@@ -256,16 +254,15 @@ def compute_ECM_X2C(
 
     ECM_X2C = 100 * (1 - np.abs(solapamiento_x2c.real) / np.abs(norma_x2c_chiral))
 
-    end_X2Ctime = time.time()
     if debug > 0:
         print("X2C: norma WF chiral (chiral basis):", norma_x2c_chiral)
         print("X2C: norma WF achiral (achiral basis):", achiral_x2c_norm)
         print("X2C: overlap (normalized):", solapamiento_x2c / norma_x2c_chiral)
-        print("X2C time (min):", (end_X2Ctime - start_X2Ctime) / 60)
 
     return ECM_X2C, ECM_X2C_molcontr
 
 
+@debug_timed("4c")
 def compute_ECM_4c(mol_chiral, mol_achiral, n4c, Lo, So, nocc, cvalue, debug=0):
     """Compute ECM at four-component level. It inner projects the wave-function
     from the molecule over its nearest achiral symmetric structure.
