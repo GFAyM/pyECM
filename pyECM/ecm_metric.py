@@ -20,8 +20,8 @@ def _orbital_overlaps_and_contributions(
 ):
     """Accumulate the achiral norm, overlap, and per-orbital contribution.
 
-    Done orbital by orbital. Shared by compute_ECM_NR (called once per spin
-    channel) and compute_ECM_X2C (called once, over all occupied MOs).
+    Done orbital by orbital. Shared by compute_ECM_NR (called once per spin channel) and
+    compute_ECM_X2C (called once, over all occupied MOs).
 
     :param n_occupied: number of occupied MOs to sum over
     :type n_occupied: int

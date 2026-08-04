@@ -71,8 +71,8 @@ def obtain_nearest_structure(
 def download_CSM_zip(input_path, xyz_FILENAME, download_dir, silent=True):
     """Upload a xyz file to the CSM website and download the results zip.
 
-    Tries Chrome, Firefox, Edge, and Safari in that order, using whichever
-    driver is available.
+    Tries Chrome, Firefox, Edge, and Safari in that order, using whichever driver is
+    available.
 
     :param input_path: directory containing xyz_FILENAME + ".xyz"
     :type input_path: str
@@ -191,17 +191,16 @@ def download_CSM_zip(input_path, xyz_FILENAME, download_dir, silent=True):
 def split_output(zip_file, output_dir=None, mol_name="molecule"):
     """Split the CSM results zip into separate chiral/achiral xyz files.
 
-    Extracts "resulting_mols.xyz" from zip_file, splits it in half (first
-    half is the chiral structure, second half the achiral one), writes
-    "<mol_name>_chiral.xyz" and "<mol_name>_achiral.xyz" in output_dir, and
-    removes the intermediate file and the zip.
+    Extracts "resulting_mols.xyz" from zip_file, splits it in half (first half is the
+    chiral structure, second half the achiral one), writes "<mol_name>_chiral.xyz" and
+    "<mol_name>_achiral.xyz" in output_dir, and removes the intermediate file and the
+    zip.
 
     :param zip_file: path to the CSM results zip file
     :type zip_file: str
     :param output_dir: directory where the split xyz files are written
     :type output_dir: str, optional
-    :param mol_name: prefix used for the two output xyz files, defaults to
-        "molecule"
+    :param mol_name: prefix used for the two output xyz files, defaults to "molecule"
     :type mol_name: str, optional
     """
     # Extract the desired file in the specified directory

@@ -55,8 +55,8 @@ def read_xyz(filename):
 def atom_symbol(raw_name):
     """Remove trailing digits from an atom label.
 
-    E.g. 'H1' -> 'H'. Typically used to turn a per-atom identifier (unique
-    within a molecule) back into its chemical element symbol.
+    E.g. 'H1' -> 'H'. Typically used to turn a per-atom identifier (unique within a
+    molecule) back into its chemical element symbol.
 
     :param raw_name: atom label, possibly with a trailing index number
     :type raw_name: str or any type convertible to str

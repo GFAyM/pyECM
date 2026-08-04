@@ -1,8 +1,7 @@
 """Core molecula class for pyECM.
 
-Orchestrates geometry, I/O, plotting, chirality metrics (CCM/ECM), and the
-pySCF-based quantum chemistry calculations (NR, X2C, four-component) for a
-single molecule.
+Orchestrates geometry, I/O, plotting, chirality metrics (CCM/ECM), and the pySCF-based
+quantum chemistry calculations (NR, X2C, four-component) for a single molecule.
 """
 
 import os
@@ -100,8 +99,8 @@ class molecula:
     def atoms_positions(self):
         """Build self.positions from self.atoms.
 
-        Also builds self.positions_achiral, if an achiral xyz file was
-        loaded, as (n_atoms, 3) arrays.
+        Also builds self.positions_achiral, if an achiral xyz file was loaded, as
+        (n_atoms, 3) arrays.
         """
         self.positions = geometry.build_positions(self.n_atoms, self.atoms)
 
@@ -113,8 +112,8 @@ class molecula:
     def reference_coordinate(self):
         """Set self.central_point from self.origin.
 
-        Either the position of the named atom (if origin is a string) or
-        the given point directly (if origin is a numpy array).
+        Either the position of the named atom (if origin is a string) or the given point
+        directly (if origin is a numpy array).
         """
         central_point = geometry.central_point_from_origin(
             self.n_atoms, self.positions, self.atoms[4], self.origin
@@ -148,8 +147,8 @@ class molecula:
     def plot_dipole(self):
         """Plot the molecule dipole.
 
-        Only meaningful if direction was replaced by the molecule's actual
-        dipole moment.
+        Only meaningful if direction was replaced by the molecule's actual dipole
+        moment.
         """
         plotting.plot_dipole(self)
 
@@ -183,8 +182,7 @@ class molecula:
     def load_from_xyz(self, filename="MOL", achiral=False):
         """Load atomic positions and names from a xyz file.
 
-        Stores the result in self.atoms (or self.achiral_atoms, if
-        achiral=True).
+        Stores the result in self.atoms (or self.achiral_atoms, if achiral=True).
 
         :param filename: xyz file name, defaults to "MOL"
         :type filename: str, optional
@@ -478,8 +476,8 @@ class molecula:
     def _build_mol_chiral(self, name, z_coordinate, cartesian):
         """Build the pyscf.gto.Mole for the chiral structure.
 
-        Scaled on the z-axis by the given z_coordinate, using self.gto_dict
-        (set by pySCF_WF).
+        Scaled on the z-axis by the given z_coordinate, using self.gto_dict (set by
+        pySCF_WF).
 
         :param name: name of the xyz molecule file, including its directory
         :type name: str

@@ -25,9 +25,8 @@ def _get_axes(mol):
 def plot_dipole(mol):
     """Plot the molecule dipole as a vector from the origin.
 
-    If mol.direction was replaced by the molecule's actual dipole moment,
-    plots that; otherwise plots whatever vector mol.direction currently
-    holds.
+    If mol.direction was replaced by the molecule's actual dipole moment, plots that;
+    otherwise plots whatever vector mol.direction currently holds.
 
     :param mol: molecule whose direction/dipole vector is plotted
     :type mol: pyECM.molecule_class.molecula
@@ -89,12 +88,11 @@ def plot_bonds(mol):
 def plot_options(mol):
     """Apply arbitrary matplotlib customization code stored in mol.options.
 
-    E.g. axis labels, title. Each value in mol.options is a string of
-    Python code, executed with a restricted namespace exposing only 'ax'
-    (the current axes), 'self' (mol, kept for backward compatibility with
-    strings referencing 'self.fig', etc.) and 'np'; builtins are disabled
-    to avoid arbitrary code execution (e.g. file access, imports) through
-    this mechanism.
+    E.g. axis labels, title. Each value in mol.options is a string of Python code,
+    executed with a restricted namespace exposing only 'ax' (the current axes), 'self'
+    (mol, kept for backward compatibility with strings referencing 'self.fig', etc.) and
+    'np'; builtins are disabled to avoid arbitrary code execution (e.g. file access,
+    imports) through this mechanism.
 
     :param mol: molecule whose mol.options dict of code strings is executed
     :type mol: pyECM.molecule_class.molecula
