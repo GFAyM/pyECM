@@ -39,10 +39,11 @@ pyECM is a **Python 3.10** package
 
     ```source venv_pyecm/bin/activate```
 
-<!-- Install the packages through "pip install pyECM". Setup.py should be configured. -->
-4. Install dependencies:
+4. Install pyECM in editable mode. This installs the package and its
+   dependencies, and makes `import pyECM` work from any notebook or
+   script without manually touching `sys.path`:
 
-    ```pip install -r requirements.txt```
+    ```pip install -e .```
 
 5. Run pyECM (check some examples below)
 
