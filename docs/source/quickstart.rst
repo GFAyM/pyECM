@@ -76,7 +76,7 @@ calculate CCM and ECM for each structure that belongs to the path.
 	achiral_atom_origin = np.array([0.0000, 0.000, 0.0000]) # Point that defines the plane. Any atom of the symmetric structure
 
 	# Import the molecule from a xyz file
-	mymolecule = molecula(XYZ_file = '../pyECM/data/import/CFMAR_chiral.xyz', dipolo=vector, origen=achiral_atom_origin)
+	mymolecule = molecula(XYZ_file = '../pyECM/data/import/CFMAR_chiral.xyz', dipole=vector, origin=achiral_atom_origin)
 	mymolecule.rotate_to_align_dipole_with_z()
 
 	# Create the files associated to the virtual mirror path
@@ -98,40 +98,19 @@ To find out what else you can do, head over to the examples under workflow folde
 
 
 
-====================
-Development versions
-====================
+===================
+Development version
+===================
 
-To install development versions of AMCESS, you can compile it from source. 
-In order to install from source, you will need a python3.9 interpreter and
-
-    * black==22.12.0
-    * flake8==6.0.0
-    * flake8-black==0.3.6
-    * flake8-builtins==2.1.0
-    * flake8-isort==6.0.0
-    * tox==4.2.5
-    * pytest==7.2.1
-    * pytest-cov==4.0.0
-    * coverage==7.0.3
-    * wheel==0.38.4
-    * pytest-mpl==0.16.1
-    * mypy==0.991
-    * sphinx==6.1.3
-    * sphinx_rtd_theme==1.2.0
-    * myst-parser==0.19.1
-    * docutils==0.18.1
-    * sphinxcontrib-bibtex==2.5.0
-    * autopep8==2.0.2
-    * mendeleev==0.12.1
-
-
+To install development version of pyECM, you can compile it from source.
+In order to install from source, you will need a python3.10 interpreter and
+the packages detailed at requirements.txt and requirements_dev.txt files.
 
 Assuming you have already installed required dependencies, then you can compile with:
 
 .. code-block:: bash
 
-    $ git clone git@github.com:juanjoaucar/pyECM.git
+    $ git clone git@github.com:GFAyM/pyECM.git
     $ cd pyECM
     $ pip install -e
 

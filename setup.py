@@ -38,7 +38,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name="pyECM",
-    version="0.3.1",
+    version=VERSION,
     author="""
     Juan José Aucar
     """,

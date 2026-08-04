@@ -10,21 +10,18 @@
 # DOCS
 # =============================================================================
 
-"""
-pyECM
-Electronic Chirality Measure.
-"""
+"""PyECM Electronic Chirality Measure."""
 
 # =============================================================================
 # META
 # =============================================================================
 
-__version__ = "0.1.1"
+__version__ = "1.1.0"
 
 
 # =============================================================================
 # IMPORTS
 # =============================================================================
 
-#from .base_molecule import Molecule, Cluster  # noqa
-#from .search_engine import SearchConfig as engine  # noqa
+# from .base_molecule import Molecule, Cluster  # noqa
+# from .search_engine import SearchConfig as engine  # noqa

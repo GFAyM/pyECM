@@ -38,7 +38,7 @@ The Electronic Chirality Measure (ECM) is a quantity that allows to the measure
 the chirality of any (chiral) molecular system. It was proposed by Luca Bellarosa and Francesco
 Zerbetto in 2003 :cite:`2003_Bellarosa`.
 
-The Electronic Chirality Measure (ECM) is an end-to-end package implemented in Python 3.9 to 
+The Electronic Chirality Measure (ECM) is an end-to-end package implemented in Python 3.10 to
 measure the mentioned quantity. It also has some development interface
 with the `PySCF <https://pyscf.org/>`_ and `DIRAC <https://www.diracprogram.org/>`_ packages.
 

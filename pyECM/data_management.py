@@ -1,14 +1,16 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import WebDriverException
+"""Some functions for data management."""
 
-import time
 import os
-import zipfile
-import tempfile
 import pathlib
+import tempfile
+import time
+import zipfile
+
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select, WebDriverWait
 
 
 def obtain_nearest_structure(
@@ -19,7 +21,29 @@ def obtain_nearest_structure(
     silent=True,
     remove_files=False,
 ):
+    """Download and split the nearest achiral structure for a xyz file.
 
+    Uses the CSM website (https://csm.ouproj.org.il/molecule) to compute
+    the nearest symmetric structure, then splits the result into
+    "<name>_chiral.xyz" and "<name>_achiral.xyz" in output_path.
+
+    :param xyz_FILENAME: name (without extension) of the xyz file to upload
+    :type xyz_FILENAME: str
+    :param input_path: directory containing xyz_FILENAME + ".xyz"
+    :type input_path: str
+    :param output_path: directory where the split xyz files are written,
+        defaults to input_path
+    :type output_path: str, optional
+    :param download_dir: directory where the browser downloads the CSM
+        zip file. If None, a temporary directory is used, defaults to None
+    :type download_dir: str, optional
+    :param silent: run the browser headless, defaults to True
+    :type silent: bool, optional
+    :param remove_files: remove the original input xyz file afterwards,
+        defaults to False
+    :type remove_files: bool, optional
+    :raises FileExistsError: if download_dir already has a results.zip
+    """
     # Check if the input and output paths are valid
     input_path = str(pathlib.Path(input_path).resolve())
     output_path = str(pathlib.Path(output_path).resolve())
@@ -45,6 +69,20 @@ def obtain_nearest_structure(
 
 
 def download_CSM_zip(input_path, xyz_FILENAME, download_dir, silent=True):
+    """Upload a xyz file to the CSM website and download the results zip.
+
+    Tries Chrome, Firefox, Edge, and Safari in that order, using whichever driver is
+    available.
+
+    :param input_path: directory containing xyz_FILENAME + ".xyz"
+    :type input_path: str
+    :param xyz_FILENAME: name (without extension) of the xyz file to upload
+    :type xyz_FILENAME: str
+    :param download_dir: directory where the browser saves the downloaded zip
+    :type download_dir: str
+    :param silent: run the browser headless, defaults to True
+    :type silent: bool, optional
+    """
     # Initialize the browser in the following order: Chrome, Firefox, Edge, Safari
     driver = None
 
@@ -151,7 +189,20 @@ def download_CSM_zip(input_path, xyz_FILENAME, download_dir, silent=True):
 
 
 def split_output(zip_file, output_dir=None, mol_name="molecule"):
+    """Split the CSM results zip into separate chiral/achiral xyz files.
 
+    Extracts "resulting_mols.xyz" from zip_file, splits it in half (first half is the
+    chiral structure, second half the achiral one), writes "<mol_name>_chiral.xyz" and
+    "<mol_name>_achiral.xyz" in output_dir, and removes the intermediate file and the
+    zip.
+
+    :param zip_file: path to the CSM results zip file
+    :type zip_file: str
+    :param output_dir: directory where the split xyz files are written
+    :type output_dir: str, optional
+    :param mol_name: prefix used for the two output xyz files, defaults to "molecule"
+    :type mol_name: str, optional
+    """
     # Extract the desired file in the specified directory
     with zipfile.ZipFile(zip_file, "r") as zip_ref:
         zip_ref.extract("resulting_mols.xyz", path=output_dir)

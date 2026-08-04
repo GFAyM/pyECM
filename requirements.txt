@@ -110,14 +110,19 @@ ipykernel==7.2.0
     #   jupyter
     #   jupyter-console
     #   jupyterlab
+ipympl==0.10.0
+    # via -r requirements.in
 ipython==8.39.0
     # via
     #   -r requirements.in
     #   ipykernel
+    #   ipympl
     #   ipywidgets
     #   jupyter-console
 ipywidgets==8.1.8
-    # via jupyter
+    # via
+    #   ipympl
+    #   jupyter
 isoduration==20.11.0
     # via jsonschema
 jedi==0.20.0
@@ -197,7 +202,9 @@ markupsafe==3.0.3
     #   jinja2
     #   nbconvert
 matplotlib==3.10.9
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   ipympl
 matplotlib-inline==0.2.2
     # via
     #   ipykernel
@@ -230,6 +237,7 @@ numpy==1.26.4
     #   -r requirements.in
     #   contourpy
     #   h5py
+    #   ipympl
     #   matplotlib
     #   mendeleev
     #   pandas
@@ -263,7 +271,9 @@ parso==0.8.7
 pexpect==4.9.0
     # via ipython
 pillow==12.2.0
-    # via matplotlib
+    # via
+    #   ipympl
+    #   matplotlib
 platformdirs==4.9.6
     # via jupyter-core
 prometheus-client==0.25.0
@@ -414,6 +424,7 @@ tornado==6.5.5
 traitlets==5.15.0
     # via
     #   ipykernel
+    #   ipympl
     #   ipython
     #   ipywidgets
     #   jupyter-client
