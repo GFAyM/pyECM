@@ -25,6 +25,31 @@ def build_positions(n_atoms, atoms):
     return np.array(positions)
 
 
+def build_atom_list(atom_symbols, positions, z_coordinate=1.0):
+    """Build a pyscf gto.Mole 'atom' specification.
+
+    Directly from in-memory data and without writing/reading an xyz file.
+
+    :param atom_symbols: element symbol per atom (already stripped of
+        trailing digits, see xyz_io.atom_symbol())
+    :type atom_symbols: sequence of str
+    :param positions: nuclear positions, shape (n_atoms, 3)
+    :type positions: numpy.ndarray
+    :param z_coordinate: scale factor applied to the z coordinate,
+        defaults to 1.0
+    :type z_coordinate: float, optional
+    :return: atom specification accepted by pyscf.gto.M(atom=...)
+    :rtype: list of [str, tuple(float, float, float)]
+    """
+    return [
+        [
+            atom_symbols[j],
+            (positions[j][0], positions[j][1], positions[j][2] * z_coordinate),
+        ]
+        for j in range(len(atom_symbols))
+    ]
+
+
 def central_point_from_origin(n_atoms, positions, atom_names, origin):
     """Resolve the central point from 'origin'.
 

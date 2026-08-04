@@ -479,8 +479,14 @@ class molecula:
         Scaled on the z-axis by the given z_coordinate, using self.gto_dict (set by
         pySCF_WF).
 
-        :param name: name of the xyz molecule file, including its directory
-        :type name: str
+        If 'name' is given, the geometry is read from the xyz file
+        name + "_{z_coordinate:.2f}.xyz" on disk (legacy path, requires a
+        prior export_xyz() call). If 'name' is None, the geometry is built
+        directly from self.positions -- no xyz file needed at all.
+
+        :param name: name of the xyz molecule file, including its
+            directory, or None to build directly from self.positions
+        :type name: str or None
         :param z_coordinate: scale factor applied to the z coordinate
         :type z_coordinate: float
         :param cartesian: use cartesian basis set
@@ -488,11 +494,19 @@ class molecula:
         :return: the built molecule
         :rtype: pyscf.gto.Mole
         """
-        mol_chiral = gto.M(
-            atom=name + "_" + "{:.2f}".format(z_coordinate) + ".xyz",
-            max_memory=5000.0,
-            **self.gto_dict
-        )
+        if name is not None:
+            mol_chiral = gto.M(
+                atom=name + "_" + "{:.2f}".format(z_coordinate) + ".xyz",
+                max_memory=5000.0,
+                **self.gto_dict
+            )
+        else:
+            atom_symbols = [xyz_io.atom_symbol(n) for n in self.atoms[4]]
+            atom_spec = geometry.build_atom_list(
+                atom_symbols, self.positions, z_coordinate
+            )
+            mol_chiral = gto.M(atom=atom_spec, max_memory=5000.0, **self.gto_dict)
+
         if cartesian:
             mol_chiral, _ = mol_chiral.to_uncontracted_cartesian_basis()
         return mol_chiral
@@ -502,14 +516,35 @@ class molecula:
 
         Uses self.gto_dict (set by pySCF_WF).
 
-        :param name: name of the xyz molecule file, including its directory
-        :type name: str
+        If 'name' is given, the geometry is read from name + "_0.00.xyz"
+        on disk (legacy path). If 'name' is None, it's built directly
+        from self.positions_achiral (if an achiral xyz file was loaded
+        into the instance) or, otherwise, derived from the chiral
+        structure by zeroing its z coordinate -- matching exactly what
+        export_xyz does on disk when achiral=None.
+
+        :param name: name of the xyz molecule file, including its
+            directory, or None to build directly from in-memory data
+        :type name: str or None
         :param cartesian: use cartesian basis set
         :type cartesian: bool
         :return: the built molecule
         :rtype: pyscf.gto.Mole
         """
-        mol_achiral = gto.M(atom=name + "_0.00.xyz", max_memory=5000.0, **self.gto_dict)
+        if name is not None:
+            mol_achiral = gto.M(
+                atom=name + "_0.00.xyz", max_memory=5000.0, **self.gto_dict
+            )
+        else:
+            atom_symbols = [xyz_io.atom_symbol(n) for n in self.atoms[4]]
+            if self.XYZ_achiral_file is not None:
+                positions_achiral = self.positions_achiral
+            else:
+                positions_achiral = self.positions.copy()
+                positions_achiral[:, 2] = 0.0
+            atom_spec = geometry.build_atom_list(atom_symbols, positions_achiral)
+            mol_achiral = gto.M(atom=atom_spec, max_memory=5000.0, **self.gto_dict)
+
         if cartesian:
             mol_achiral, _ = mol_achiral.to_uncontracted_cartesian_basis()
         return mol_achiral
