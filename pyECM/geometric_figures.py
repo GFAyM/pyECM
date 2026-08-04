@@ -1,10 +1,12 @@
+"""3D geometric helpers (vectors, planes, spheres, rotations) for pyECM plots."""
+
 import numpy as np
 from matplotlib.patches import Circle
 from mpl_toolkits.mplot3d import art3d
 
 
 def plot_vector(fig, orig, vector, color="blue"):
-    """Plots a vector, defined by its origin and direction
+    """Plot a vector, defined by its origin and direction.
 
     :param fig: figure (from matplotlib.pyplot)
     :type fig: matplotlib.figure.Figure
@@ -30,7 +32,8 @@ def plot_vector(fig, orig, vector, color="blue"):
 
 
 def rotation_matrix(direction):
-    """Gets the matrix for objects rotations.
+    """Get the matrix for objects rotations.
+
     The direction is taken against z-direction.
 
     :param direction: Final direction
@@ -57,6 +60,15 @@ def rotation_matrix(direction):
 
 
 def pathpatch_2d_to_3d(pathpatch, z, normal):
+    """Convert a 2D matplotlib patch into a 3D one on a plane at height z.
+
+    :param pathpatch: 2D patch to convert in place (e.g. a matplotlib.patches.Circle)
+    :type pathpatch: matplotlib.patches.Patch
+    :param z: height (z coordinate) of the plane the patch is placed on
+    :type z: float
+    :param normal: vector normal to the plane the patch is placed on
+    :type normal: numpy.ndarray
+    """
     #    if type(normal) is str:  # Translate strings to normal vectors
     #        index = "xyz".index(normal)
     #        normal = np.roll((1.0, 0, 0), index)
@@ -83,11 +95,18 @@ def pathpatch_2d_to_3d(pathpatch, z, normal):
 
 
 def pathpatch_translate(pathpatch, delta):
+    """Translate an already-3D-converted patch by delta.
+
+    :param pathpatch: 3D patch to translate in place (see pathpatch_2d_to_3d)
+    :type pathpatch: mpl_toolkits.mplot3d.art3d.PathPatch3D
+    :param delta: translation vector
+    :type delta: numpy.ndarray
+    """
     pathpatch._segment3d += delta
 
 
 def define_plane(ax, point, normal, size=10, color="y"):
-    """Defines a plane (to be plotted)
+    """Define a plane (to be plotted).
 
     :param ax: matplotlib axe
     :type ax: matplotlib.axes._subplots.Axes3DSubplot
@@ -107,8 +126,9 @@ def define_plane(ax, point, normal, size=10, color="y"):
 
 
 def define_sphere(xCenter, yCenter, zCenter, r):
-    """Defines the points that constitute a sphere, defined by
-    its coordinates centers and its radius size.
+    """Define the points that constitute a sphere.
+
+    Defined by its coordinate centers and its radius size.
 
     :param xCenter: X center coordinates
     :type xCenter: numpy.float64
@@ -133,7 +153,7 @@ def define_sphere(xCenter, yCenter, zCenter, r):
 
 
 def rotation_matrix_from_vectors(vec_to_rotate, final_direction):
-    """Finds the rotation matrix that aligns vec_to_rotate to final_direction
+    """Find the rotation matrix that aligns vec_to_rotate to final_direction.
 
     :param vec_to_rotate: vector that will be rotated
     :type vec_to_rotate: numpy.ndarray

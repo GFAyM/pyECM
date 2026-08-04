@@ -1,9 +1,5 @@
 # This should be imported from pyscf or pyscf-forge
-"""
-
-@author Juan Jose Aucar
-
-"""
+"""Fermi Contact and parity-violation integrals for four-component wave functions."""
 
 import numpy
 from pyscf import gto, lib
@@ -71,6 +67,7 @@ def fc_integrals(mol, mf, atom, **kwargs):
 def gamma5_fc_integrals(mol, mf, atom, **kwargs):
     """
     Compute the integrals for PV contributions to energy for a given atom.
+
     The integrals are calculated in the four-component spinor basis.
     Point nuclear charge distribution is assumed.
 
@@ -109,12 +106,13 @@ def gamma5_fc_integrals(mol, mf, atom, **kwargs):
 
 def fc_expval(mol, mf, atom):
     """
-    Calculate the Fermi Contact (FC) expectation values
-    for each occupied orbital in a molecule, focusing on a specific atom.
+    Calculate the Fermi Contact (FC) expectation values.
 
-    The expectation values are calculated using the four-component Dirac-Coulomb spinor
-    wavefunctions. The function computes the contributions from the large-large (LL) and
-    small-small (SS) components of the spinor for each occupied orbital.
+    For each occupied orbital in a molecule, focusing on a specific atom.
+    The expectation values are calculated using the four-component
+    Dirac-Coulomb spinor wavefunctions. The function computes the
+    contributions from the large-large (LL) and small-small (SS)
+    components of the spinor for each occupied orbital.
 
     :param mol: Molecule object containing information about the molecular system.
     :type mol: pyscf.gto.Mole
@@ -162,10 +160,9 @@ def fc_expval(mol, mf, atom):
 
 def Epv_atom(mol, mf, atom_index, dm=None):
     """
-    Calculate the parity-violating (PV) contribution
-    to energy for a given atom in a molecule.
+    Calculate the parity-violating (PV) contribution to energy.
 
-    The function supports:
+    Computed for a given atom in a molecule. The function supports:
     - orbital expectation values from DHF orbitals
     - density matrix contraction in AO or MO basis
 
@@ -312,13 +309,11 @@ def Epv_atom(mol, mf, atom_index, dm=None):
 
 
 def Epv_molecule(mol, mf, dm=None):
-    """
-    Calculate the weak charge parity-violating (PV) contributions
-    for all atoms in the molecule within a punctual nuclear
-    charge distribution model.
+    """Calculate the weak charge parity-violating (PV) contributions.
 
-    This function iterates over all atoms in the molecule
-    and computes the PV contributions for each atom.
+    Computed for all atoms in the molecule within a punctual nuclear charge
+    distribution model. This function iterates over all atoms in the
+    molecule and computes the PV contributions for each atom.
 
     If dm is None:
         returns orbital contributions from the reference DHF/DFT orbitals.
@@ -338,7 +333,6 @@ def Epv_molecule(mol, mf, dm=None):
              for the occupied orbitals of that atom.
     :rtype: numpy.ndarray (real), shape (n_atoms, n_occ)
     """
-
     natm = mf.mol.natm
 
     # Determine output size from the calculation type
@@ -372,6 +366,13 @@ def Epv_molecule(mol, mf, dm=None):
 
 # To modify https://pyscf.org/_modules/pyscf/scf/dhf.html#get_ovlp
 def get_ovlp_AUCAR(mol):
+    """Build the four-component overlap matrix in the DHF spinor basis.
+
+    :param mol: molecule for which the overlap matrix is built
+    :type mol: pyscf.gto.Mole
+    :return: overlap matrix, shape (n4c, n4c)
+    :rtype: numpy.ndarray (complex128)
+    """
     n2c = mol.nao_2c()
     n4c = n2c * 2
     c = lib.param.LIGHT_SPEED

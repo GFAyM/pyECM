@@ -1,5 +1,11 @@
+"""Core molecula class for pyECM.
+
+Orchestrates geometry, I/O, plotting, chirality metrics (CCM/ECM), and the
+pySCF-based quantum chemistry calculations (NR, X2C, four-component) for a
+single molecule.
+"""
+
 import os
-import sys
 
 import mendeleev as mendeleev
 import numpy as np
@@ -9,14 +15,10 @@ from pyECM import ccm_metrics, ecm_metric, gamma5, geometry, plotting, pyscf_wf,
 from pyECM.geometric_figures import rotation_matrix_from_vectors
 from pyECM.pyscf_fc import Epv_molecule
 
-module_path = os.path.abspath(os.path.join(".."))
-
-if module_path not in sys.path:
-    sys.path.append(module_path)
-
 
 class molecula:
     """It is possible to create a molecule object from a xyz file.
+
     A vector can be associated to the molecule so that it is possible to align it
     with the z direction, as the virtual mirror path will be created
     by reflections in the z=0 plane.
@@ -59,6 +61,10 @@ class molecula:
         direction=None,
         **kwargs
     ):
+        """Initialize a molecula instance.
+
+        See the class docstring for the full description of each parameter.
+        """
         self.fig = figure
         self.options = kwargs
         self.origin = origin
@@ -92,8 +98,11 @@ class molecula:
             )
 
     def atoms_positions(self):
-        """Builds self.positions (and self.positions_achiral, if an achiral
-        xyz file was loaded) as (n_atoms, 3) arrays from self.atoms."""
+        """Build self.positions from self.atoms.
+
+        Also builds self.positions_achiral, if an achiral xyz file was
+        loaded, as (n_atoms, 3) arrays.
+        """
         self.positions = geometry.build_positions(self.n_atoms, self.atoms)
 
         if self.XYZ_achiral_file is not None:
@@ -102,9 +111,11 @@ class molecula:
             )
 
     def reference_coordinate(self):
-        """Sets self.central_point from self.origin: either the position of
-        the named atom (if origin is a string) or the given point directly
-        (if origin is a numpy array)."""
+        """Set self.central_point from self.origin.
+
+        Either the position of the named atom (if origin is a string) or
+        the given point directly (if origin is a numpy array).
+        """
         central_point = geometry.central_point_from_origin(
             self.n_atoms, self.positions, self.atoms[4], self.origin
         )
@@ -112,9 +123,10 @@ class molecula:
             self.central_point = central_point
 
     def origin_on_atom(self):
-        """Shifts self.positions so that self.origin becomes the new
-        coordinate origin, and stores the original central point in
-        self.central_point_coordinates."""
+        """Shift self.positions so that self.origin becomes the new origin.
+
+        Stores the original central point in self.central_point_coordinates.
+        """
         self.positions, self.central_point_coordinates = (
             geometry.shift_positions_to_origin(
                 self.n_atoms, self.positions, self.atoms[4], self.origin
@@ -122,8 +134,10 @@ class molecula:
         )
 
     def rotate_to_align_with_z(self):
-        """Rotates the molecule so that its nearest symmetric
-        structure lies in the z=0 plane."""
+        """Rotate the molecule so its nearest symmetric structure lies in z=0.
+
+        The rotation aligns self.direction with the z axis.
+        """
         z_direction = np.array([0, 0, 1])
         if z_direction.all() != self.direction.all():
             matrix = rotation_matrix_from_vectors(self.direction, z_direction)
@@ -132,16 +146,19 @@ class molecula:
             self.direction = matrix @ self.direction
 
     def plot_dipole(self):
-        """Plots the molecule dipole (if direction is replaced
-        by the molecule dipole)."""
+        """Plot the molecule dipole.
+
+        Only meaningful if direction was replaced by the molecule's actual
+        dipole moment.
+        """
         plotting.plot_dipole(self)
 
     def plot_plane(self):
-        """Plots the plane normal to the molecule direction."""
+        """Plot the plane normal to the molecule direction."""
         plotting.plot_plane(self)
 
     def plot_sphere(self):
-        """Plots the nuclei as spheres."""
+        """Plot the nuclei as spheres."""
         plotting.plot_sphere(self)
 
     def plot_bonds(self):
@@ -153,7 +170,7 @@ class molecula:
         plotting.plot_options(self)
 
     def save_xyz(self, filename="MOL"):
-        """Saves the molecule in xyz format
+        """Save the molecule in xyz format.
 
         :param filename: xyz file name, defaults to "MOL"
         :type filename: str, optional
@@ -164,16 +181,17 @@ class molecula:
         xyz_io.write_xyz(filename, self.n_atoms, atoms_name_xyz, self.positions)
 
     def load_from_xyz(self, filename="MOL", achiral=False):
-        """Loads atomic positions and names from a xyz file into self.atoms
-        (or self.achiral_atoms, if achiral=True).
+        """Load atomic positions and names from a xyz file.
+
+        Stores the result in self.atoms (or self.achiral_atoms, if
+        achiral=True).
 
         :param filename: xyz file name, defaults to "MOL"
         :type filename: str, optional
-        :param achiral: if True, stores the result in self.achiral_atoms
-            instead of self.atoms/self.n_atoms, defaults to False
+        :param achiral: if True, stores the result in self.achiral_atoms instead of
+            self.atoms/self.n_atoms, defaults to False
         :type achiral: bool, optional
         """
-
         number_atoms, coord_x, coord_y, coord_z, colors, names = xyz_io.read_xyz(
             filename
         )
@@ -192,8 +210,7 @@ class molecula:
         z_coordinate=1.00,
         achiral=None,
     ):
-        """Generates the xyz files for the chiral molecule and
-        the nearest symmetric structure.
+        """Generate the chiral and achiral xyz files for this molecule.
 
         :param prefix_name: prefix name for xyz files, defaults to "MOL"
         :type prefix_name: str, optional
@@ -285,8 +302,9 @@ class molecula:
         lim_sup=1.00,
         points=10,
     ):
-        """Generates the molecules in the virtual mirror path, which is defined
-        by reflecting the molecule in the plane z=0.
+        """Generate the molecules in the virtual mirror path.
+
+        The path is defined by reflecting the molecule in the plane z=0.
 
         :param prefix_name: prefix name for xyz files, defaults to "MOL"
         :type prefix_name: str, optional
@@ -301,7 +319,6 @@ class molecula:
         :param points: number of z-rates defining the path, defaults to 10.0
         :type points: float, optional
         """
-
         if points is None:
             points = int((lim_sup - lim_inf) / 0.05 + 1)
 
@@ -309,7 +326,7 @@ class molecula:
             self.export_xyz(prefix_name, DIRAC, folder, i)
 
     def CCM(self, z_coordinate=1.00, path=False):
-        """Calculates the CCM for the molecule.
+        """Calculate the CCM for the molecule.
 
         :param z_coordinate: scale factor applied to the z coordinate,
             defaults to 1.00
@@ -321,7 +338,6 @@ class molecula:
         :return: NORM1, CCM1, NORM2, CCM2
         :rtype: float(s)
         """
-
         positions_achiral = (
             None if self.XYZ_achiral_file is None else self.positions_achiral
         )
@@ -342,7 +358,7 @@ class molecula:
             return Norm_1, CCM_1, Norm_2, CCM_2
 
     def CCM_on_path(self, lim_inf=0.20, lim_sup=1.00, points=10):
-        """Calculates the CCM for the molecules in the virtual mirror path.
+        """Calculate the CCM for the molecules in the virtual mirror path.
 
         :param lim_inf: minimum z-rate, defaults to 0.20
         :type lim_inf: float, optional
@@ -376,30 +392,30 @@ class molecula:
         gto_dict=None,
         method_dict=None,
     ):
-        """Obtain the wave function with the pySCF code, storing the result(s)
-        as attributes of self (e.g. self.NR_all_MO, self.x2c_MO,
-        self.rel_MO_Lo/So, depending on which methods were requested).
-        NR, X2C and 4c are independent and can be combined freely in
-        a single call.
+        """Obtain the wave function with the pySCF code.
 
-        :param name: name of the xyz molecule file,
-            including its directory, defaults to None
+        Stores the result(s) as attributes of self (e.g. self.NR_all_MO,
+        self.x2c_MO, self.rel_MO_Lo/So, depending on which methods were
+        requested). NR, X2C and 4c are independent and can be combined
+        freely in a single call.
+
+        :param name: name of the xyz molecule file, including its directory, defaults to
+            None
         :type name: str, optional
         :param cartesian: use cartesian basis set, defaults to False
         :type cartesian: bool, optional
-        :param z_coordinate: scale factor applied to the z coordinate of the
-            structure whose WF is computed, defaults to 1.00
+        :param z_coordinate: scale factor applied to the z coordinate of the structure
+            whose WF is computed, defaults to 1.00
         :type z_coordinate: float, optional
-        :param gto_dict: options for Gaussian Type Orbitals (basis, charge,
-            spin, verbose), defaults to None
+        :param gto_dict: options for Gaussian Type Orbitals (basis, charge, spin,
+            verbose), defaults to None
         :type gto_dict: dict, optional
-        :param method_dict: which WF method(s) to compute and their options
-            (NR, X2C, fourcomp, DFT, debug, cvalue). Keys not given fall
-            back to defaults (NR=True, the rest False/0), defaults to None
+        :param method_dict: which WF method(s) to compute and their options (NR, X2C,
+            fourcomp, DFT, debug, cvalue). Keys not given fall back to defaults
+            (NR=True, the rest False/0), defaults to None
         :type method_dict: dict, optional
         :raises NotImplementedError: if fourcomp and DFT are both requested
         """
-
         # Define default values for keys in gto_dict
         if gto_dict is None:
             gto_dict = {}
@@ -460,8 +476,10 @@ class molecula:
             ) = pyscf_wf.compute_4c_WF(mol_chiral, cvalue, debug=debug)
 
     def _build_mol_chiral(self, name, z_coordinate, cartesian):
-        """Build the pyscf.gto.Mole for the chiral structure, scaled on
-        the z-axis by the given z_coordinate, using self.gto_dict (set by pySCF_WF).
+        """Build the pyscf.gto.Mole for the chiral structure.
+
+        Scaled on the z-axis by the given z_coordinate, using self.gto_dict
+        (set by pySCF_WF).
 
         :param name: name of the xyz molecule file, including its directory
         :type name: str
@@ -482,8 +500,9 @@ class molecula:
         return mol_chiral
 
     def _build_mol_achiral(self, name, cartesian):
-        """Build the pyscf.gto.Mole for the achiral reference structure,
-        using self.gto_dict (set by pySCF_WF).
+        """Build the pyscf.gto.Mole for the achiral reference structure.
+
+        Uses self.gto_dict (set by pySCF_WF).
 
         :param name: name of the xyz molecule file, including its directory
         :type name: str
@@ -505,7 +524,7 @@ class molecula:
         path=False,
         method_dict=None,
     ):
-        """Calculate ECM in a certain structure
+        """Calculate ECM in a certain structure.
 
         :param name: name of the xyz molecule file,
             including its directory, defaults to None
@@ -524,7 +543,6 @@ class molecula:
         :return: ECM_NR, ECM_X2C, ECM_4c (only when path=True)
         :rtype: float(s)
         """
-
         # Define default values for keys in method_dict
         if method_dict is None:
             method_dict = {}
@@ -629,10 +647,10 @@ class molecula:
         method_dict=None,
         gto_dict=None,
     ):
-        """Calculate ECM in the virtual mirror path
+        """Calculate ECM in the virtual mirror path.
 
-        :param name: name of the xyz molecule file,
-            including its directory, defaults to None
+        :param name: name of the xyz molecule file, including its directory, defaults to
+            None
         :type name: str, optional
         :param lim_inf: minimum z-rate, defaults to 0.20
         :type lim_inf: float, optional
@@ -640,16 +658,15 @@ class molecula:
         :type lim_sup: float, optional
         :param points: number of z-rates where calculating the ECM, defaults to 10
         :type points: int, optional
-        :param method_dict: Set method for WF calculation
-            (previously calculated), defaults to None
+        :param method_dict: Set method for WF calculation (previously calculated),
+            defaults to None
         :type method_dict: dict, optional
         :param gto_dict: Set options for Gaussian Type Orbitals, defaults to None
         :type gto_dict: dict, optional
-        :return: z-rates, ECMs(NR), molecular orbital contributions
-            to ECMs(NR), ECMs(4c)
+        :return: z-rates, ECMs(NR), molecular orbital contributions to ECMs(NR),
+            ECMs(4c)
         :rtype: numpy.ndarray(s)
         """
-
         z_rate = np.zeros(points)
         ECMs_NR = np.zeros(points)
         ECMs_x2c = np.zeros(points)
@@ -682,8 +699,9 @@ class molecula:
     def gamma5(
         self, name=None, cartesian=False, z_coordinate=1.00, method_dict=None, debug=0
     ):
-        """Calculate the Gamma5 expectation value. Requires that the
-        four-component wave function was already computed with
+        """Calculate the Gamma5 expectation value.
+
+        Requires that the four-component wave function was already computed with
         pySCF_WF(method_dict={'fourcomp': True, ...}).
 
         :param name: name of the xyz molecule file,
@@ -704,7 +722,6 @@ class molecula:
         :return: Gamma5 expectation value
         :rtype: float
         """
-
         if not hasattr(self, "rel_MO_Lo"):
             raise AttributeError(
                 "The four-component wave function is not defined within the class. "
@@ -731,40 +748,20 @@ class molecula:
 
     def Epv(
         self,
-        name=None,
-        cartesian=False,
-        z_coordinate=1.00,
-        method_dict=None,
-        debug=0,
         dm=None,
     ):
-        """Calculate the parity-violating (PV) energy contribution for each
-        atom and occupied orbital, storing the result in self.Epv_expval.
-        Requires that the four-component wave function was already computed
-        with pySCF_WF(method_dict={'fourcomp': True, ...}).
+        """Calculate the parity-violating (PV) energy contribution.
 
-        :param name: name of the xyz molecule file, including its directory.
-            Currently unused (kept for API consistency with ECM/gamma5),
-            defaults to None
-        :type name: str, optional
-        :param cartesian: use cartesian basis set. Currently unused,
-            defaults to False
-        :type cartesian: bool, optional
-        :param z_coordinate: scale factor applied to the z coordinate.
-            Currently unused, defaults to 1.00
-        :type z_coordinate: float, optional
-        :param method_dict: options for the calculation. Currently unused,
-            defaults to None
-        :type method_dict: dict, optional
-        :param debug: debug level. Currently unused, defaults to 0
-        :type debug: int, optional
+        Computed for each atom and occupied orbital, storing the result in
+        self.Epv_expval. Requires that the four-component wave function was
+        already computed with pySCF_WF(method_dict={'fourcomp': True, ...}).
+
         :param dm: density matrix (AO or MO basis) to contract the PV
             operator with. If None, uses the reference DHF orbitals directly,
             defaults to None
         :type dm: numpy.ndarray, optional
         :raises AttributeError: if the four-component wave function is not defined
         """
-
         if not hasattr(self, "rel_MO_Lo"):
             raise AttributeError(
                 "The four-component wave function is not defined within the class. "

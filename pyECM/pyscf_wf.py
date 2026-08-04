@@ -1,9 +1,8 @@
 """Wave-function calculations (NR/X2C/4c) via pySCF.
 
-Each function gets gto.Mole and returns the results within a tuple.
-They dont directly read neither write attributes from the molecule class.
-The molecule class is supposed to select in which of their own
-attributes will save each result.
+Each function gets gto.Mole and returns the results within a tuple. They dont directly
+read neither write attributes from the molecule class. The molecule class is supposed to
+select in which of their own attributes will save each result.
 """
 
 import sys
@@ -13,15 +12,16 @@ from numpy import matmul as mm
 from numpy import transpose as tp
 from pyscf import lib, scf
 from pyscf.lib.misc import light_speed
-from pyECM.decorators import debug_timed
 
+from pyECM.decorators import debug_timed
 from pyECM.pyscf_fc import get_ovlp_AUCAR
 
 
 @debug_timed("NR")
 def compute_NR_WF(mol_chiral, DFT=False, debug=0):
-    """Compute the non-relativistic wave function (RHF, or RKS if a
-    DFT functional is given).
+    """Compute the non-relativistic wave function.
+
+    Runs RHF, or RKS if a DFT functional is given.
 
     :param mol_chiral: molecule (already built) for which the WF is computed
     :type mol_chiral: pyscf.gto.Mole
@@ -29,11 +29,10 @@ def compute_NR_WF(mol_chiral, DFT=False, debug=0):
     :type DFT: str or False, optional
     :param debug: verbosity level; prints timing and norm diagnostics if > 0
     :type debug: int, optional
-    :return: (Noccupied_MO_alpha, Noccupied_MO_beta, all_MO,
-        occupied_MO, mf_chiral, AO_number)
+    :return: (Noccupied_MO_alpha, Noccupied_MO_beta, all_MO, occupied_MO, mf_chiral,
+        AO_number)
     :rtype: tuple(int, int, numpy.ndarray, tuple, pyscf.scf.hf.SCF, int)
     """
-
     if DFT is False:
         mf_chiral = scf.RHF(mol_chiral)
         mf_chiral.kernel()
@@ -89,11 +88,10 @@ def compute_X2C_WF(mol_chiral, DFT=False, debug=0):
     :type DFT: str or False, optional
     :param debug: verbosity level; prints timing and norm diagnostics if > 0
     :type debug: int, optional
-    :return: (x2c_MO, x2c_occup_MO, Nalphaoccupied_MO,
-        Nbetaoccupied_MO, x2c_energy, AO_number)
+    :return: (x2c_MO, x2c_occup_MO, Nalphaoccupied_MO, Nbetaoccupied_MO, x2c_energy,
+        AO_number)
     :rtype: tuple(numpy.ndarray, numpy.ndarray, int, int, float, int)
     """
-
     if DFT is False:
         mf_chiral_x2c = mol_chiral.X2C()
         mf_chiral_x2c.kernel()
@@ -173,12 +171,10 @@ def compute_4c_WF(mol_chiral, cvalue, debug=0):
     :type cvalue: float
     :param debug: verbosity level; prints timing and norm diagnostics if > 0
     :type debug: int, optional
-    :return: (n4c, rel_nmo, Lo, So, Noccupied_MO, rel_energy,
-        mf_chiral_rel, AO_number)
-    :rtype: tuple(int, int, numpy.ndarray, numpy.ndarray, int, float,
-        pyscf.scf.dhf.DHF, int)
+    :return: (n4c, rel_nmo, Lo, So, Noccupied_MO, rel_energy, mf_chiral_rel, AO_number)
+    :rtype: tuple(int, int, numpy.ndarray, numpy.ndarray, int, float, pyscf.scf.dhf.DHF,
+        int)
     """
-
     with light_speed(cvalue):
         c = lib.param.LIGHT_SPEED
 

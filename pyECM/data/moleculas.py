@@ -1,7 +1,18 @@
+"""Preloaded molecule."""
+
 import numpy as np
 
 
 def mol_SeIClO_rotated(enantiomero, campovectorial=None):
+    """Preloaded SeIClO molecule.
+
+    :param enantiomero: R- or S-enantiomer
+    :type enantiomero: string
+    :param campovectorial: vectorial field, defaults to None
+    :type campovectorial: deprecated, optional
+    :return: nro_atomos, tuple, NDArray, NDArray
+    :rtype: integer,
+    """
     # Angstrom Units
     nro_atomos = 4
     coordenadas_x = np.zeros(nro_atomos)

@@ -43,6 +43,7 @@ certifi==2026.5.20
 charset-normalizer==3.4.7
     # via
     #   -c requirements.txt
+    #   docformatter
     #   requests
 click==8.4.1
     # via
@@ -78,6 +79,8 @@ decorator==5.3.1
     #   ipython
 distlib==0.4.0
     # via virtualenv
+docformatter==1.7.8
+    # via -r requirements_dev.in
 docutils==0.21.2
     # via
     #   -c requirements.txt

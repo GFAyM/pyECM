@@ -1,8 +1,10 @@
+"""Vector utilities for pyECM."""
+
 import numpy as np
 
 
 def remove_zeros(x, y, z=None):
-    """Removes zeros values from input arrays
+    """Remove zeros values from input arrays.
 
     :param x: First array to be treated
     :type x: array
@@ -44,7 +46,7 @@ def remove_zeros(x, y, z=None):
 
 
 def normalize_vector(x, y, z=None):
-    """Normalize 2D/3D vector (to unity)
+    """Normalize 2D/3D vector (to unity).
 
     :param x: x component/s
     :type x: float or array

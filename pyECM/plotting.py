@@ -1,8 +1,7 @@
 """Plotting utilities for pyECM.molecula objects.
 
-Each function receives the mol object  as a parameter, so that
-they can be tested independently from the mol class.
-They all assume that mol.fig was provided.
+Each function receives the mol object  as a parameter, so that they can be tested
+independently from the mol class. They all assume that mol.fig was provided.
 """
 
 import numpy as np
@@ -18,29 +17,28 @@ def _get_axes(mol):
     :return: existing or newly created 3D axes of mol.fig
     :rtype: mpl_toolkits.mplot3d.axes3d.Axes3D
     """
-
     if mol.fig.get_axes():
         return mol.fig.gca()
     return mol.fig.add_subplot(projection="3d")
 
 
 def plot_dipole(mol):
-    """Plot the molecule dipole as a vector from the origin (if
-    mol.direction was replaced by the molecule's actual dipole moment;
-    otherwise plots whatever vector mol.direction currently holds).
+    """Plot the molecule dipole as a vector from the origin.
+
+    If mol.direction was replaced by the molecule's actual dipole moment,
+    plots that; otherwise plots whatever vector mol.direction currently
+    holds.
 
     :param mol: molecule whose direction/dipole vector is plotted
     :type mol: pyECM.molecule_class.molecula
     """
-
     point = np.array([0, 0, 0])
     dipolo = np.array([mol.direction[0], mol.direction[1], mol.direction[2]])
     plot_vector(mol.fig, point, dipolo)
 
 
 def plot_plane(mol):
-    """Plot the plane normal to the molecule direction, centered at the
-    origin.
+    """Plot the plane normal to the molecule direction, centered at the origin.
 
     :param mol: molecule whose direction defines the plane's normal vector
     :type mol: pyECM.molecule_class.molecula
@@ -52,8 +50,9 @@ def plot_plane(mol):
 
 
 def plot_sphere(mol):
-    """Plot each nucleus of the molecule as a small wireframe sphere,
-    colored according to mol.atoms[3] (the atom color list).
+    """Plot each nucleus of the molecule as a small wireframe sphere.
+
+    Colored according to mol.atoms[3] (the atom color list).
 
     :param mol: molecule whose nuclei are plotted
     :type mol: pyECM.molecule_class.molecula
@@ -68,11 +67,12 @@ def plot_sphere(mol):
 
 
 def plot_bonds(mol):
-    """Plot the molecule bonds as straight lines between the bonded atoms
-    listed in mol.bonds.
+    """Plot the molecule bonds as straight lines.
 
-    :param mol: molecule whose bonds are plotted. Requires mol.bonds, an
-        (n_bonds, 2) array of atom index pairs
+    Drawn between the bonded atoms listed in mol.bonds.
+
+    :param mol: molecule whose bonds are plotted. Requires mol.bonds, an (n_bonds, 2)
+        array of atom index pairs
     :type mol: pyECM.molecule_class.molecula
     """
     ax = _get_axes(mol)
@@ -87,13 +87,14 @@ def plot_bonds(mol):
 
 
 def plot_options(mol):
-    """Apply arbitrary matplotlib customization code stored in mol.options
-    (e.g. axis labels, title) to the current axes. Each value in
-    mol.options is a string of Python code, executed with a restricted
-    namespace exposing only `ax` (the current axes), `self` (mol, kept
-    for backward compatibility with strings referencing `self.fig`, etc.)
-    and `np`; builtins are disabled to avoid arbitrary code execution
-    (e.g. file access, imports) through this mechanism.
+    """Apply arbitrary matplotlib customization code stored in mol.options.
+
+    E.g. axis labels, title. Each value in mol.options is a string of
+    Python code, executed with a restricted namespace exposing only 'ax'
+    (the current axes), 'self' (mol, kept for backward compatibility with
+    strings referencing 'self.fig', etc.) and 'np'; builtins are disabled
+    to avoid arbitrary code execution (e.g. file access, imports) through
+    this mechanism.
 
     :param mol: molecule whose mol.options dict of code strings is executed
     :type mol: pyECM.molecule_class.molecula

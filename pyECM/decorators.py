@@ -1,10 +1,13 @@
+"""Decorators shared across pyECM modules."""
+
 import functools
 import time
 
 
 def debug_timed(label):
-    """Prints the wrapped function's wall-clock time, only when it's
-    called with debug > 0.
+    """Print the wrapped function's wall-clock time.
+
+    Only prints when the wrapped function is called with debug > 0.
 
     :param label: name shown in the printed message (e.g. "NR", "X2C")
     :type label: str

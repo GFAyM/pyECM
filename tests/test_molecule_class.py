@@ -25,6 +25,7 @@ def test_create_mol_files(tmp_path):
         XYZ_file=main_directory+"pyECM/data/import/AP1_chiral.xyz",
         direction=vector,
         origin=achiral_atom_origin,
+        charge=0
     )
     c.rotate_to_align_with_z()
 

@@ -12,12 +12,11 @@ def ccm(positions, atom_names, positions_achiral=None, z_coordinate=1.00):
 
     :param positions: array (n_atoms, 3) for the structure
     :param atom_names: atom names
-    :param positions_achiral: array (n_atoms, 3) for the reference achiral
-        structure. If None, z=0.
+    :param positions_achiral: array (n_atoms, 3) for the reference achiral structure. If
+        None, z=0.
     :param z_coordinate: scale factor over z coordinate
     :return: Norm_1, CCM_1, Norm_2, CCM_2
     """
-
     """Obtain the CCM (Continuous Chirality Measure) for a molecule, using
     two different normalization definitions.
 

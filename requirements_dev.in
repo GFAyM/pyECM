@@ -4,6 +4,7 @@ autopep8
 bandit
 black
 coverage[toml]
+docformatter
 flake8
 flake8-black
 flake8-builtins

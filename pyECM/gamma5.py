@@ -1,11 +1,12 @@
+"""Gamma5 expectation value calculation for four-component wave functions."""
+
 import numpy as np
 from numpy import matmul as mm
 from numpy import transpose as tp
 
 
 def compute_gamma5(mol_chiral, n4c, nocc, Lo, So, cvalue, rel_energy, debug=0):
-    """Compute the Gamma5 expectation value for a four-component (DHF)
-    wave function.
+    """Compute the Gamma5 expectation value for a four-component (DHF) wave function.
 
     :param mol_chiral: chiral structure the WF was computed on
     :type mol_chiral: pyscf.gto.Mole
@@ -13,11 +14,11 @@ def compute_gamma5(mol_chiral, n4c, nocc, Lo, So, cvalue, rel_energy, debug=0):
     :type n4c: int
     :param nocc: number of occupied MOs
     :type nocc: int
-    :param Lo: occupied MO coefficients, large component
-        (obtained with pyscf_wf.compute_4c_WF)
+    :param Lo: occupied MO coefficients, large component (obtained with
+        pyscf_wf.compute_4c_WF)
     :type Lo: numpy.ndarray
-    :param So: occupied MO coefficients, small component
-        (obtained with pyscf_wf.compute_4c_WF)
+    :param So: occupied MO coefficients, small component (obtained with
+        pyscf_wf.compute_4c_WF)
     :type So: numpy.ndarray
     :param cvalue: speed of light value used in the DHF calculation
     :type cvalue: float

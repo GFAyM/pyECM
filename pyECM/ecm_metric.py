@@ -1,9 +1,8 @@
 """ECM (Electronic Chirality Measure) calculations via pySCF.
 
-Each function receive a gto.Mole object and the results corresponding
-to a specific wave-function (previously obtained through pySCF)
-and returns ECM (including orbital contributions).
-It does not read neither write self attributes.
+Each function receive a gto.Mole object and the results corresponding to a specific
+wave-function (previously obtained through pySCF) and returns ECM (including orbital
+contributions). It does not read neither write self attributes.
 """
 
 import numpy as np
@@ -19,27 +18,25 @@ from pyECM.pyscf_fc import get_ovlp_AUCAR
 def _orbital_overlaps_and_contributions(
     n_occupied, mo_coeff, overlap_mixed, overlap_achiral, achiral_mo_coeff
 ):
-    """Accumulate, orbital by orbital, the achiral norm, the chiral/achiral
-    overlap, and each orbital's (unnormalized) ECM contribution.
+    """Accumulate the achiral norm, overlap, and per-orbital contribution.
 
-    Shared by compute_ECM_NR (called once per spin channel) and
-    compute_ECM_X2C (called once, over all occupied MOs).
+    Done orbital by orbital. Shared by compute_ECM_NR (called once per spin
+    channel) and compute_ECM_X2C (called once, over all occupied MOs).
 
     :param n_occupied: number of occupied MOs to sum over
     :type n_occupied: int
     :param mo_coeff: chiral MO coefficients
     :type mo_coeff: numpy.ndarray
-    :param overlap_mixed: cross overlap block between the chiral and
-        achiral structures (from the supermolecule)
+    :param overlap_mixed: cross overlap block between the chiral and achiral structures
+        (from the supermolecule)
     :type overlap_mixed: numpy.ndarray
     :param overlap_achiral: AO overlap matrix of the achiral structure
     :type overlap_achiral: numpy.ndarray
-    :param achiral_mo_coeff: chiral MO coefficients already projected into
-        the achiral basis (see _achiral_basis_projection)
+    :param achiral_mo_coeff: chiral MO coefficients already projected into the achiral
+        basis (see _achiral_basis_projection)
     :type achiral_mo_coeff: numpy.ndarray
-    :return: (achiral_norm, overlap_sum, molcontr), where molcontr is a
-        list with each orbital's ECM contribution (not yet normalized
-        by the chiral norm)
+    :return: (achiral_norm, overlap_sum, molcontr), where molcontr is a list with each
+        orbital's ECM contribution (not yet normalized by the chiral norm)
     :rtype: tuple(complex, complex, list)
     """
     achiral_norm = 0
@@ -73,8 +70,10 @@ def compute_ECM_NR(
     Noccupied_MO_beta,
     debug=0,
 ):
-    """Compute ECM at non-relativistic level. It inner projects the wave-function
-    from the molecule over its nearest achiral symmetric structure.
+    """Compute ECM at non-relativistic level.
+
+    It inner projects the wave-function from the molecule over its nearest achiral
+    symmetric structure.
 
     :param mol_chiral: chiral structure
     :type mol_chiral: pyscf.gto.Mole
@@ -94,7 +93,6 @@ def compute_ECM_NR(
     :return: (ECM_NR, ECM_NR_molcontr_alpha, ECM_NR_molcontr_beta, ECM_NR_molcontr)
     :rtype: tuple(float, numpy.ndarray, numpy.ndarray, numpy.ndarray)
     """
-
     naos_sph = mol_chiral.intor("int1e_ovlp_sph").shape[0]
 
     AO_number = mol_chiral.nao
@@ -190,8 +188,10 @@ def compute_ECM_X2C(
     Nbetaoccupied_MO,
     debug=0,
 ):
-    """Compute ECM at X2C level. It inner projects the wave-function
-    from the molecule over its nearest achiral symmetric structure.
+    """Compute ECM at X2C level.
+
+    It inner projects the wave-function from the molecule over its nearest achiral
+    symmetric structure.
 
     :param mol_chiral: chiral structure
     :type mol_chiral: pyscf.gto.Mole
@@ -199,8 +199,8 @@ def compute_ECM_X2C(
     :type mol_achiral: pyscf.gto.Mole
     :param mol_super: molecule composed by the sum quiral+achiral, for overlap integrals
     :type mol_super: pyscf.gto.Mole
-    :param x2c_MO: coefficients of all MOs of the X2C WF of mol_chiral
-        (obtained with pyscf_wf.compute_X2C_WF)
+    :param x2c_MO: coefficients of all MOs of the X2C WF of mol_chiral (obtained with
+        pyscf_wf.compute_X2C_WF)
     :type x2c_MO: numpy.ndarray
     :param x2c_occup_MO: coefficients of the occupied MOs of the X2C WF
     :type x2c_occup_MO: numpy.ndarray
@@ -212,9 +212,7 @@ def compute_ECM_X2C(
     :type debug: int, optional
     :return: (ECM_X2C, ECM_X2C_molcontr)
     :rtype: tuple(float, list)
-
     """
-
     Noccupied_MO = Nalphaoccupied_MO + Nbetaoccupied_MO
     AO_number_supermol = np.array([mol_super.nao])[0]
 
@@ -262,8 +260,10 @@ def compute_ECM_X2C(
 
 @debug_timed("4c")
 def compute_ECM_4c(mol_chiral, mol_achiral, n4c, Lo, So, nocc, cvalue, debug=0):
-    """Compute ECM at four-component level. It inner projects the wave-function
-    from the molecule over its nearest achiral symmetric structure.
+    """Compute ECM at four-component level.
+
+    It inner projects the wave-function from the molecule over its nearest achiral
+    symmetric structure.
 
     :param mol_chiral: chiral structure
     :type mol_chiral: pyscf.gto.Mole
@@ -271,11 +271,11 @@ def compute_ECM_4c(mol_chiral, mol_achiral, n4c, Lo, So, nocc, cvalue, debug=0):
     :type mol_achiral: pyscf.gto.Mole
     :param n4c: total dimension of the four-component space (2 * n2c)
     :type n4c: int
-    :param Lo: occupied MO coefficients, large component
-        (obtained with pyscf_wf.compute_4c_WF)
+    :param Lo: occupied MO coefficients, large component (obtained with
+        pyscf_wf.compute_4c_WF)
     :type Lo: numpy.ndarray
-    :param So: occupied MO coefficients, small component
-        (obtained with pyscf_wf.compute_4c_WF)
+    :param So: occupied MO coefficients, small component (obtained with
+        pyscf_wf.compute_4c_WF)
     :type So: numpy.ndarray
     :param nocc: number of occupied MOs
     :type nocc: int

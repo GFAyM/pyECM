@@ -7,8 +7,9 @@ import numpy as np
 
 
 def build_positions(n_atoms, atoms):
-    """Build a (n_atoms, 3) array of positions from an 'atoms' tuple
-    (coord_x, coord_y, coord_z, colors, names), as returned by
+    """Build a (n_atoms, 3) array of positions from an atoms tuple.
+
+    The tuple is (coord_x, coord_y, coord_z, colors, names), as returned by
     xyz_io.read_xyz.
 
     :param n_atoms: number of atoms
@@ -25,21 +26,22 @@ def build_positions(n_atoms, atoms):
 
 
 def central_point_from_origin(n_atoms, positions, atom_names, origin):
-    """Resolve the central point from 'origin': either the position of
-    the named atom (if origin is a string) or the given point directly
-    (if origin is a numpy array).
+    """Resolve the central point from 'origin'.
+
+    Either the position of the named atom (if origin is a string) or the
+    given point directly (if origin is a numpy array).
 
     :param n_atoms: number of atoms
     :type n_atoms: int
     :param positions: (n_atoms, 3) array of positions
     :type positions: numpy.ndarray
-    :param atom_names: atom name/label per atom, used to find 'origin'
-        when it's given as a string
+    :param atom_names: atom name/label per atom, used to find 'origin' when it's given
+        as a string
     :type atom_names: sequence of str
     :param origin: point (numpy.ndarray) or atom name (str) used as origin
     :type origin: numpy.ndarray or str or None
-    :return: the resolved central point, or None if origin is None or the
-        named atom wasn't found
+    :return: the resolved central point, or None if origin is None or the named atom
+        wasn't found
     :rtype: numpy.ndarray or None
     """
     if origin is None:
@@ -55,15 +57,14 @@ def central_point_from_origin(n_atoms, positions, atom_names, origin):
 
 
 def shift_positions_to_origin(n_atoms, positions, atom_names, origin):
-    """Shift 'positions' so that 'origin' becomes the new coordinate
-    origin.
+    """Shift 'positions' so that 'origin' becomes the new coordinate origin.
 
     :param n_atoms: number of atoms
     :type n_atoms: int
     :param positions: (n_atoms, 3) array of positions
     :type positions: numpy.ndarray
-    :param atom_names: atom name/label per atom, used to find 'origin'
-        when it's given as a string
+    :param atom_names: atom name/label per atom, used to find 'origin' when it's given
+        as a string
     :type atom_names: sequence of str
     :param origin: point (numpy.ndarray) or atom name (str) used as origin
     :type origin: numpy.ndarray or str
