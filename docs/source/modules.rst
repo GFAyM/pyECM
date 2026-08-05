@@ -1,7 +1,7 @@
-ECM API
-=======
+pyECM
+=====
 
 .. toctree::
    :maxdepth: 4
 
-   ecm
+   pyECM
