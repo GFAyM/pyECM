@@ -2,59 +2,98 @@
 
 ## Development setup
 
-Install pyECM in editable mode and install developers dependencies:
+Install pyECM in editable mode and install developers dependencies.
 
-      ```pip install -e .```
+1. Install pyECM in editable mode:
 
-      ```pip install -r requirements_dev.txt```
+   ```bash
+   pip install -e .
+   ```
 
-      ```pip install -r requirements_doc.txt```
+2. Install developer dependencies:
+
+   ```bash
+   pip install -r requirements_dev.txt
+   ```
+
+3. Install documentation dependencies:
+
+   ```bash
+   pip install -r requirements_doc.txt
+   ```
 
 ## Running tests
 
 Run all tests:
 
-      ``tox``
+   ```bash
+   tox
+   ```
 
 Run short tests:
 
-      ``tox -e fast``
+   ```bash
+   tox -e fast
+   ```
 
 ## Linting and formatting
 
 Check format files using flake8:
 
-      ``tox -e flake8``
+   ```bash
+   tox -e flake8
+   ```
 
 Format files according to docformatter, isort and black:
 
-      ``tox -e format``
+   ```bash
+   tox -e format
+   ```
 
 
 ## Update the requirements lists
 
-To update requirements.txt, requierements_dev.txt and requirements_doc.txt dependencies,
+To update requirements.txt, requierements_dev.txt and requirements_doc.txt dependencies.
 
-      ``pip-compile requirements.in``
+1. Update requirements.txt:
 
-      ``pip-compile requirements_dev.in``
+   ```bash
+   pip-compile requirements.in
+   ```
 
-      ``pip-compile requirements_doc.in``
+2. Update requirements_dev.txt:
+
+   ```bash
+   pip-compile requirements_dev.in
+   ```
+
+3. Update requirements_doc.txt:
+
+   ```bash
+   pip-compile requirements_doc.in
+   ```
+      
 
 ## Building the docs locally
 
 Either build the html files using doc:
 
-      ``tox -e docs``
+   ```bash
+   tox -e docs
+   ```
 
 or executing under the doc folder:
 
-      ``make html``
+   ```bash
+   make html
+   ```
 
 ## Update the rst files
 
 To update the rst files under the doc folder:
 
-      ``sphinx-apidoc -f -o docs/source pyECM/``
+   ```bash
+   sphinx-apidoc -f -o docs/source pyECM/
+   ```
 
 
