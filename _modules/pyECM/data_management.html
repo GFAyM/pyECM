@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyECM.data_management &mdash; ECM 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/Chirality_with_hands.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Basic Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">ECM API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../support.html">Support</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ECM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyECM.data_management</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyECM.data_management</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Some functions for data management.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">selenium</span><span class="w"> </span><span class="kn">import</span> <span class="n">webdriver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">selenium.common.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebDriverException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">selenium.webdriver.common.by</span><span class="w"> </span><span class="kn">import</span> <span class="n">By</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">selenium.webdriver.support</span><span class="w"> </span><span class="kn">import</span> <span class="n">expected_conditions</span> <span class="k">as</span> <span class="n">EC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">selenium.webdriver.support.ui</span><span class="w"> </span><span class="kn">import</span> <span class="n">Select</span><span class="p">,</span> <span class="n">WebDriverWait</span>
+
+
+<div class="viewcode-block" id="obtain_nearest_structure">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.data_management.obtain_nearest_structure">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">obtain_nearest_structure</span><span class="p">(</span>
+    <span class="n">xyz_FILENAME</span><span class="p">,</span>
+    <span class="n">input_path</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">download_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">remove_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Download and split the nearest achiral structure for a xyz file.</span>
+
+<span class="sd">    Uses the CSM website (https://csm.ouproj.org.il/molecule) to compute</span>
+<span class="sd">    the nearest symmetric structure, then splits the result into</span>
+<span class="sd">    &quot;&lt;name&gt;_chiral.xyz&quot; and &quot;&lt;name&gt;_achiral.xyz&quot; in output_path.</span>
+
+<span class="sd">    :param xyz_FILENAME: name (without extension) of the xyz file to upload</span>
+<span class="sd">    :type xyz_FILENAME: str</span>
+<span class="sd">    :param input_path: directory containing xyz_FILENAME + &quot;.xyz&quot;</span>
+<span class="sd">    :type input_path: str</span>
+<span class="sd">    :param output_path: directory where the split xyz files are written,</span>
+<span class="sd">        defaults to input_path</span>
+<span class="sd">    :type output_path: str, optional</span>
+<span class="sd">    :param download_dir: directory where the browser downloads the CSM</span>
+<span class="sd">        zip file. If None, a temporary directory is used, defaults to None</span>
+<span class="sd">    :type download_dir: str, optional</span>
+<span class="sd">    :param silent: run the browser headless, defaults to True</span>
+<span class="sd">    :type silent: bool, optional</span>
+<span class="sd">    :param remove_files: remove the original input xyz file afterwards,</span>
+<span class="sd">        defaults to False</span>
+<span class="sd">    :type remove_files: bool, optional</span>
+<span class="sd">    :raises FileExistsError: if download_dir already has a results.zip</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if the input and output paths are valid</span>
+    <span class="n">input_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">output_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">input_path</span>
+
+    <span class="k">if</span> <span class="n">download_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">download_dir</span><span class="p">:</span>
+            <span class="n">download_CSM_zip</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">xyz_FILENAME</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">silent</span><span class="p">)</span>
+            <span class="n">split_output</span><span class="p">(</span><span class="n">download_dir</span> <span class="o">+</span> <span class="s2">&quot;/results.zip&quot;</span><span class="p">,</span> <span class="n">output_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">xyz_FILENAME</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">download_dir</span> <span class="o">+</span> <span class="s2">&quot;/results.zip&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
+                <span class="s2">&quot;The file &#39;results.zip&#39; already exists in the download directory. &quot;</span>
+                <span class="s2">&quot;Please remove it before running again.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">download_CSM_zip</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">xyz_FILENAME</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">silent</span><span class="p">)</span>
+        <span class="n">split_output</span><span class="p">(</span><span class="n">download_dir</span> <span class="o">+</span> <span class="s2">&quot;/results.zip&quot;</span><span class="p">,</span> <span class="n">output_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">xyz_FILENAME</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">remove_files</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">input_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">xyz_FILENAME</span> <span class="o">+</span> <span class="s2">&quot;.xyz&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="download_CSM_zip">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.data_management.download_CSM_zip">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">download_CSM_zip</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">xyz_FILENAME</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a xyz file to the CSM website and download the results zip.</span>
+
+<span class="sd">    Tries Chrome, Firefox, Edge, and Safari in that order, using whichever driver is</span>
+<span class="sd">    available.</span>
+
+<span class="sd">    :param input_path: directory containing xyz_FILENAME + &quot;.xyz&quot;</span>
+<span class="sd">    :type input_path: str</span>
+<span class="sd">    :param xyz_FILENAME: name (without extension) of the xyz file to upload</span>
+<span class="sd">    :type xyz_FILENAME: str</span>
+<span class="sd">    :param download_dir: directory where the browser saves the downloaded zip</span>
+<span class="sd">    :type download_dir: str</span>
+<span class="sd">    :param silent: run the browser headless, defaults to True</span>
+<span class="sd">    :type silent: bool, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialize the browser in the following order: Chrome, Firefox, Edge, Safari</span>
+    <span class="n">driver</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">chrome_options</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">ChromeOptions</span><span class="p">()</span>
+        <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_experimental_option</span><span class="p">(</span>
+            <span class="s2">&quot;prefs&quot;</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="c1"># Configure the download folder</span>
+                <span class="s2">&quot;download.default_directory&quot;</span><span class="p">:</span> <span class="n">download_dir</span><span class="p">,</span>
+                <span class="c1"># Do not ask before downloading</span>
+                <span class="s2">&quot;download.prompt_for_download&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;directory_upgrade&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--headless&quot;</span><span class="p">)</span>
+            <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no-sandbox&quot;</span><span class="p">)</span>
+            <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--disable-dev-shm-usage&quot;</span><span class="p">)</span>
+        <span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Chrome</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">chrome_options</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">WebDriverException</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">firefox_options</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">FirefoxOptions</span><span class="p">()</span>
+            <span class="n">firefox_profile</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">FirefoxProfile</span><span class="p">()</span>
+            <span class="n">firefox_profile</span><span class="o">.</span><span class="n">set_preference</span><span class="p">(</span>
+                <span class="s2">&quot;browser.download.folderList&quot;</span><span class="p">,</span> <span class="mi">2</span>
+            <span class="p">)</span>  <span class="c1"># Personalized folder</span>
+            <span class="n">firefox_profile</span><span class="o">.</span><span class="n">set_preference</span><span class="p">(</span><span class="s2">&quot;browser.download.dir&quot;</span><span class="p">,</span> <span class="n">download_dir</span><span class="p">)</span>
+            <span class="n">firefox_profile</span><span class="o">.</span><span class="n">set_preference</span><span class="p">(</span>
+                <span class="s2">&quot;browser.helperApps.neverAsk.saveToDisk&quot;</span><span class="p">,</span> <span class="s2">&quot;application/zip&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">silent</span><span class="p">:</span>
+                <span class="n">firefox_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--headless&quot;</span><span class="p">)</span>
+            <span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Firefox</span><span class="p">(</span>
+                <span class="n">firefox_profile</span><span class="o">=</span><span class="n">firefox_profile</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">firefox_options</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">WebDriverException</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">edge_options</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">EdgeOptions</span><span class="p">()</span>
+                <span class="n">edge_options</span><span class="o">.</span><span class="n">add_experimental_option</span><span class="p">(</span>
+                    <span class="s2">&quot;prefs&quot;</span><span class="p">,</span>
+                    <span class="p">{</span>
+                        <span class="c1"># Configure the download folder</span>
+                        <span class="s2">&quot;download.default_directory&quot;</span><span class="p">:</span> <span class="n">download_dir</span><span class="p">,</span>
+                        <span class="c1"># Do not ask before downloading</span>
+                        <span class="s2">&quot;download.prompt_for_download&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="s2">&quot;directory_upgrade&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">silent</span><span class="p">:</span>
+                    <span class="n">edge_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--headless&quot;</span><span class="p">)</span>
+                <span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">edge_options</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">WebDriverException</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Safari</span><span class="p">()</span>
+                <span class="k">except</span> <span class="n">WebDriverException</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;There is no supported browser found. &quot;</span>
+                        <span class="s2">&quot;Make sure you have Chrome, Firefox, Edge or Safari installed.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Navigate to the website</span>
+    <span class="n">driver</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://csm.ouproj.org.il/molecule&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Wait until the file input is clickable</span>
+    <span class="n">wait</span> <span class="o">=</span> <span class="n">WebDriverWait</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">upload_button</span> <span class="o">=</span> <span class="n">wait</span><span class="o">.</span><span class="n">until</span><span class="p">(</span><span class="n">EC</span><span class="o">.</span><span class="n">element_to_be_clickable</span><span class="p">((</span><span class="n">By</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="s2">&quot;file&quot;</span><span class="p">)))</span>
+    <span class="n">upload_button</span><span class="o">.</span><span class="n">send_keys</span><span class="p">(</span><span class="n">input_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">xyz_FILENAME</span> <span class="o">+</span> <span class="s2">&quot;.xyz&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Click on &quot;CCM&quot;</span>
+    <span class="n">ccm_button</span> <span class="o">=</span> <span class="n">wait</span><span class="o">.</span><span class="n">until</span><span class="p">(</span>
+        <span class="n">EC</span><span class="o">.</span><span class="n">element_to_be_clickable</span><span class="p">((</span><span class="n">By</span><span class="o">.</span><span class="n">XPATH</span><span class="p">,</span> <span class="s1">&#39;//button[text()=&quot; CCM:&quot;]&#39;</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">ccm_button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span>
+
+    <span class="c1"># Wait until the select element is visible</span>
+    <span class="n">wait</span> <span class="o">=</span> <span class="n">WebDriverWait</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">select_element</span> <span class="o">=</span> <span class="n">wait</span><span class="o">.</span><span class="n">until</span><span class="p">(</span><span class="n">EC</span><span class="o">.</span><span class="n">presence_of_element_located</span><span class="p">((</span><span class="n">By</span><span class="o">.</span><span class="n">TAG_NAME</span><span class="p">,</span> <span class="s2">&quot;select&quot;</span><span class="p">)))</span>
+
+    <span class="c1"># Create a Select object and select the option with value &quot;20&quot;</span>
+    <span class="n">select</span> <span class="o">=</span> <span class="n">Select</span><span class="p">(</span><span class="n">select_element</span><span class="p">)</span>
+    <span class="n">select</span><span class="o">.</span><span class="n">select_by_value</span><span class="p">(</span><span class="s2">&quot;20&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Wait until the &quot;Calculate&quot; button is clickable and click on it</span>
+    <span class="n">calculate_button</span> <span class="o">=</span> <span class="n">wait</span><span class="o">.</span><span class="n">until</span><span class="p">(</span>
+        <span class="n">EC</span><span class="o">.</span><span class="n">element_to_be_clickable</span><span class="p">((</span><span class="n">By</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span> <span class="s2">&quot;btn-success&quot;</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">calculate_button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span>
+
+    <span class="c1"># Wait unil the &quot;Download class result&quot; button is clickable and click on it</span>
+    <span class="n">download_button</span> <span class="o">=</span> <span class="n">wait</span><span class="o">.</span><span class="n">until</span><span class="p">(</span>
+        <span class="n">EC</span><span class="o">.</span><span class="n">element_to_be_clickable</span><span class="p">((</span><span class="n">By</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span> <span class="s2">&quot;btn-primary&quot;</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">download_button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span>
+
+    <span class="c1"># Wait until the file is downloaded</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Check if the file has been downloaded</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">download_dir</span> <span class="o">+</span> <span class="s2">&quot;/results.zip&quot;</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="c1"># Wait for 1 second before checking again</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="split_output">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.data_management.split_output">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">split_output</span><span class="p">(</span><span class="n">zip_file</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mol_name</span><span class="o">=</span><span class="s2">&quot;molecule&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split the CSM results zip into separate chiral/achiral xyz files.</span>
+
+<span class="sd">    Extracts &quot;resulting_mols.xyz&quot; from zip_file, splits it in half (first half is the</span>
+<span class="sd">    chiral structure, second half the achiral one), writes &quot;&lt;mol_name&gt;_chiral.xyz&quot; and</span>
+<span class="sd">    &quot;&lt;mol_name&gt;_achiral.xyz&quot; in output_dir, and removes the intermediate file and the</span>
+<span class="sd">    zip.</span>
+
+<span class="sd">    :param zip_file: path to the CSM results zip file</span>
+<span class="sd">    :type zip_file: str</span>
+<span class="sd">    :param output_dir: directory where the split xyz files are written</span>
+<span class="sd">    :type output_dir: str, optional</span>
+<span class="sd">    :param mol_name: prefix used for the two output xyz files, defaults to &quot;molecule&quot;</span>
+<span class="sd">    :type mol_name: str, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Extract the desired file in the specified directory</span>
+    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">zip_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_ref</span><span class="p">:</span>
+        <span class="n">zip_ref</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s2">&quot;resulting_mols.xyz&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
+
+    <span class="c1"># Open the original file in read mode</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="s2">&quot;resulting_mols.xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="c1"># Calculate the mid point</span>
+    <span class="n">mid_point</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="c1"># Split the lines into two parts</span>
+    <span class="n">part1</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[:</span><span class="n">mid_point</span><span class="p">]</span>
+    <span class="n">part2</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">mid_point</span><span class="p">:]</span>
+
+    <span class="c1"># Write the first part in a new file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="n">mol_name</span> <span class="o">+</span> <span class="s2">&quot;_chiral.xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">part1</span><span class="p">)</span>
+
+    <span class="c1"># Write the second part in a new file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="n">mol_name</span> <span class="o">+</span> <span class="s2">&quot;_achiral.xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">part2</span><span class="p">)</span>
+
+    <span class="c1"># Eliminate the original file</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="s2">&quot;resulting_mols.xyz&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Eliminate the zip file</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">zip_file</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Juan José Aucar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

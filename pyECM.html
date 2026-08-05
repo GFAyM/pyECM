@@ -1,0 +1,1453 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyECM package &mdash; ECM 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=fc837d61"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pyECM.data package" href="pyECM.data.html" />
+    <link rel="prev" title="pyECM" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/Chirality_with_hands.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Basic Example</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ECM API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pyECM package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.data.html">pyECM.data package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ECM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">pyECM</a></li>
+      <li class="breadcrumb-item active">pyECM package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyECM.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyecm-package">
+<h1>pyECM package<a class="headerlink" href="#pyecm-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyECM.data.html">pyECM.data package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.data.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.data.html#module-pyECM.data.moleculas">pyECM.data.moleculas module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.data.html#pyECM.data.moleculas.mol_SeIClO_rotated"><code class="docutils literal notranslate"><span class="pre">mol_SeIClO_rotated()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.data.html#module-pyECM.data">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pyECM.ccm_metrics">
+<span id="pyecm-ccm-metrics-module"></span><h2>pyECM.ccm_metrics module<a class="headerlink" href="#module-pyECM.ccm_metrics" title="Link to this heading"></a></h2>
+<p>Continuous Chirality Measure for pyECM.</p>
+<p>The ccm function does not depend on the molecule instance.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.ccm_metrics.ccm">
+<span class="sig-prename descclassname"><span class="pre">pyECM.ccm_metrics.</span></span><span class="sig-name descname"><span class="pre">ccm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions_achiral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/ccm_metrics.html#ccm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.ccm_metrics.ccm" title="Link to this definition"></a></dt>
+<dd><p>Obtain CCM (two definitions are available for it) for a molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> – array (n_atoms, 3) for the structure</p></li>
+<li><p><strong>atom_names</strong> – atom names</p></li>
+<li><p><strong>positions_achiral</strong> – array (n_atoms, 3) for the reference achiral structure. If
+None, z=0.</p></li>
+<li><p><strong>z_coordinate</strong> – scale factor over z coordinate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Norm_1, CCM_1, Norm_2, CCM_2</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.data_management">
+<span id="pyecm-data-management-module"></span><h2>pyECM.data_management module<a class="headerlink" href="#module-pyECM.data_management" title="Link to this heading"></a></h2>
+<p>Some functions for data management.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.data_management.download_CSM_zip">
+<span class="sig-prename descclassname"><span class="pre">pyECM.data_management.</span></span><span class="sig-name descname"><span class="pre">download_CSM_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xyz_FILENAME</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/data_management.html#download_CSM_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.data_management.download_CSM_zip" title="Link to this definition"></a></dt>
+<dd><p>Upload a xyz file to the CSM website and download the results zip.</p>
+<p>Tries Chrome, Firefox, Edge, and Safari in that order, using whichever driver is
+available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_path</strong> (<em>str</em>) – directory containing xyz_FILENAME + “.xyz”</p></li>
+<li><p><strong>xyz_FILENAME</strong> (<em>str</em>) – name (without extension) of the xyz file to upload</p></li>
+<li><p><strong>download_dir</strong> (<em>str</em>) – directory where the browser saves the downloaded zip</p></li>
+<li><p><strong>silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – run the browser headless, defaults to True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.data_management.obtain_nearest_structure">
+<span class="sig-prename descclassname"><span class="pre">pyECM.data_management.</span></span><span class="sig-name descname"><span class="pre">obtain_nearest_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz_FILENAME</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/data_management.html#obtain_nearest_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.data_management.obtain_nearest_structure" title="Link to this definition"></a></dt>
+<dd><p>Download and split the nearest achiral structure for a xyz file.</p>
+<p>Uses the CSM website (<a class="reference external" href="https://csm.ouproj.org.il/molecule">https://csm.ouproj.org.il/molecule</a>) to compute
+the nearest symmetric structure, then splits the result into
+“&lt;name&gt;_chiral.xyz” and “&lt;name&gt;_achiral.xyz” in output_path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xyz_FILENAME</strong> (<em>str</em>) – name (without extension) of the xyz file to upload</p></li>
+<li><p><strong>input_path</strong> (<em>str</em>) – directory containing xyz_FILENAME + “.xyz”</p></li>
+<li><p><strong>output_path</strong> (<em>str</em><em>, </em><em>optional</em>) – directory where the split xyz files are written,
+defaults to input_path</p></li>
+<li><p><strong>download_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – directory where the browser downloads the CSM
+zip file. If None, a temporary directory is used, defaults to None</p></li>
+<li><p><strong>silent</strong> (<em>bool</em><em>, </em><em>optional</em>) – run the browser headless, defaults to True</p></li>
+<li><p><strong>remove_files</strong> (<em>bool</em><em>, </em><em>optional</em>) – remove the original input xyz file afterwards,
+defaults to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileExistsError</strong> – if download_dir already has a results.zip</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.data_management.split_output">
+<span class="sig-prename descclassname"><span class="pre">pyECM.data_management.</span></span><span class="sig-name descname"><span class="pre">split_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'molecule'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/data_management.html#split_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.data_management.split_output" title="Link to this definition"></a></dt>
+<dd><p>Split the CSM results zip into separate chiral/achiral xyz files.</p>
+<p>Extracts “resulting_mols.xyz” from zip_file, splits it in half (first half is the
+chiral structure, second half the achiral one), writes “&lt;mol_name&gt;_chiral.xyz” and
+“&lt;mol_name&gt;_achiral.xyz” in output_dir, and removes the intermediate file and the
+zip.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zip_file</strong> (<em>str</em>) – path to the CSM results zip file</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – directory where the split xyz files are written</p></li>
+<li><p><strong>mol_name</strong> (<em>str</em><em>, </em><em>optional</em>) – prefix used for the two output xyz files, defaults to “molecule”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.decorators">
+<span id="pyecm-decorators-module"></span><h2>pyECM.decorators module<a class="headerlink" href="#module-pyECM.decorators" title="Link to this heading"></a></h2>
+<p>Decorators shared across pyECM modules.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.decorators.debug_timed">
+<span class="sig-prename descclassname"><span class="pre">pyECM.decorators.</span></span><span class="sig-name descname"><span class="pre">debug_timed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/decorators.html#debug_timed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.decorators.debug_timed" title="Link to this definition"></a></dt>
+<dd><p>Print the wrapped function’s wall-clock time.</p>
+<p>Only prints when the wrapped function is called with debug &gt; 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>str</em>) – name shown in the printed message (e.g. “NR”, “X2C”)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.ecm_metric">
+<span id="pyecm-ecm-metric-module"></span><h2>pyECM.ecm_metric module<a class="headerlink" href="#module-pyECM.ecm_metric" title="Link to this heading"></a></h2>
+<p>ECM (Electronic Chirality Measure) calculations via pySCF.</p>
+<p>Each function receive a gto.Mole object and the results corresponding to a specific
+wave-function (previously obtained through pySCF) and returns ECM (including orbital
+contributions). It does not read neither write self attributes.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.ecm_metric.compute_ECM_4c">
+<span class="sig-prename descclassname"><span class="pre">pyECM.ecm_metric.</span></span><span class="sig-name descname"><span class="pre">compute_ECM_4c</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_chiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_achiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n4c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Lo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">So</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nocc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/ecm_metric.html#compute_ECM_4c"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.ecm_metric.compute_ECM_4c" title="Link to this definition"></a></dt>
+<dd><p>Compute ECM at four-component level.</p>
+<p>It inner projects the wave-function from the molecule over its nearest achiral
+symmetric structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_chiral</strong> (<em>pyscf.gto.Mole</em>) – chiral structure</p></li>
+<li><p><strong>mol_achiral</strong> (<em>pyscf.gto.Mole</em>) – nearest symmetric (achiral) reference structure</p></li>
+<li><p><strong>n4c</strong> (<em>int</em>) – total dimension of the four-component space (2 * n2c)</p></li>
+<li><p><strong>Lo</strong> (<em>numpy.ndarray</em>) – occupied MO coefficients, large component (obtained with
+pyscf_wf.compute_4c_WF)</p></li>
+<li><p><strong>So</strong> (<em>numpy.ndarray</em>) – occupied MO coefficients, small component (obtained with
+pyscf_wf.compute_4c_WF)</p></li>
+<li><p><strong>nocc</strong> (<em>int</em>) – number of occupied MOs</p></li>
+<li><p><strong>cvalue</strong> (<em>float</em>) – speed of light value used in the DHF calculation</p></li>
+<li><p><strong>debug</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity level; prints diagnostics if &gt; 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(ECM_4c, ECM_4c_molcontr)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple(float, numpy.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.ecm_metric.compute_ECM_NR">
+<span class="sig-prename descclassname"><span class="pre">pyECM.ecm_metric.</span></span><span class="sig-name descname"><span class="pre">compute_ECM_NR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_chiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_achiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_super</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NR_all_MO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Noccupied_MO_alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Noccupied_MO_beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/ecm_metric.html#compute_ECM_NR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.ecm_metric.compute_ECM_NR" title="Link to this definition"></a></dt>
+<dd><p>Compute ECM at non-relativistic level.</p>
+<p>It inner projects the wave-function from the molecule over its nearest achiral
+symmetric structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_chiral</strong> (<em>pyscf.gto.Mole</em>) – chiral structure</p></li>
+<li><p><strong>mol_achiral</strong> (<em>pyscf.gto.Mole</em>) – nearest achiral symmetric structure</p></li>
+<li><p><strong>mol_super</strong> (<em>pyscf.gto.Mole</em>) – molecule composed by the sum quiral+achiral, for overlap integrals</p></li>
+<li><p><strong>NR_all_MO</strong> (<em>numpy.ndarray</em>) – molecular coeficients of the NR-WF for the chiral molecule
+(obtained through pyscf_wf.compute_NR_WF)</p></li>
+<li><p><strong>Noccupied_MO_alpha</strong> (<em>int</em>) – number of molecular orbitals with alpha spin</p></li>
+<li><p><strong>Noccupied_MO_beta</strong> (<em>int</em>) – number of molecular orbitals with beta spin</p></li>
+<li><p><strong>debug</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity level; prints diagnostics if &gt; 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(ECM_NR, ECM_NR_molcontr_alpha, ECM_NR_molcontr_beta, ECM_NR_molcontr)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple(float, numpy.ndarray, numpy.ndarray, numpy.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.ecm_metric.compute_ECM_X2C">
+<span class="sig-prename descclassname"><span class="pre">pyECM.ecm_metric.</span></span><span class="sig-name descname"><span class="pre">compute_ECM_X2C</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_chiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_achiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_super</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2c_MO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2c_occup_MO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nalphaoccupied_MO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nbetaoccupied_MO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/ecm_metric.html#compute_ECM_X2C"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.ecm_metric.compute_ECM_X2C" title="Link to this definition"></a></dt>
+<dd><p>Compute ECM at X2C level.</p>
+<p>It inner projects the wave-function from the molecule over its nearest achiral
+symmetric structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_chiral</strong> (<em>pyscf.gto.Mole</em>) – chiral structure</p></li>
+<li><p><strong>mol_achiral</strong> (<em>pyscf.gto.Mole</em>) – nearest symmetric (achiral) reference structure</p></li>
+<li><p><strong>mol_super</strong> (<em>pyscf.gto.Mole</em>) – molecule composed by the sum quiral+achiral, for overlap integrals</p></li>
+<li><p><strong>x2c_MO</strong> (<em>numpy.ndarray</em>) – coefficients of all MOs of the X2C WF of mol_chiral (obtained with
+pyscf_wf.compute_X2C_WF)</p></li>
+<li><p><strong>x2c_occup_MO</strong> (<em>numpy.ndarray</em>) – coefficients of the occupied MOs of the X2C WF</p></li>
+<li><p><strong>Nalphaoccupied_MO</strong> (<em>int</em>) – number of occupied alpha-spin MOs</p></li>
+<li><p><strong>Nbetaoccupied_MO</strong> (<em>int</em>) – number of occupied beta-spin MOs</p></li>
+<li><p><strong>debug</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity level; prints diagnostics if &gt; 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(ECM_X2C, ECM_X2C_molcontr)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple(float, list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.gamma5">
+<span id="pyecm-gamma5-module"></span><h2>pyECM.gamma5 module<a class="headerlink" href="#module-pyECM.gamma5" title="Link to this heading"></a></h2>
+<p>Gamma5 expectation value calculation for four-component wave functions.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.gamma5.compute_gamma5">
+<span class="sig-prename descclassname"><span class="pre">pyECM.gamma5.</span></span><span class="sig-name descname"><span class="pre">compute_gamma5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_chiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n4c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nocc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Lo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">So</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/gamma5.html#compute_gamma5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.gamma5.compute_gamma5" title="Link to this definition"></a></dt>
+<dd><p>Compute the Gamma5 expectation value for a four-component (DHF) wave function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_chiral</strong> (<em>pyscf.gto.Mole</em>) – chiral structure the WF was computed on</p></li>
+<li><p><strong>n4c</strong> (<em>int</em>) – total dimension of the four-component space (2 * n2c)</p></li>
+<li><p><strong>nocc</strong> (<em>int</em>) – number of occupied MOs</p></li>
+<li><p><strong>Lo</strong> (<em>numpy.ndarray</em>) – occupied MO coefficients, large component (obtained with
+pyscf_wf.compute_4c_WF)</p></li>
+<li><p><strong>So</strong> (<em>numpy.ndarray</em>) – occupied MO coefficients, small component (obtained with
+pyscf_wf.compute_4c_WF)</p></li>
+<li><p><strong>cvalue</strong> (<em>float</em>) – speed of light value used in the DHF calculation</p></li>
+<li><p><strong>rel_energy</strong> (<em>float</em>) – total DHF energy, printed only if debug &gt; 0</p></li>
+<li><p><strong>debug</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity level; prints diagnostics if &gt; 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Gamma5 expectation value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.geometric_figures">
+<span id="pyecm-geometric-figures-module"></span><h2>pyECM.geometric_figures module<a class="headerlink" href="#module-pyECM.geometric_figures" title="Link to this heading"></a></h2>
+<p>3D geometric helpers (vectors, planes, spheres, rotations) for pyECM plots.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometric_figures.define_plane">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometric_figures.</span></span><span class="sig-name descname"><span class="pre">define_plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometric_figures.html#define_plane"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometric_figures.define_plane" title="Link to this definition"></a></dt>
+<dd><p>Define a plane (to be plotted).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes._subplots.Axes3DSubplot</em>) – matplotlib axe</p></li>
+<li><p><strong>point</strong> (<em>numpy.ndarray</em>) – point contained by the plane</p></li>
+<li><p><strong>normal</strong> (<em>numpy.ndarray</em>) – vector normal to the plane</p></li>
+<li><p><strong>size</strong> (<em>int</em><em>, </em><em>optional</em>) – radius size to be plotted, defaults to 10</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – plane colour, defaults to “y”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometric_figures.define_sphere">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometric_figures.</span></span><span class="sig-name descname"><span class="pre">define_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xCenter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yCenter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zCenter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometric_figures.html#define_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometric_figures.define_sphere" title="Link to this definition"></a></dt>
+<dd><p>Define the points that constitute a sphere.</p>
+<p>Defined by its coordinate centers and its radius size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xCenter</strong> (<em>numpy.float64</em>) – X center coordinates</p></li>
+<li><p><strong>yCenter</strong> (<em>numpy.float64</em>) – Y center coordinates</p></li>
+<li><p><strong>zCenter</strong> (<em>numpy.float64</em>) – Z center coordinates</p></li>
+<li><p><strong>r</strong> (<em>float</em>) – radius size</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>points defining the sphere volume</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometric_figures.pathpatch_2d_to_3d">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometric_figures.</span></span><span class="sig-name descname"><span class="pre">pathpatch_2d_to_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathpatch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometric_figures.html#pathpatch_2d_to_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometric_figures.pathpatch_2d_to_3d" title="Link to this definition"></a></dt>
+<dd><p>Convert a 2D matplotlib patch into a 3D one on a plane at height z.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathpatch</strong> (<em>matplotlib.patches.Patch</em>) – 2D patch to convert in place (e.g. a matplotlib.patches.Circle)</p></li>
+<li><p><strong>z</strong> (<em>float</em>) – height (z coordinate) of the plane the patch is placed on</p></li>
+<li><p><strong>normal</strong> (<em>numpy.ndarray</em>) – vector normal to the plane the patch is placed on</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometric_figures.pathpatch_translate">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometric_figures.</span></span><span class="sig-name descname"><span class="pre">pathpatch_translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathpatch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometric_figures.html#pathpatch_translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometric_figures.pathpatch_translate" title="Link to this definition"></a></dt>
+<dd><p>Translate an already-3D-converted patch by delta.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathpatch</strong> (<em>mpl_toolkits.mplot3d.art3d.PathPatch3D</em>) – 3D patch to translate in place (see pathpatch_2d_to_3d)</p></li>
+<li><p><strong>delta</strong> (<em>numpy.ndarray</em>) – translation vector</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometric_figures.plot_vector">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometric_figures.</span></span><span class="sig-name descname"><span class="pre">plot_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blue'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometric_figures.html#plot_vector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometric_figures.plot_vector" title="Link to this definition"></a></dt>
+<dd><p>Plot a vector, defined by its origin and direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – figure (from matplotlib.pyplot)</p></li>
+<li><p><strong>orig</strong> (<em>numpy.ndarray</em>) – vector’s origin coordinates</p></li>
+<li><p><strong>vector</strong> (<em>_type_</em>) – vector’s components</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – vector’s colour, defaults to “blue”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>figure</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometric_figures.rotation_matrix">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometric_figures.</span></span><span class="sig-name descname"><span class="pre">rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometric_figures.html#rotation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometric_figures.rotation_matrix" title="Link to this definition"></a></dt>
+<dd><p>Get the matrix for objects rotations.</p>
+<p>The direction is taken against z-direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>direction</strong> (<em>numpy.ndarray</em>) – Final direction</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>rotation matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometric_figures.rotation_matrix_from_vectors">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometric_figures.</span></span><span class="sig-name descname"><span class="pre">rotation_matrix_from_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_to_rotate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_direction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometric_figures.html#rotation_matrix_from_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometric_figures.rotation_matrix_from_vectors" title="Link to this definition"></a></dt>
+<dd><p>Find the rotation matrix that aligns vec_to_rotate to final_direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vec_to_rotate</strong> (<em>numpy.ndarray</em>) – vector that will be rotated</p></li>
+<li><p><strong>final_direction</strong> (<em>numpy.ndarray</em>) – final direction of rotated vector</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>rotation matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.geometry">
+<span id="pyecm-geometry-module"></span><h2>pyECM.geometry module<a class="headerlink" href="#module-pyECM.geometry" title="Link to this heading"></a></h2>
+<p>Geometry utilities for pyECM.molecula objects.</p>
+<p>Pure functions operating on plain arrays of atom data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometry.build_atom_list">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometry.</span></span><span class="sig-name descname"><span class="pre">build_atom_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atom_symbols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometry.html#build_atom_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometry.build_atom_list" title="Link to this definition"></a></dt>
+<dd><p>Build a pyscf gto.Mole ‘atom’ specification.</p>
+<p>Directly from in-memory data and without writing/reading an xyz file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atom_symbols</strong> (<em>sequence</em><em> of </em><em>str</em>) – element symbol per atom (already stripped of
+trailing digits, see xyz_io.atom_symbol())</p></li>
+<li><p><strong>positions</strong> (<em>numpy.ndarray</em>) – nuclear positions, shape (n_atoms, 3)</p></li>
+<li><p><strong>z_coordinate</strong> (<em>float</em><em>, </em><em>optional</em>) – scale factor applied to the z coordinate,
+defaults to 1.0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>atom specification accepted by pyscf.gto.M(atom=…)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of [str, tuple(float, float, float)]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometry.build_positions">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometry.</span></span><span class="sig-name descname"><span class="pre">build_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometry.html#build_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometry.build_positions" title="Link to this definition"></a></dt>
+<dd><p>Build a (n_atoms, 3) array of positions from an atoms tuple.</p>
+<p>The tuple is (coord_x, coord_y, coord_z, colors, names), as returned by
+xyz_io.read_xyz.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_atoms</strong> (<em>int</em>) – number of atoms</p></li>
+<li><p><strong>atoms</strong> (<em>tuple</em>) – (coord_x, coord_y, coord_z, colors, names) tuple</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>positions array</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray, shape (n_atoms, 3)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometry.central_point_from_origin">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometry.</span></span><span class="sig-name descname"><span class="pre">central_point_from_origin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometry.html#central_point_from_origin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometry.central_point_from_origin" title="Link to this definition"></a></dt>
+<dd><p>Resolve the central point from ‘origin’.</p>
+<p>Either the position of the named atom (if origin is a string) or the
+given point directly (if origin is a numpy array).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_atoms</strong> (<em>int</em>) – number of atoms</p></li>
+<li><p><strong>positions</strong> (<em>numpy.ndarray</em>) – (n_atoms, 3) array of positions</p></li>
+<li><p><strong>atom_names</strong> (<em>sequence</em><em> of </em><em>str</em>) – atom name/label per atom, used to find ‘origin’ when it’s given
+as a string</p></li>
+<li><p><strong>origin</strong> (<em>numpy.ndarray</em><em> or </em><em>str</em><em> or </em><em>None</em>) – point (numpy.ndarray) or atom name (str) used as origin</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the resolved central point, or None if origin is None or the named atom
+wasn’t found</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.geometry.shift_positions_to_origin">
+<span class="sig-prename descclassname"><span class="pre">pyECM.geometry.</span></span><span class="sig-name descname"><span class="pre">shift_positions_to_origin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/geometry.html#shift_positions_to_origin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.geometry.shift_positions_to_origin" title="Link to this definition"></a></dt>
+<dd><p>Shift ‘positions’ so that ‘origin’ becomes the new coordinate origin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_atoms</strong> (<em>int</em>) – number of atoms</p></li>
+<li><p><strong>positions</strong> (<em>numpy.ndarray</em>) – (n_atoms, 3) array of positions</p></li>
+<li><p><strong>atom_names</strong> (<em>sequence</em><em> of </em><em>str</em>) – atom name/label per atom, used to find ‘origin’ when it’s given
+as a string</p></li>
+<li><p><strong>origin</strong> (<em>numpy.ndarray</em><em> or </em><em>str</em>) – point (numpy.ndarray) or atom name (str) used as origin</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(new_positions, central_point_coordinates)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple(numpy.ndarray, numpy.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.molecule_class">
+<span id="pyecm-molecule-class-module"></span><h2>pyECM.molecule_class module<a class="headerlink" href="#module-pyECM.molecule_class" title="Link to this heading"></a></h2>
+<p>Core molecula class for pyECM.</p>
+<p>Orchestrates geometry, I/O, plotting, chirality metrics (CCM/ECM), and the pySCF-based
+quantum chemistry calculations (NR, X2C, four-component) for a single molecule.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyECM.molecule_class.</span></span><span class="sig-name descname"><span class="pre">molecula</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preloaded_molecule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">XYZ_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">XYZ_achiral_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>It is possible to create a molecule object from a xyz file.</p>
+<p>A vector can be associated to the molecule so that it is possible to align it
+with the z direction, as the virtual mirror path will be created
+by reflections in the z=0 plane.
+The vector should be obtained uploading the xzy file to
+<a class="reference external" href="https://csm.ouproj.org.il/molecule">https://csm.ouproj.org.il/molecule</a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Examples<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.1807</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9725</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1469</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">origin_at</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0000</span><span class="p">,</span> <span class="mf">0.200</span><span class="p">,</span> <span class="mf">0.1000</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span><span class="o">=</span><span class="s1">&#39;pyECM/data/import/CFMAR_chiral.xyz&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span> <span class="o">=</span> <span class="n">molecula</span><span class="p">(</span><span class="n">XYZ_file</span> <span class="o">=</span> <span class="n">file</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">vector</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin_at</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>preloaded_molecule</strong> (<em>tuple</em><em>, </em><em>optional</em>) – tuple (n_atoms, atoms, direction, bonds)
+for building the molecule without reading a xyz file, defaults to None</p></li>
+<li><p><strong>figure</strong> (<em>matplotlib.figure.Figure</em><em>, </em><em>optional</em>) – matplotlib figure where the molecule will be plotted,
+required only if any plot_* method will be used, defaults to None</p></li>
+<li><p><strong>origin</strong> (<em>numpy.ndarray</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – point (or atom name) used as origin of coordinates,
+defaults to None (uses the first atom’s position)</p></li>
+<li><p><strong>XYZ_file</strong> (<em>str</em><em>, </em><em>optional</em>) – path to the xyz file with the chiral structure, defaults to None</p></li>
+<li><p><strong>XYZ_achiral_file</strong> (<em>str</em><em>, </em><em>optional</em>) – path to the xyz file with the achiral
+(symmetric) reference structure, defaults to None</p></li>
+<li><p><strong>direction</strong> (<em>numpy.ndarray</em><em>, </em><em>optional</em>) – vector defining the molecule orientation with respect to
+the nearest achiral symmetric structure,
+used to align it with the z axis, defaults to None</p></li>
+<li><p><strong>kwargs</strong> – extra plotting options, stored in self.options and
+evaluated by plot_options()</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.CCM">
+<span class="sig-name descname"><span class="pre">CCM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.CCM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.CCM" title="Link to this definition"></a></dt>
+<dd><p>Calculate the CCM for the molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z_coordinate</strong> (<em>float</em><em>, </em><em>optional</em>) – scale factor applied to the z coordinate,
+defaults to 1.00</p></li>
+<li><p><strong>path</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, returns the results instead of storing them
+in self (used when called repeatedly from CCM_on_path),
+defaults to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NORM1, CCM1, NORM2, CCM2</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float(s)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.CCM_on_path">
+<span class="sig-name descname"><span class="pre">CCM_on_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lim_inf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim_sup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.CCM_on_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.CCM_on_path" title="Link to this definition"></a></dt>
+<dd><p>Calculate the CCM for the molecules in the virtual mirror path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lim_inf</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum z-rate, defaults to 0.20</p></li>
+<li><p><strong>lim_sup</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum z-rate, defaults to 1.00</p></li>
+<li><p><strong>points</strong> (<em>int</em><em>, </em><em>optional</em>) – number of z-rates where calculating the CCM, defaults to 10</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>z-rates, NORMs1, CCMs1, NORMs2, CCMs2</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray(s)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.ECM">
+<span class="sig-name descname"><span class="pre">ECM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.ECM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.ECM" title="Link to this definition"></a></dt>
+<dd><p>Calculate ECM in a certain structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the xyz molecule file,
+including its directory, defaults to None</p></li>
+<li><p><strong>cartesian</strong> (<em>bool</em><em>, </em><em>optional</em>) – use cartesian basis set, defaults to False</p></li>
+<li><p><strong>z_coordinate</strong> (<em>float</em><em>, </em><em>optional</em>) – variable for ECM on path, defaults to 1.00</p></li>
+<li><p><strong>path</strong> (<em>bool</em><em>, </em><em>optional</em>) – True for ECM on path, defaults to False</p></li>
+<li><p><strong>method_dict</strong> (<em>dict</em><em>, </em><em>optional</em>) – Set method for WF calculation,
+previously calculated, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – if the wave function required by
+method_dict was not computed first with pySCF_WF</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ECM_NR, ECM_X2C, ECM_4c (only when path=True)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float(s)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.ECM_on_path">
+<span class="sig-name descname"><span class="pre">ECM_on_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim_inf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim_sup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gto_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.ECM_on_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.ECM_on_path" title="Link to this definition"></a></dt>
+<dd><p>Calculate ECM in the virtual mirror path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the xyz molecule file, including its directory, defaults to
+None</p></li>
+<li><p><strong>lim_inf</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum z-rate, defaults to 0.20</p></li>
+<li><p><strong>lim_sup</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum z-rate, defaults to 1.00</p></li>
+<li><p><strong>points</strong> (<em>int</em><em>, </em><em>optional</em>) – number of z-rates where calculating the ECM, defaults to 10</p></li>
+<li><p><strong>method_dict</strong> (<em>dict</em><em>, </em><em>optional</em>) – Set method for WF calculation (previously calculated),
+defaults to None</p></li>
+<li><p><strong>gto_dict</strong> (<em>dict</em><em>, </em><em>optional</em>) – Set options for Gaussian Type Orbitals, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>z-rates, ECMs(NR), molecular orbital contributions to ECMs(NR),
+ECMs(4c)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray(s)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.Epv">
+<span class="sig-name descname"><span class="pre">Epv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.Epv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.Epv" title="Link to this definition"></a></dt>
+<dd><p>Calculate the parity-violating (PV) energy contribution.</p>
+<p>Computed for each atom and occupied orbital, storing the result in
+self.Epv_expval. Requires that the four-component wave function was
+already computed with pySCF_WF(method_dict={‘fourcomp’: True, …}).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dm</strong> (<em>numpy.ndarray</em><em>, </em><em>optional</em>) – density matrix (AO or MO basis) to contract the PV
+operator with. If None, uses the reference DHF orbitals directly,
+defaults to None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – if the four-component wave function is not defined</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.atoms_positions">
+<span class="sig-name descname"><span class="pre">atoms_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.atoms_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.atoms_positions" title="Link to this definition"></a></dt>
+<dd><p>Build self.positions from self.atoms.</p>
+<p>Also builds self.positions_achiral, if an achiral xyz file was loaded, as
+(n_atoms, 3) arrays.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.export_xyz">
+<span class="sig-name descname"><span class="pre">export_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MOL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DIRAC</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">achiral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.export_xyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.export_xyz" title="Link to this definition"></a></dt>
+<dd><p>Generate the chiral and achiral xyz files for this molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_name</strong> (<em>str</em><em>, </em><em>optional</em>) – prefix name for xyz files, defaults to “MOL”</p></li>
+<li><p><strong>DIRAC</strong> (<em>bool</em><em>, </em><em>optional</em>) – create DIRAC mol files, defaults to False</p></li>
+<li><p><strong>folder</strong> (<em>str</em><em>, </em><em>optional</em>) – directory where saving the files, defaults to None</p></li>
+<li><p><strong>z_coordinate</strong> (<em>float</em><em>, </em><em>optional</em>) – scale factor applied to the z coordinate of the
+chiral structure, defaults to 1.00 (unmodified structure)</p></li>
+<li><p><strong>achiral</strong> (<em>str</em><em>, </em><em>optional</em>) – path to an existing xyz file to use as the achiral
+reference (copied as-is). If None, the achiral structure is
+derived from the chiral one by zeroing its z coordinate,
+defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.gamma5">
+<span class="sig-name descname"><span class="pre">gamma5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.gamma5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.gamma5" title="Link to this definition"></a></dt>
+<dd><p>Calculate the Gamma5 expectation value.</p>
+<p>Requires that the four-component wave function was already computed with
+pySCF_WF(method_dict={‘fourcomp’: True, …}).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the xyz molecule file,
+including its directory, defaults to None</p></li>
+<li><p><strong>cartesian</strong> (<em>bool</em><em>, </em><em>optional</em>) – use cartesian basis set, defaults to False</p></li>
+<li><p><strong>z_coordinate</strong> (<em>float</em><em>, </em><em>optional</em>) – scale factor applied to the z coordinate of the
+structure, defaults to 1.00</p></li>
+<li><p><strong>method_dict</strong> (<em>dict</em><em>, </em><em>optional</em>) – options for the calculation (debug, cvalue),
+defaults to None</p></li>
+<li><p><strong>debug</strong> (<em>int</em><em>, </em><em>optional</em>) – debug level, overridden by method_dict[“debug”]
+if given, defaults to 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – if the four-component wave function is not defined</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Gamma5 expectation value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.load_from_xyz">
+<span class="sig-name descname"><span class="pre">load_from_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MOL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">achiral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.load_from_xyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.load_from_xyz" title="Link to this definition"></a></dt>
+<dd><p>Load atomic positions and names from a xyz file.</p>
+<p>Stores the result in self.atoms (or self.achiral_atoms, if achiral=True).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – xyz file name, defaults to “MOL”</p></li>
+<li><p><strong>achiral</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, stores the result in self.achiral_atoms instead of
+self.atoms/self.n_atoms, defaults to False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.origin_on_atom">
+<span class="sig-name descname"><span class="pre">origin_on_atom</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.origin_on_atom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.origin_on_atom" title="Link to this definition"></a></dt>
+<dd><p>Shift self.positions so that self.origin becomes the new origin.</p>
+<p>Stores the original central point in self.central_point_coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.plot_bonds">
+<span class="sig-name descname"><span class="pre">plot_bonds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.plot_bonds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.plot_bonds" title="Link to this definition"></a></dt>
+<dd><p>Plot the molecule bonds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.plot_dipole">
+<span class="sig-name descname"><span class="pre">plot_dipole</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.plot_dipole"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.plot_dipole" title="Link to this definition"></a></dt>
+<dd><p>Plot the molecule dipole.</p>
+<p>Only meaningful if direction was replaced by the molecule’s actual dipole
+moment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.plot_options">
+<span class="sig-name descname"><span class="pre">plot_options</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.plot_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.plot_options" title="Link to this definition"></a></dt>
+<dd><p>Options plots.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.plot_plane">
+<span class="sig-name descname"><span class="pre">plot_plane</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.plot_plane"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.plot_plane" title="Link to this definition"></a></dt>
+<dd><p>Plot the plane normal to the molecule direction.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.plot_sphere">
+<span class="sig-name descname"><span class="pre">plot_sphere</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.plot_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.plot_sphere" title="Link to this definition"></a></dt>
+<dd><p>Plot the nuclei as spheres.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.pySCF_WF">
+<span class="sig-name descname"><span class="pre">pySCF_WF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gto_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.pySCF_WF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.pySCF_WF" title="Link to this definition"></a></dt>
+<dd><p>Obtain the wave function with the pySCF code.</p>
+<p>Stores the result(s) as attributes of self (e.g. self.NR_all_MO,
+self.x2c_MO, self.rel_MO_Lo/So, depending on which methods were
+requested). NR, X2C and 4c are independent and can be combined
+freely in a single call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the xyz molecule file, including its directory, defaults to
+None</p></li>
+<li><p><strong>cartesian</strong> (<em>bool</em><em>, </em><em>optional</em>) – use cartesian basis set, defaults to False</p></li>
+<li><p><strong>z_coordinate</strong> (<em>float</em><em>, </em><em>optional</em>) – scale factor applied to the z coordinate of the structure
+whose WF is computed, defaults to 1.00</p></li>
+<li><p><strong>gto_dict</strong> (<em>dict</em><em>, </em><em>optional</em>) – options for Gaussian Type Orbitals (basis, charge, spin,
+verbose), defaults to None</p></li>
+<li><p><strong>method_dict</strong> (<em>dict</em><em>, </em><em>optional</em>) – which WF method(s) to compute and their options (NR, X2C,
+fourcomp, DFT, debug, cvalue). Keys not given fall back to defaults
+(NR=True, the rest False/0), defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – if fourcomp and DFT are both requested</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.reference_coordinate">
+<span class="sig-name descname"><span class="pre">reference_coordinate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.reference_coordinate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.reference_coordinate" title="Link to this definition"></a></dt>
+<dd><p>Set self.central_point from self.origin.</p>
+<p>Either the position of the named atom (if origin is a string) or the given point
+directly (if origin is a numpy array).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.rotate_to_align_with_z">
+<span class="sig-name descname"><span class="pre">rotate_to_align_with_z</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.rotate_to_align_with_z"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.rotate_to_align_with_z" title="Link to this definition"></a></dt>
+<dd><p>Rotate the molecule so its nearest symmetric structure lies in z=0.</p>
+<p>The rotation aligns self.direction with the z axis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.save_xyz">
+<span class="sig-name descname"><span class="pre">save_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MOL'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.save_xyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.save_xyz" title="Link to this definition"></a></dt>
+<dd><p>Save the molecule in xyz format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – xyz file name, defaults to “MOL”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyECM.molecule_class.molecula.xyz_mirror_path">
+<span class="sig-name descname"><span class="pre">xyz_mirror_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MOL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DIRAC</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim_inf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim_sup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/molecule_class.html#molecula.xyz_mirror_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.molecule_class.molecula.xyz_mirror_path" title="Link to this definition"></a></dt>
+<dd><p>Generate the molecules in the virtual mirror path.</p>
+<p>The path is defined by reflecting the molecule in the plane z=0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_name</strong> (<em>str</em><em>, </em><em>optional</em>) – prefix name for xyz files, defaults to “MOL”</p></li>
+<li><p><strong>DIRAC</strong> (<em>bool</em><em>, </em><em>optional</em>) – create DIRAC mol files, defaults to False</p></li>
+<li><p><strong>folder</strong> (<em>str</em><em>, </em><em>optional</em>) – directory where saving the files, defaults to None</p></li>
+<li><p><strong>lim_inf</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum z-rate, defaults to 0.0</p></li>
+<li><p><strong>lim_sup</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum z-rate, defaults to 1.0</p></li>
+<li><p><strong>points</strong> (<em>float</em><em>, </em><em>optional</em>) – number of z-rates defining the path, defaults to 10.0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pyECM.plotting">
+<span id="pyecm-plotting-module"></span><h2>pyECM.plotting module<a class="headerlink" href="#module-pyECM.plotting" title="Link to this heading"></a></h2>
+<p>Plotting utilities for pyECM.molecula objects.</p>
+<p>Each function receives the mol object  as a parameter, so that they can be tested
+independently from the mol class. They all assume that mol.fig was provided.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.plotting.plot_bonds">
+<span class="sig-prename descclassname"><span class="pre">pyECM.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_bonds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/plotting.html#plot_bonds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.plotting.plot_bonds" title="Link to this definition"></a></dt>
+<dd><p>Plot the molecule bonds as straight lines.</p>
+<p>Drawn between the bonded atoms listed in mol.bonds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mol</strong> (<a class="reference internal" href="#pyECM.molecule_class.molecula" title="pyECM.molecule_class.molecula"><em>pyECM.molecule_class.molecula</em></a>) – molecule whose bonds are plotted. Requires mol.bonds, an (n_bonds, 2)
+array of atom index pairs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.plotting.plot_dipole">
+<span class="sig-prename descclassname"><span class="pre">pyECM.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_dipole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/plotting.html#plot_dipole"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.plotting.plot_dipole" title="Link to this definition"></a></dt>
+<dd><p>Plot the molecule dipole as a vector from the origin.</p>
+<p>If mol.direction was replaced by the molecule’s actual dipole moment, plots that;
+otherwise plots whatever vector mol.direction currently holds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mol</strong> (<a class="reference internal" href="#pyECM.molecule_class.molecula" title="pyECM.molecule_class.molecula"><em>pyECM.molecule_class.molecula</em></a>) – molecule whose direction/dipole vector is plotted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.plotting.plot_options">
+<span class="sig-prename descclassname"><span class="pre">pyECM.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/plotting.html#plot_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.plotting.plot_options" title="Link to this definition"></a></dt>
+<dd><p>Apply arbitrary matplotlib customization code stored in mol.options.</p>
+<p>E.g. axis labels, title. Each value in mol.options is a string of Python code,
+executed with a restricted namespace exposing only ‘ax’ (the current axes), ‘self’
+(mol, kept for backward compatibility with strings referencing ‘self.fig’, etc.) and
+‘np’; builtins are disabled to avoid arbitrary code execution (e.g. file access,
+imports) through this mechanism.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mol</strong> (<a class="reference internal" href="#pyECM.molecule_class.molecula" title="pyECM.molecule_class.molecula"><em>pyECM.molecule_class.molecula</em></a>) – molecule whose mol.options dict of code strings is executed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.plotting.plot_plane">
+<span class="sig-prename descclassname"><span class="pre">pyECM.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_plane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/plotting.html#plot_plane"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.plotting.plot_plane" title="Link to this definition"></a></dt>
+<dd><p>Plot the plane normal to the molecule direction, centered at the origin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mol</strong> (<a class="reference internal" href="#pyECM.molecule_class.molecula" title="pyECM.molecule_class.molecula"><em>pyECM.molecule_class.molecula</em></a>) – molecule whose direction defines the plane’s normal vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.plotting.plot_sphere">
+<span class="sig-prename descclassname"><span class="pre">pyECM.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/plotting.html#plot_sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.plotting.plot_sphere" title="Link to this definition"></a></dt>
+<dd><p>Plot each nucleus of the molecule as a small wireframe sphere.</p>
+<p>Colored according to mol.atoms[3] (the atom color list).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mol</strong> (<a class="reference internal" href="#pyECM.molecule_class.molecula" title="pyECM.molecule_class.molecula"><em>pyECM.molecule_class.molecula</em></a>) – molecule whose nuclei are plotted</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.pyscf_fc">
+<span id="pyecm-pyscf-fc-module"></span><h2>pyECM.pyscf_fc module<a class="headerlink" href="#module-pyECM.pyscf_fc" title="Link to this heading"></a></h2>
+<p>Fermi Contact and parity-violation integrals for four-component wave functions.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.pyscf_fc.Epv_atom">
+<span class="sig-prename descclassname"><span class="pre">pyECM.pyscf_fc.</span></span><span class="sig-name descname"><span class="pre">Epv_atom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/pyscf_fc.html#Epv_atom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.pyscf_fc.Epv_atom" title="Link to this definition"></a></dt>
+<dd><p>Calculate the parity-violating (PV) contribution to energy.</p>
+<p>Computed for a given atom in a molecule. The function supports:
+- orbital expectation values from DHF orbitals
+- density matrix contraction in AO or MO basis</p>
+<dl class="simple">
+<dt>For a one-electron operator:</dt><dd><p>E_PV = Tr(D * h_PV)</p>
+</dd>
+<dt>If dm is provided:</dt><dd><ul class="simple">
+<li><p>AO density matrices are transformed to MO basis</p></li>
+<li><p>MO density matrices (e.g. MP2/CCSD PySCF densities) are used directly</p></li>
+</ul>
+</dd>
+</dl>
+<p>It then returns the contributions from each occupied orbital.
+(First term of Eq. 4 -  <a class="reference external" href="https://doi.org/10.1002/wcms.1396">https://doi.org/10.1002/wcms.1396</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>pyscf.gto.Mole</em>) – Molecule object containing information about the molecular system.</p></li>
+<li><p><strong>mf</strong> (<em>pyscf.scf.hf.SCF</em>) – Mean-field object, obtained from a Dirac-Hartree-Fock (DHF) calculation.</p></li>
+<li><p><strong>atom_index</strong> (<em>int</em>) – Index of the atom for which the PV contribution is computed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of PV expectation values for each occupied orbital.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray (real), shape (nocc,)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Example:</dt><dd><p>mol = gto.Mole()
+# Setup mol with geometry and basis set…
+mf = scf.DHF(mol)
+mf.kernel()
+atom_index = 0
+pv_values = Epv_atom(mol, mf, atom_index)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.pyscf_fc.Epv_molecule">
+<span class="sig-prename descclassname"><span class="pre">pyECM.pyscf_fc.</span></span><span class="sig-name descname"><span class="pre">Epv_molecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/pyscf_fc.html#Epv_molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.pyscf_fc.Epv_molecule" title="Link to this definition"></a></dt>
+<dd><p>Calculate the weak charge parity-violating (PV) contributions.</p>
+<p>Computed for all atoms in the molecule within a punctual nuclear charge
+distribution model. This function iterates over all atoms in the
+molecule and computes the PV contributions for each atom.</p>
+<dl class="simple">
+<dt>If dm is None:</dt><dd><p>returns orbital contributions from the reference DHF/DFT orbitals.</p>
+</dd>
+<dt>If dm is provided:</dt><dd><p>returns contributions obtained by contracting the PV operator with
+the supplied density matrix (AO or MO representation).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>pyscf.gto.Mole</em>) – Molecule object containing information about the molecular system.</p></li>
+<li><p><strong>mf</strong> (<em>pyscf.scf.hf.SCF</em>) – Mean-field object, typically obtained from a
+Dirac-Hartree-Fock (DHF) calculation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A 2D array where each row corresponds to an atom
+and each column contains the PV contributions
+for the occupied orbitals of that atom.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray (real), shape (n_atoms, n_occ)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.pyscf_fc.fc_expval">
+<span class="sig-prename descclassname"><span class="pre">pyECM.pyscf_fc.</span></span><span class="sig-name descname"><span class="pre">fc_expval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/pyscf_fc.html#fc_expval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.pyscf_fc.fc_expval" title="Link to this definition"></a></dt>
+<dd><p>Calculate the Fermi Contact (FC) expectation values.</p>
+<p>For each occupied orbital in a molecule, focusing on a specific atom.
+The expectation values are calculated using the four-component
+Dirac-Coulomb spinor wavefunctions. The function computes the
+contributions from the large-large (LL) and small-small (SS)
+components of the spinor for each occupied orbital.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>pyscf.gto.Mole</em>) – Molecule object containing information about the molecular system.</p></li>
+<li><p><strong>mf</strong> (<em>pyscf.scf.hf.SCF</em>) – Mean-field object, obtained from a Dirac-Hartree-Fock (DHF) calculation.</p></li>
+<li><p><strong>atom</strong> (<em>int</em>) – Index of the atom for which the FC expectation values are computed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of FC expectation values for each occupied orbital.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray (real), shape (nocc,)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Example:</dt><dd><p>mol = gto.Mole()
+# Setup mol with geometry and basis set…
+mf = scf.DHF(mol)
+mf.kernel()
+atom_index = 0
+fc_expval_per_orbital = fc_expval(mol, mf, atom_index)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.pyscf_fc.fc_integrals">
+<span class="sig-prename descclassname"><span class="pre">pyECM.pyscf_fc.</span></span><span class="sig-name descname"><span class="pre">fc_integrals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/pyscf_fc.html#fc_integrals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.pyscf_fc.fc_integrals" title="Link to this definition"></a></dt>
+<dd><p>Compute the Fermi Contact (FC) integrals for a given atom.</p>
+<p>This function calculates the Fermi Contact integrals in
+relativistic form for a specified atom in the molecule using
+four-component Dirac-Coulomb spinor wavefunctions.</p>
+<p>The FC integrals consist of four distinct blocks:
+- LL: Large-Large component
+- LS: Large-Small component
+- SL: Small-Large component
+- SS: Small-Small component</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>pyscf.gto.Mole</em>) – Molecule object containing information about the molecular system.</p></li>
+<li><p><strong>mf</strong> (<em>pyscf.scf.hf.SCF</em>) – Mean-field object, obtained from a Dirac-Hartree-Fock (DHF) calculation.</p></li>
+<li><p><strong>atom</strong> (<em>int</em>) – Index of the atom for which the FC integrals are computed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matrix of Fermi Contact integrals
+(4-component spinor form) for the specified atom.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray (complex128), shape (n4c, n4c)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Example:</dt><dd><p>mol = gto.Mole()
+# Setup mol with geometry and basis set…
+mf = scf.DHF(mol)
+mf.kernel()
+atom_index = 0
+fc_matrix = fc_integrals(mol, mf, atom_index)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.pyscf_fc.gamma5_fc_integrals">
+<span class="sig-prename descclassname"><span class="pre">pyECM.pyscf_fc.</span></span><span class="sig-name descname"><span class="pre">gamma5_fc_integrals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/pyscf_fc.html#gamma5_fc_integrals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.pyscf_fc.gamma5_fc_integrals" title="Link to this definition"></a></dt>
+<dd><p>Compute the integrals for PV contributions to energy for a given atom.</p>
+<p>The integrals are calculated in the four-component spinor basis.
+Point nuclear charge distribution is assumed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>pyscf.gto.Mole</em>) – Molecule object containing information about the molecular system.</p></li>
+<li><p><strong>mf</strong> (<em>pyscf.scf.hf.SCF</em>) – Mean-field object, obtained from a Dirac-Hartree-Fock (DHF) calculation.</p></li>
+<li><p><strong>atom</strong> (<em>int</em>) – Index of the atom for which the integrals are computed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matrix of integrals (4-component spinor form) for the specified atom.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray (complex128), shape (n4c, n4c)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Example:</dt><dd><p>mol = gto.Mole()
+# Setup mol with geometry and basis set…
+mf = scf.DHF(mol)
+mf.kernel()
+atom_index = 0
+fc_matrix = PV_integrals(mol, mf, atom_index)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.pyscf_fc.get_ovlp_AUCAR">
+<span class="sig-prename descclassname"><span class="pre">pyECM.pyscf_fc.</span></span><span class="sig-name descname"><span class="pre">get_ovlp_AUCAR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/pyscf_fc.html#get_ovlp_AUCAR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.pyscf_fc.get_ovlp_AUCAR" title="Link to this definition"></a></dt>
+<dd><p>Build the four-component overlap matrix in the DHF spinor basis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mol</strong> (<em>pyscf.gto.Mole</em>) – molecule for which the overlap matrix is built</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>overlap matrix, shape (n4c, n4c)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray (complex128)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.pyscf_wf">
+<span id="pyecm-pyscf-wf-module"></span><h2>pyECM.pyscf_wf module<a class="headerlink" href="#module-pyECM.pyscf_wf" title="Link to this heading"></a></h2>
+<p>Wave-function calculations (NR/X2C/4c) via pySCF.</p>
+<p>Each function gets gto.Mole and returns the results within a tuple. They dont directly
+read neither write attributes from the molecule class. The molecule class is supposed to
+select in which of their own attributes will save each result.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.pyscf_wf.compute_4c_WF">
+<span class="sig-prename descclassname"><span class="pre">pyECM.pyscf_wf.</span></span><span class="sig-name descname"><span class="pre">compute_4c_WF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_chiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvalue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/pyscf_wf.html#compute_4c_WF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.pyscf_wf.compute_4c_WF" title="Link to this definition"></a></dt>
+<dd><p>Compute the four-component relativistic wave function (DHF).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_chiral</strong> (<em>pyscf.gto.Mole</em>) – molecule (already built) for which the WF is computed</p></li>
+<li><p><strong>cvalue</strong> (<em>float</em>) – speed of light value used for the DHF calculation</p></li>
+<li><p><strong>debug</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity level; prints timing and norm diagnostics if &gt; 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n4c, rel_nmo, Lo, So, Noccupied_MO, rel_energy, mf_chiral_rel, AO_number)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple(int, int, numpy.ndarray, numpy.ndarray, int, float, pyscf.scf.dhf.DHF,
+int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.pyscf_wf.compute_NR_WF">
+<span class="sig-prename descclassname"><span class="pre">pyECM.pyscf_wf.</span></span><span class="sig-name descname"><span class="pre">compute_NR_WF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_chiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DFT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/pyscf_wf.html#compute_NR_WF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.pyscf_wf.compute_NR_WF" title="Link to this definition"></a></dt>
+<dd><p>Compute the non-relativistic wave function.</p>
+<p>Runs RHF, or RKS if a DFT functional is given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_chiral</strong> (<em>pyscf.gto.Mole</em>) – molecule (already built) for which the WF is computed</p></li>
+<li><p><strong>DFT</strong> (<em>str</em><em> or </em><em>False</em><em>, </em><em>optional</em>) – DFT functional name (e.g. “b3lyp”). If False, runs RHF instead</p></li>
+<li><p><strong>debug</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity level; prints timing and norm diagnostics if &gt; 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(Noccupied_MO_alpha, Noccupied_MO_beta, all_MO, occupied_MO, mf_chiral,
+AO_number)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple(int, int, numpy.ndarray, tuple, pyscf.scf.hf.SCF, int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.pyscf_wf.compute_X2C_WF">
+<span class="sig-prename descclassname"><span class="pre">pyECM.pyscf_wf.</span></span><span class="sig-name descname"><span class="pre">compute_X2C_WF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_chiral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DFT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/pyscf_wf.html#compute_X2C_WF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.pyscf_wf.compute_X2C_WF" title="Link to this definition"></a></dt>
+<dd><p>Compute the X2C (exact two-component) relativistic wave function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_chiral</strong> (<em>pyscf.gto.Mole</em>) – molecule (already built) for which the WF is computed</p></li>
+<li><p><strong>DFT</strong> (<em>str</em><em> or </em><em>False</em><em>, </em><em>optional</em>) – DFT functional name (e.g. “b3lyp”). If False, runs X2C-UHF instead</p></li>
+<li><p><strong>debug</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity level; prints timing and norm diagnostics if &gt; 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(x2c_MO, x2c_occup_MO, Nalphaoccupied_MO, Nbetaoccupied_MO, x2c_energy,
+AO_number)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple(numpy.ndarray, numpy.ndarray, int, int, float, int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.vectors">
+<span id="pyecm-vectors-module"></span><h2>pyECM.vectors module<a class="headerlink" href="#module-pyECM.vectors" title="Link to this heading"></a></h2>
+<p>Vector utilities for pyECM.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.vectors.normalize_vector">
+<span class="sig-prename descclassname"><span class="pre">pyECM.vectors.</span></span><span class="sig-name descname"><span class="pre">normalize_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/vectors.html#normalize_vector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.vectors.normalize_vector" title="Link to this definition"></a></dt>
+<dd><p>Normalize 2D/3D vector (to unity).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em><em> or </em><em>array</em>) – x component/s</p></li>
+<li><p><strong>y</strong> (<em>float</em><em> or </em><em>array</em>) – y component/s</p></li>
+<li><p><strong>z</strong> (<em>float</em><em> or </em><em>array</em><em>, </em><em>optional</em>) – z component/s, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Normalized vector/s</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.vectors.remove_zeros">
+<span class="sig-prename descclassname"><span class="pre">pyECM.vectors.</span></span><span class="sig-name descname"><span class="pre">remove_zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/vectors.html#remove_zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.vectors.remove_zeros" title="Link to this definition"></a></dt>
+<dd><p>Remove zeros values from input arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array</em>) – First array to be treated</p></li>
+<li><p><strong>y</strong> (<em>array</em>) – Second array to be treated</p></li>
+<li><p><strong>z</strong> (<em>array</em><em>, </em><em>optional</em>) – Third array to be treated, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>x, y, z without theirs zero values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>arrays</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM.xyz_io">
+<span id="pyecm-xyz-io-module"></span><h2>pyECM.xyz_io module<a class="headerlink" href="#module-pyECM.xyz_io" title="Link to this heading"></a></h2>
+<p>XYZ file I/O utilities for pyECM.molecula objects.</p>
+<p>The functions are pure, in the sense that they receive and return data without reading
+nor writing attributes from a molecule instance.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.xyz_io.atom_symbol">
+<span class="sig-prename descclassname"><span class="pre">pyECM.xyz_io.</span></span><span class="sig-name descname"><span class="pre">atom_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/xyz_io.html#atom_symbol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.xyz_io.atom_symbol" title="Link to this definition"></a></dt>
+<dd><p>Remove trailing digits from an atom label.</p>
+<p>E.g. ‘H1’ -&gt; ‘H’. Typically used to turn a per-atom identifier (unique within a
+molecule) back into its chemical element symbol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw_name</strong> (<em>str</em><em> or </em><em>any type convertible to str</em>) – atom label, possibly with a trailing index number</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the label with all digit characters removed</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.xyz_io.read_xyz">
+<span class="sig-prename descclassname"><span class="pre">pyECM.xyz_io.</span></span><span class="sig-name descname"><span class="pre">read_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/xyz_io.html#read_xyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.xyz_io.read_xyz" title="Link to this definition"></a></dt>
+<dd><p>Read a xyz file into plain arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – path to the xyz file</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – if the file has empty lines between the header and the last atom
+line (a common formatting error that silently breaks column-based readers)</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(n_atoms, coord_x, coord_y, coord_z, colors, names). ‘colors’ is
+initialized to “black” for every atom (colors are not stored in the xyz format
+itself; they are assigned elsewhere)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple(int, numpy.ndarray, numpy.ndarray, numpy.ndarray, list of str, list of
+str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.xyz_io.write_dirac_mol">
+<span class="sig-prename descclassname"><span class="pre">pyECM.xyz_io.</span></span><span class="sig-name descname"><span class="pre">write_dirac_mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_names_dirac</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atomic_numbers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/xyz_io.html#write_dirac_mol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.xyz_io.write_dirac_mol" title="Link to this definition"></a></dt>
+<dd><p>Write a DIRAC .mol file from atom names, atomic numbers, and positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – path of the .mol file to create (overwritten if it already exists)</p></li>
+<li><p><strong>n_atoms</strong> (<em>int</em>) – number of atoms to write</p></li>
+<li><p><strong>atom_names_dirac</strong> (<em>sequence</em><em> of </em><em>str</em>) – per-atom DIRAC labels (element symbol + unique index, e.g.
+“H1”, “H2”, “O3”)</p></li>
+<li><p><strong>atomic_numbers</strong> (<em>sequence</em><em> of </em><em>int</em>) – atomic number (Z) per atom, in the same order as ‘positions’</p></li>
+<li><p><strong>positions</strong> (<em>numpy.ndarray</em><em> or </em><em>sequence</em><em>, </em><em>shape</em><em> (</em><em>n_atoms</em><em>, </em><em>3</em><em>)</em>) – nuclear positions to write</p></li>
+<li><p><strong>z_coordinate</strong> (<em>float</em><em>, </em><em>optional</em>) – scale factor applied to the z coordinate of each atom before
+writing it, defaults to 1.0 (unmodified structure)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if charge is not 0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyECM.xyz_io.write_xyz">
+<span class="sig-prename descclassname"><span class="pre">pyECM.xyz_io.</span></span><span class="sig-name descname"><span class="pre">write_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyECM/xyz_io.html#write_xyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyECM.xyz_io.write_xyz" title="Link to this definition"></a></dt>
+<dd><p>Write a xyz file from atom names and positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – path of the xyz file to create (overwritten if it already exists)</p></li>
+<li><p><strong>n_atoms</strong> (<em>int</em>) – number of atoms to write</p></li>
+<li><p><strong>atom_names</strong> (<em>sequence</em><em> of </em><em>str</em>) – atom symbols, in the same order as ‘positions’</p></li>
+<li><p><strong>positions</strong> (<em>numpy.ndarray</em><em> or </em><em>sequence</em><em>, </em><em>shape</em><em> (</em><em>n_atoms</em><em>, </em><em>3</em><em>)</em>) – nuclear positions to write</p></li>
+<li><p><strong>z_coordinate</strong> (<em>float</em><em>, </em><em>optional</em>) – scale factor applied to the z coordinate of each atom before
+writing it, defaults to 1.0 (unmodified structure)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyECM">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyECM" title="Link to this heading"></a></h2>
+<p>PyECM Electronic Chirality Measure.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="pyECM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyECM.data.html" class="btn btn-neutral float-right" title="pyECM.data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Juan José Aucar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,509 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyECM.ecm_metric &mdash; ECM 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/Chirality_with_hands.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Basic Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">ECM API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../support.html">Support</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ECM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyECM.ecm_metric</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyECM.ecm_metric</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;ECM (Electronic Chirality Measure) calculations via pySCF.</span>
+
+<span class="sd">Each function receive a gto.Mole object and the results corresponding to a specific</span>
+<span class="sd">wave-function (previously obtained through pySCF) and returns ECM (including orbital</span>
+<span class="sd">contributions). It does not read neither write self attributes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">matmul</span> <span class="k">as</span> <span class="n">mm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpose</span> <span class="k">as</span> <span class="n">tp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyscf.lib.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">light_speed</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">fractional_matrix_power</span> <span class="k">as</span> <span class="n">matrix_power</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyECM.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">debug_timed</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyECM.pyscf_fc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ovlp_AUCAR</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_orbital_overlaps_and_contributions</span><span class="p">(</span>
+    <span class="n">n_occupied</span><span class="p">,</span> <span class="n">mo_coeff</span><span class="p">,</span> <span class="n">overlap_mixed</span><span class="p">,</span> <span class="n">overlap_achiral</span><span class="p">,</span> <span class="n">achiral_mo_coeff</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Accumulate the achiral norm, overlap, and per-orbital contribution.</span>
+
+<span class="sd">    Done orbital by orbital. Shared by compute_ECM_NR (called once per spin channel) and</span>
+<span class="sd">    compute_ECM_X2C (called once, over all occupied MOs).</span>
+
+<span class="sd">    :param n_occupied: number of occupied MOs to sum over</span>
+<span class="sd">    :type n_occupied: int</span>
+<span class="sd">    :param mo_coeff: chiral MO coefficients</span>
+<span class="sd">    :type mo_coeff: numpy.ndarray</span>
+<span class="sd">    :param overlap_mixed: cross overlap block between the chiral and achiral structures</span>
+<span class="sd">        (from the supermolecule)</span>
+<span class="sd">    :type overlap_mixed: numpy.ndarray</span>
+<span class="sd">    :param overlap_achiral: AO overlap matrix of the achiral structure</span>
+<span class="sd">    :type overlap_achiral: numpy.ndarray</span>
+<span class="sd">    :param achiral_mo_coeff: chiral MO coefficients already projected into the achiral</span>
+<span class="sd">        basis (see _achiral_basis_projection)</span>
+<span class="sd">    :type achiral_mo_coeff: numpy.ndarray</span>
+<span class="sd">    :return: (achiral_norm, overlap_sum, molcontr), where molcontr is a list with each</span>
+<span class="sd">        orbital&#39;s ECM contribution (not yet normalized by the chiral norm)</span>
+<span class="sd">    :rtype: tuple(complex, complex, list)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">achiral_norm</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">overlap_sum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">molcontr</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_occupied</span><span class="p">):</span>
+        <span class="n">achiral_norm</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">achiral_norm</span>
+            <span class="o">+</span> <span class="n">mm</span><span class="p">(</span>
+                <span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">achiral_mo_coeff</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_achiral</span><span class="p">),</span> <span class="n">achiral_mo_coeff</span>
+            <span class="p">)[</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">overlap_sum</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">overlap_sum</span>
+            <span class="o">+</span> <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">mo_coeff</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_mixed</span><span class="p">),</span> <span class="n">achiral_mo_coeff</span><span class="p">)[</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">molcontr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="mi">100</span>
+            <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">mo_coeff</span><span class="p">),</span> <span class="n">overlap_mixed</span><span class="p">),</span> <span class="n">achiral_mo_coeff</span><span class="p">)[</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">]))</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">achiral_norm</span><span class="p">,</span> <span class="n">overlap_sum</span><span class="p">,</span> <span class="n">molcontr</span>
+
+
+<div class="viewcode-block" id="compute_ECM_NR">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.ecm_metric.compute_ECM_NR">[docs]</a>
+<span class="nd">@debug_timed</span><span class="p">(</span><span class="s2">&quot;NR&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_ECM_NR</span><span class="p">(</span>
+    <span class="n">mol_chiral</span><span class="p">,</span>
+    <span class="n">mol_achiral</span><span class="p">,</span>
+    <span class="n">mol_super</span><span class="p">,</span>
+    <span class="n">NR_all_MO</span><span class="p">,</span>
+    <span class="n">Noccupied_MO_alpha</span><span class="p">,</span>
+    <span class="n">Noccupied_MO_beta</span><span class="p">,</span>
+    <span class="n">debug</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute ECM at non-relativistic level.</span>
+
+<span class="sd">    It inner projects the wave-function from the molecule over its nearest achiral</span>
+<span class="sd">    symmetric structure.</span>
+
+<span class="sd">    :param mol_chiral: chiral structure</span>
+<span class="sd">    :type mol_chiral: pyscf.gto.Mole</span>
+<span class="sd">    :param mol_achiral: nearest achiral symmetric structure</span>
+<span class="sd">    :type mol_achiral: pyscf.gto.Mole</span>
+<span class="sd">    :param mol_super: molecule composed by the sum quiral+achiral, for overlap integrals</span>
+<span class="sd">    :type mol_super: pyscf.gto.Mole</span>
+<span class="sd">    :param NR_all_MO: molecular coeficients of the NR-WF for the chiral molecule</span>
+<span class="sd">        (obtained through pyscf_wf.compute_NR_WF)</span>
+<span class="sd">    :type NR_all_MO: numpy.ndarray</span>
+<span class="sd">    :param Noccupied_MO_alpha: number of molecular orbitals with alpha spin</span>
+<span class="sd">    :type Noccupied_MO_alpha: int</span>
+<span class="sd">    :param Noccupied_MO_beta: number of molecular orbitals with beta spin</span>
+<span class="sd">    :type Noccupied_MO_beta: int</span>
+<span class="sd">    :param debug: verbosity level; prints diagnostics if &gt; 0</span>
+<span class="sd">    :type debug: int, optional</span>
+<span class="sd">    :return: (ECM_NR, ECM_NR_molcontr_alpha, ECM_NR_molcontr_beta, ECM_NR_molcontr)</span>
+<span class="sd">    :rtype: tuple(float, numpy.ndarray, numpy.ndarray, numpy.ndarray)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">naos_sph</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp_sph&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">AO_number</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">nao</span>
+    <span class="n">AO_number_supermol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mol_super</span><span class="o">.</span><span class="n">nao</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">overlap_mixed_fullspace</span> <span class="o">=</span> <span class="n">mol_super</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp&quot;</span><span class="p">)</span>
+    <span class="n">overlap_mixed</span> <span class="o">=</span> <span class="n">overlap_mixed_fullspace</span><span class="p">[</span>
+        <span class="mi">0</span> <span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">AO_number_supermol</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">AO_number_supermol</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="p">:</span> <span class="n">AO_number_supermol</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">overlap_chiral</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp&quot;</span><span class="p">)</span>
+    <span class="n">overlap_achiral</span> <span class="o">=</span> <span class="n">mol_achiral</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp&quot;</span><span class="p">)</span>
+
+    <span class="n">overlap_pot_chiral</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">overlap_chiral</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">overlap_pot_achiral</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">overlap_achiral</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">ocupp_mo_coeff_alpha</span> <span class="o">=</span> <span class="n">NR_all_MO</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">AO_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">Noccupied_MO_alpha</span><span class="p">]</span>
+    <span class="n">ocupp_mo_coeff_beta</span> <span class="o">=</span> <span class="n">NR_all_MO</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">AO_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">Noccupied_MO_beta</span><span class="p">]</span>
+    <span class="n">norma_alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+        <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">ocupp_mo_coeff_alpha</span><span class="p">),</span> <span class="n">overlap_chiral</span><span class="p">),</span> <span class="n">ocupp_mo_coeff_alpha</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">norma_beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+        <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">ocupp_mo_coeff_beta</span><span class="p">),</span> <span class="n">overlap_chiral</span><span class="p">),</span> <span class="n">ocupp_mo_coeff_beta</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">norma_chiral</span> <span class="o">=</span> <span class="n">norma_alpha</span> <span class="o">+</span> <span class="n">norma_beta</span>
+
+    <span class="n">C_achiral_newbasis</span> <span class="o">=</span> <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">overlap_pot_achiral</span><span class="p">,</span> <span class="n">overlap_pot_chiral</span><span class="p">),</span> <span class="n">NR_all_MO</span><span class="p">)</span>
+
+    <span class="n">achiral_norm_alpha</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">achiral_norm_beta</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">overlap_NR_alpha</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">overlap_NR_beta</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ECM_molcontr_alpha</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ECM_molcontr_beta</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">achiral_norm_alpha</span><span class="p">,</span> <span class="n">overlap_NR_alpha</span><span class="p">,</span> <span class="n">ECM_molcontr_alpha</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">_orbital_overlaps_and_contributions</span><span class="p">(</span>
+            <span class="n">Noccupied_MO_alpha</span><span class="p">,</span>
+            <span class="n">NR_all_MO</span><span class="p">,</span>
+            <span class="n">overlap_mixed</span><span class="p">,</span>
+            <span class="n">overlap_achiral</span><span class="p">,</span>
+            <span class="n">C_achiral_newbasis</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">achiral_norm_beta</span><span class="p">,</span> <span class="n">overlap_NR_beta</span><span class="p">,</span> <span class="n">ECM_molcontr_beta</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">_orbital_overlaps_and_contributions</span><span class="p">(</span>
+            <span class="n">Noccupied_MO_beta</span><span class="p">,</span>
+            <span class="n">NR_all_MO</span><span class="p">,</span>
+            <span class="n">overlap_mixed</span><span class="p">,</span>
+            <span class="n">overlap_achiral</span><span class="p">,</span>
+            <span class="n">C_achiral_newbasis</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">overlap_NR</span> <span class="o">=</span> <span class="n">overlap_NR_alpha</span> <span class="o">+</span> <span class="n">overlap_NR_beta</span>
+    <span class="n">achiral_norm</span> <span class="o">=</span> <span class="n">achiral_norm_alpha</span> <span class="o">+</span> <span class="n">achiral_norm_beta</span>
+
+    <span class="n">ECM_NR</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">overlap_NR</span><span class="p">)</span> <span class="o">/</span> <span class="n">norma_chiral</span><span class="p">)</span>
+
+    <span class="n">ECM_NR_molcontr_alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">ECM_molcontr_alpha</span><span class="p">),</span> <span class="p">(</span><span class="n">Noccupied_MO_alpha</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">ECM_NR_molcontr_alpha</span> <span class="o">=</span> <span class="n">ECM_NR_molcontr_alpha</span> <span class="o">/</span> <span class="n">norma_chiral</span>
+
+    <span class="n">ECM_NR_molcontr_beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">ECM_molcontr_beta</span><span class="p">),</span> <span class="p">(</span><span class="n">Noccupied_MO_beta</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">ECM_NR_molcontr_beta</span> <span class="o">=</span> <span class="n">ECM_NR_molcontr_beta</span> <span class="o">/</span> <span class="n">norma_chiral</span>
+
+    <span class="n">ECM_NR_molcontr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ECM_NR_molcontr_alpha</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ECM_NR_molcontr_beta</span><span class="p">))</span>
+    <span class="n">ECM_NR_molcontr</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">ECM_NR_molcontr_alpha</span>
+    <span class="n">ECM_NR_molcontr</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">ECM_NR_molcontr_beta</span>
+
+    <span class="k">if</span> <span class="n">debug</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;naos_cart:&quot;</span><span class="p">,</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">nao</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;naos_sph:&quot;</span><span class="p">,</span> <span class="n">naos_sph</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;norma WF chiral (chiral basis):&quot;</span><span class="p">,</span> <span class="n">norma_chiral</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;norma WF achiral (achiral basis):&quot;</span><span class="p">,</span> <span class="n">achiral_norm</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NR overlap (normalized):&quot;</span><span class="p">,</span> <span class="n">overlap_NR</span> <span class="o">/</span> <span class="n">norma_chiral</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ECM_NR</span><span class="p">,</span> <span class="n">ECM_NR_molcontr_alpha</span><span class="p">,</span> <span class="n">ECM_NR_molcontr_beta</span><span class="p">,</span> <span class="n">ECM_NR_molcontr</span></div>
+
+
+
+<div class="viewcode-block" id="compute_ECM_X2C">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.ecm_metric.compute_ECM_X2C">[docs]</a>
+<span class="nd">@debug_timed</span><span class="p">(</span><span class="s2">&quot;X2C&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_ECM_X2C</span><span class="p">(</span>
+    <span class="n">mol_chiral</span><span class="p">,</span>
+    <span class="n">mol_achiral</span><span class="p">,</span>
+    <span class="n">mol_super</span><span class="p">,</span>
+    <span class="n">x2c_MO</span><span class="p">,</span>
+    <span class="n">x2c_occup_MO</span><span class="p">,</span>
+    <span class="n">Nalphaoccupied_MO</span><span class="p">,</span>
+    <span class="n">Nbetaoccupied_MO</span><span class="p">,</span>
+    <span class="n">debug</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute ECM at X2C level.</span>
+
+<span class="sd">    It inner projects the wave-function from the molecule over its nearest achiral</span>
+<span class="sd">    symmetric structure.</span>
+
+<span class="sd">    :param mol_chiral: chiral structure</span>
+<span class="sd">    :type mol_chiral: pyscf.gto.Mole</span>
+<span class="sd">    :param mol_achiral: nearest symmetric (achiral) reference structure</span>
+<span class="sd">    :type mol_achiral: pyscf.gto.Mole</span>
+<span class="sd">    :param mol_super: molecule composed by the sum quiral+achiral, for overlap integrals</span>
+<span class="sd">    :type mol_super: pyscf.gto.Mole</span>
+<span class="sd">    :param x2c_MO: coefficients of all MOs of the X2C WF of mol_chiral (obtained with</span>
+<span class="sd">        pyscf_wf.compute_X2C_WF)</span>
+<span class="sd">    :type x2c_MO: numpy.ndarray</span>
+<span class="sd">    :param x2c_occup_MO: coefficients of the occupied MOs of the X2C WF</span>
+<span class="sd">    :type x2c_occup_MO: numpy.ndarray</span>
+<span class="sd">    :param Nalphaoccupied_MO: number of occupied alpha-spin MOs</span>
+<span class="sd">    :type Nalphaoccupied_MO: int</span>
+<span class="sd">    :param Nbetaoccupied_MO: number of occupied beta-spin MOs</span>
+<span class="sd">    :type Nbetaoccupied_MO: int</span>
+<span class="sd">    :param debug: verbosity level; prints diagnostics if &gt; 0</span>
+<span class="sd">    :type debug: int, optional</span>
+<span class="sd">    :return: (ECM_X2C, ECM_X2C_molcontr)</span>
+<span class="sd">    :rtype: tuple(float, list)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Noccupied_MO</span> <span class="o">=</span> <span class="n">Nalphaoccupied_MO</span> <span class="o">+</span> <span class="n">Nbetaoccupied_MO</span>
+    <span class="n">AO_number_supermol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mol_super</span><span class="o">.</span><span class="n">nao</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">overlap_mixed_fullspace</span> <span class="o">=</span> <span class="n">mol_super</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp_spinor&quot;</span><span class="p">)</span>
+    <span class="n">overlap_mixed</span> <span class="o">=</span> <span class="n">overlap_mixed_fullspace</span><span class="p">[</span>
+        <span class="mi">0</span> <span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">AO_number_supermol</span><span class="p">),</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">AO_number_supermol</span><span class="p">)</span> <span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">AO_number_supermol</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">overlap_chiral</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp_spinor&quot;</span><span class="p">)</span>
+    <span class="n">overlap_achiral</span> <span class="o">=</span> <span class="n">mol_achiral</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp_spinor&quot;</span><span class="p">)</span>
+
+    <span class="n">overlap_pot_chiral</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">overlap_chiral</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">overlap_pot_achiral</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">overlap_achiral</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">norma_x2c_chiral</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+        <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">x2c_occup_MO</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_chiral</span><span class="p">),</span> <span class="n">x2c_occup_MO</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">C_x2c_achiral_newbasis</span> <span class="o">=</span> <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">overlap_pot_achiral</span><span class="p">,</span> <span class="n">overlap_pot_chiral</span><span class="p">),</span> <span class="n">x2c_MO</span><span class="p">)</span>
+
+    <span class="n">achiral_x2c_norm</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">solapamiento_x2c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ECM_X2C_molcontr</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">achiral_x2c_norm</span><span class="p">,</span> <span class="n">solapamiento_x2c</span><span class="p">,</span> <span class="n">ECM_X2C_molcontr</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">_orbital_overlaps_and_contributions</span><span class="p">(</span>
+            <span class="n">Noccupied_MO</span><span class="p">,</span>
+            <span class="n">x2c_MO</span><span class="p">,</span>
+            <span class="n">overlap_mixed</span><span class="p">,</span>
+            <span class="n">overlap_achiral</span><span class="p">,</span>
+            <span class="n">C_x2c_achiral_newbasis</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">ECM_X2C</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">solapamiento_x2c</span><span class="o">.</span><span class="n">real</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">norma_x2c_chiral</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">debug</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X2C: norma WF chiral (chiral basis):&quot;</span><span class="p">,</span> <span class="n">norma_x2c_chiral</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X2C: norma WF achiral (achiral basis):&quot;</span><span class="p">,</span> <span class="n">achiral_x2c_norm</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X2C: overlap (normalized):&quot;</span><span class="p">,</span> <span class="n">solapamiento_x2c</span> <span class="o">/</span> <span class="n">norma_x2c_chiral</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ECM_X2C</span><span class="p">,</span> <span class="n">ECM_X2C_molcontr</span></div>
+
+
+
+<div class="viewcode-block" id="compute_ECM_4c">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.ecm_metric.compute_ECM_4c">[docs]</a>
+<span class="nd">@debug_timed</span><span class="p">(</span><span class="s2">&quot;4c&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_ECM_4c</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">,</span> <span class="n">mol_achiral</span><span class="p">,</span> <span class="n">n4c</span><span class="p">,</span> <span class="n">Lo</span><span class="p">,</span> <span class="n">So</span><span class="p">,</span> <span class="n">nocc</span><span class="p">,</span> <span class="n">cvalue</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute ECM at four-component level.</span>
+
+<span class="sd">    It inner projects the wave-function from the molecule over its nearest achiral</span>
+<span class="sd">    symmetric structure.</span>
+
+<span class="sd">    :param mol_chiral: chiral structure</span>
+<span class="sd">    :type mol_chiral: pyscf.gto.Mole</span>
+<span class="sd">    :param mol_achiral: nearest symmetric (achiral) reference structure</span>
+<span class="sd">    :type mol_achiral: pyscf.gto.Mole</span>
+<span class="sd">    :param n4c: total dimension of the four-component space (2 * n2c)</span>
+<span class="sd">    :type n4c: int</span>
+<span class="sd">    :param Lo: occupied MO coefficients, large component (obtained with</span>
+<span class="sd">        pyscf_wf.compute_4c_WF)</span>
+<span class="sd">    :type Lo: numpy.ndarray</span>
+<span class="sd">    :param So: occupied MO coefficients, small component (obtained with</span>
+<span class="sd">        pyscf_wf.compute_4c_WF)</span>
+<span class="sd">    :type So: numpy.ndarray</span>
+<span class="sd">    :param nocc: number of occupied MOs</span>
+<span class="sd">    :type nocc: int</span>
+<span class="sd">    :param cvalue: speed of light value used in the DHF calculation</span>
+<span class="sd">    :type cvalue: float</span>
+<span class="sd">    :param debug: verbosity level; prints diagnostics if &gt; 0</span>
+<span class="sd">    :type debug: int, optional</span>
+<span class="sd">    :return: (ECM_4c, ECM_4c_molcontr)</span>
+<span class="sd">    :rtype: tuple(float, numpy.ndarray)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyscf.scf.dhf</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ovlp</span>
+
+    <span class="k">with</span> <span class="n">light_speed</span><span class="p">(</span><span class="n">cvalue</span><span class="p">):</span>
+        <span class="n">n2c</span> <span class="o">=</span> <span class="n">n4c</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="n">overlap_chiral_4c</span> <span class="o">=</span> <span class="n">get_ovlp</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">)</span>
+        <span class="n">overlap_achiral_4c</span> <span class="o">=</span> <span class="n">get_ovlp</span><span class="p">(</span><span class="n">mol_achiral</span><span class="p">)</span>
+
+        <span class="n">overlap_chiral_large</span> <span class="o">=</span> <span class="n">overlap_chiral_4c</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">]</span>
+        <span class="n">overlap_chiral_small</span> <span class="o">=</span> <span class="n">overlap_chiral_4c</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="n">n2c</span><span class="p">:]</span>
+        <span class="n">overlap_achiral_large</span> <span class="o">=</span> <span class="n">overlap_achiral_4c</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">]</span>
+        <span class="n">overlap_achiral_small</span> <span class="o">=</span> <span class="n">overlap_achiral_4c</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="n">n2c</span><span class="p">:]</span>
+
+        <span class="n">mol_super</span> <span class="o">=</span> <span class="n">mol_chiral</span> <span class="o">+</span> <span class="n">mol_achiral</span>
+        <span class="n">overlap_supermol_4c</span> <span class="o">=</span> <span class="n">get_ovlp_AUCAR</span><span class="p">(</span><span class="n">mol_super</span><span class="p">)</span>
+
+        <span class="n">overlap_mixed_SchiralSachiral</span> <span class="o">=</span> <span class="n">overlap_supermol_4c</span><span class="p">[</span>
+            <span class="mi">2</span> <span class="o">*</span> <span class="n">n2c</span> <span class="p">:</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n2c</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n2c</span> <span class="p">:</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">n2c</span>
+        <span class="p">]</span>
+        <span class="n">overlap_mixed_LchiralLachiral</span> <span class="o">=</span> <span class="n">overlap_supermol_4c</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">n2c</span> <span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n2c</span><span class="p">]</span>
+
+        <span class="n">overlap_pot_achiral_large</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">overlap_achiral_large</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">overlap_pot_achiral_small</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">overlap_achiral_small</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">overlap_ll_pot_chiral</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">overlap_chiral_large</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">overlap_ss_pot_chiral</span> <span class="o">=</span> <span class="n">matrix_power</span><span class="p">(</span><span class="n">overlap_chiral_small</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="n">LoLo_chiral_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+            <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">Lo</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_chiral_large</span><span class="p">),</span> <span class="n">Lo</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">SoSo_chiral_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+            <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">So</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_chiral_small</span><span class="p">),</span> <span class="n">So</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">chiral_norm</span> <span class="o">=</span> <span class="n">LoLo_chiral_norm</span> <span class="o">+</span> <span class="n">SoSo_chiral_norm</span>
+
+        <span class="n">C_Lo_achiral_newbasis</span> <span class="o">=</span> <span class="n">mm</span><span class="p">(</span>
+            <span class="n">mm</span><span class="p">(</span><span class="n">overlap_pot_achiral_large</span><span class="p">,</span> <span class="n">overlap_ll_pot_chiral</span><span class="p">),</span> <span class="n">Lo</span>
+        <span class="p">)</span>
+        <span class="n">C_So_achiral_newbasis</span> <span class="o">=</span> <span class="n">mm</span><span class="p">(</span>
+            <span class="n">mm</span><span class="p">(</span><span class="n">overlap_pot_achiral_small</span><span class="p">,</span> <span class="n">overlap_ss_pot_chiral</span><span class="p">),</span> <span class="n">So</span>
+        <span class="p">)</span>
+
+        <span class="n">achiral_norm_So</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">achiral_norm_Lo</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">overlap_LoLo</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">overlap_SoSo</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ECM_4c_molcontr</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nocc</span><span class="p">):</span>
+            <span class="n">achiral_norm_Lo</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">achiral_norm_Lo</span>
+                <span class="o">+</span> <span class="n">mm</span><span class="p">(</span>
+                    <span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">C_Lo_achiral_newbasis</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_achiral_large</span><span class="p">),</span>
+                    <span class="n">C_Lo_achiral_newbasis</span><span class="p">,</span>
+                <span class="p">)[</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">achiral_norm_So</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">achiral_norm_So</span>
+                <span class="o">+</span> <span class="n">mm</span><span class="p">(</span>
+                    <span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">C_So_achiral_newbasis</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_achiral_small</span><span class="p">),</span>
+                    <span class="n">C_So_achiral_newbasis</span><span class="p">,</span>
+                <span class="p">)[</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">overlap_LoLo</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">overlap_LoLo</span>
+                <span class="o">+</span> <span class="n">mm</span><span class="p">(</span>
+                    <span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">Lo</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_mixed_LchiralLachiral</span><span class="p">),</span>
+                    <span class="n">C_Lo_achiral_newbasis</span><span class="p">,</span>
+                <span class="p">)[</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">overlap_SoSo</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">overlap_SoSo</span>
+                <span class="o">+</span> <span class="n">mm</span><span class="p">(</span>
+                    <span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">So</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_mixed_SchiralSachiral</span><span class="p">),</span>
+                    <span class="n">C_So_achiral_newbasis</span><span class="p">,</span>
+                <span class="p">)[</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">ECM_4c_molcontr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">mm</span><span class="p">(</span>
+                    <span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">Lo</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_mixed_LchiralLachiral</span><span class="p">),</span>
+                    <span class="n">C_Lo_achiral_newbasis</span><span class="p">,</span>
+                <span class="p">)[</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+                <span class="o">+</span> <span class="n">mm</span><span class="p">(</span>
+                    <span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">So</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_mixed_SchiralSachiral</span><span class="p">),</span>
+                    <span class="n">C_So_achiral_newbasis</span><span class="p">,</span>
+                <span class="p">)[</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="n">solapamiento_total</span> <span class="o">=</span> <span class="p">(</span><span class="n">overlap_LoLo</span> <span class="o">+</span> <span class="n">overlap_SoSo</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">ECM_4c_molcontr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ECM_4c_molcontr</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">ECM_4c_molcontr</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ECM_4c_molcontr</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">chiral_norm</span><span class="p">)</span>
+
+        <span class="n">ECM_4c</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">solapamiento_total</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">chiral_norm</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">debug</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LoLo Norm:&quot;</span><span class="p">,</span> <span class="n">LoLo_chiral_norm</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SoSo Norm:&quot;</span><span class="p">,</span> <span class="n">SoSo_chiral_norm</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total (chiral) Norm:&quot;</span><span class="p">,</span> <span class="n">chiral_norm</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Achiral LoLo Norm:&quot;</span><span class="p">,</span> <span class="n">achiral_norm_Lo</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Achiral SoSo Norm:&quot;</span><span class="p">,</span> <span class="n">achiral_norm_So</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LoLo chiral/achiral overlap:&quot;</span><span class="p">,</span> <span class="n">overlap_LoLo</span> <span class="o">/</span> <span class="n">nocc</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SoSo chiral/achiral overlap:&quot;</span><span class="p">,</span> <span class="n">overlap_SoSo</span> <span class="o">/</span> <span class="n">nocc</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total overlap (normalized):&quot;</span><span class="p">,</span> <span class="n">solapamiento_total</span> <span class="o">/</span> <span class="n">nocc</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ECM LL+SS:&quot;</span><span class="p">,</span> <span class="n">ECM_4c</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ECM_4c</span><span class="p">,</span> <span class="n">ECM_4c_molcontr</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Juan José Aucar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

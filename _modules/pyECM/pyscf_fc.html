@@ -1,0 +1,513 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyECM.pyscf_fc &mdash; ECM 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/Chirality_with_hands.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Basic Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">ECM API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../support.html">Support</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ECM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyECM.pyscf_fc</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyECM.pyscf_fc</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This should be imported from pyscf or pyscf-forge</span>
+<span class="sd">&quot;&quot;&quot;Fermi Contact and parity-violation integrals for four-component wave functions.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="n">gto</span><span class="p">,</span> <span class="n">lib</span>
+
+
+<div class="viewcode-block" id="fc_integrals">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.pyscf_fc.fc_integrals">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fc_integrals</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">atom</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the Fermi Contact (FC) integrals for a given atom.</span>
+
+<span class="sd">    This function calculates the Fermi Contact integrals in</span>
+<span class="sd">    relativistic form for a specified atom in the molecule using</span>
+<span class="sd">    four-component Dirac-Coulomb spinor wavefunctions.</span>
+
+<span class="sd">    The FC integrals consist of four distinct blocks:</span>
+<span class="sd">    - LL: Large-Large component</span>
+<span class="sd">    - LS: Large-Small component</span>
+<span class="sd">    - SL: Small-Large component</span>
+<span class="sd">    - SS: Small-Small component</span>
+
+<span class="sd">    :param mol: Molecule object containing information about the molecular system.</span>
+<span class="sd">    :type mol: pyscf.gto.Mole</span>
+<span class="sd">    :param mf: Mean-field object, obtained from a Dirac-Hartree-Fock (DHF) calculation.</span>
+<span class="sd">    :type mf: pyscf.scf.hf.SCF</span>
+<span class="sd">    :param atom: Index of the atom for which the FC integrals are computed.</span>
+<span class="sd">    :type atom: int</span>
+<span class="sd">    :return: Matrix of Fermi Contact integrals</span>
+<span class="sd">             (4-component spinor form) for the specified atom.</span>
+<span class="sd">    :rtype: numpy.ndarray (complex128), shape (n4c, n4c)</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        mol = gto.Mole()</span>
+<span class="sd">        # Setup mol with geometry and basis set...</span>
+<span class="sd">        mf = scf.DHF(mol)</span>
+<span class="sd">        mf.kernel()</span>
+<span class="sd">        atom_index = 0</span>
+<span class="sd">        fc_matrix = fc_integrals(mol, mf, atom_index)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">LIGHT_SPEED</span>
+    <span class="n">n4c</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n2c</span> <span class="o">=</span> <span class="n">n4c</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">atom_coords</span><span class="p">()[[</span><span class="n">atom</span><span class="p">]]</span>
+
+    <span class="c1"># Obtaining AO integrals in spinor form</span>
+    <span class="n">ao_spinor</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">eval_gto</span><span class="p">(</span><span class="n">mf</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="s2">&quot;GTOval_spinor&quot;</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">comp</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">ao_spinor_S</span> <span class="o">=</span> <span class="n">gto</span><span class="o">.</span><span class="n">eval_gto</span><span class="p">(</span><span class="n">mf</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="s2">&quot;GTOval_sp_spinor&quot;</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">comp</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># Forming the FC integrals matrix (LL, LS, SL, SS blocks)</span>
+    <span class="n">fc_integrals</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n4c</span><span class="p">,</span> <span class="n">n4c</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">fc_integrals</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+        <span class="s2">&quot;ip,iq-&gt;pq&quot;</span><span class="p">,</span> <span class="n">ao_spinor</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">ao_spinor</span>
+    <span class="p">)</span>
+    <span class="n">fc_integrals</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="n">n2c</span><span class="p">:]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+        <span class="s2">&quot;ip,iq-&gt;pq&quot;</span><span class="p">,</span> <span class="n">ao_spinor</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">ao_spinor_S</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span>
+    <span class="n">fc_integrals</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+        <span class="s2">&quot;ip,iq-&gt;pq&quot;</span><span class="p">,</span> <span class="n">ao_spinor_S</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">ao_spinor</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span>
+    <span class="n">fc_integrals</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="n">n2c</span><span class="p">:]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+        <span class="s2">&quot;ip,iq-&gt;pq&quot;</span><span class="p">,</span> <span class="n">ao_spinor_S</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">ao_spinor_S</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fc_integrals</span></div>
+
+
+
+<div class="viewcode-block" id="gamma5_fc_integrals">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.pyscf_fc.gamma5_fc_integrals">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gamma5_fc_integrals</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">atom</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the integrals for PV contributions to energy for a given atom.</span>
+
+<span class="sd">    The integrals are calculated in the four-component spinor basis.</span>
+<span class="sd">    Point nuclear charge distribution is assumed.</span>
+
+<span class="sd">    :param mol: Molecule object containing information about the molecular system.</span>
+<span class="sd">    :type mol: pyscf.gto.Mole</span>
+<span class="sd">    :param mf: Mean-field object, obtained from a Dirac-Hartree-Fock (DHF) calculation.</span>
+<span class="sd">    :type mf: pyscf.scf.hf.SCF</span>
+<span class="sd">    :param atom: Index of the atom for which the integrals are computed.</span>
+<span class="sd">    :type atom: int</span>
+<span class="sd">    :return: Matrix of integrals (4-component spinor form) for the specified atom.</span>
+<span class="sd">    :rtype: numpy.ndarray (complex128), shape (n4c, n4c)</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        mol = gto.Mole()</span>
+<span class="sd">        # Setup mol with geometry and basis set...</span>
+<span class="sd">        mf = scf.DHF(mol)</span>
+<span class="sd">        mf.kernel()</span>
+<span class="sd">        atom_index = 0</span>
+<span class="sd">        fc_matrix = PV_integrals(mol, mf, atom_index)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n4c</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n2c</span> <span class="o">=</span> <span class="n">n4c</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="c1"># Get the Fermi Contact integrals for the selected atom</span>
+    <span class="n">fc_ao</span> <span class="o">=</span> <span class="n">fc_integrals</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+
+    <span class="c1"># Prepare the empty matrix for the FC*Gamma5 integrals (LL, LS, SL, SS blocks)</span>
+    <span class="n">gamma5_fc_integrals</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n4c</span><span class="p">,</span> <span class="n">n4c</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+    <span class="c1"># LS and SL blocks</span>
+    <span class="n">gamma5_fc_integrals</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="n">n2c</span><span class="p">:]</span> <span class="o">=</span> <span class="n">fc_ao</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="n">n2c</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">gamma5_fc_integrals</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">]</span> <span class="o">=</span> <span class="n">fc_ao</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">gamma5_fc_integrals</span></div>
+
+
+
+<div class="viewcode-block" id="fc_expval">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.pyscf_fc.fc_expval">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fc_expval</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">atom</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the Fermi Contact (FC) expectation values.</span>
+
+<span class="sd">    For each occupied orbital in a molecule, focusing on a specific atom.</span>
+<span class="sd">    The expectation values are calculated using the four-component</span>
+<span class="sd">    Dirac-Coulomb spinor wavefunctions. The function computes the</span>
+<span class="sd">    contributions from the large-large (LL) and small-small (SS)</span>
+<span class="sd">    components of the spinor for each occupied orbital.</span>
+
+<span class="sd">    :param mol: Molecule object containing information about the molecular system.</span>
+<span class="sd">    :type mol: pyscf.gto.Mole</span>
+<span class="sd">    :param mf: Mean-field object, obtained from a Dirac-Hartree-Fock (DHF) calculation.</span>
+<span class="sd">    :type mf: pyscf.scf.hf.SCF</span>
+<span class="sd">    :param atom: Index of the atom for which the FC expectation values are computed.</span>
+<span class="sd">    :type atom: int</span>
+<span class="sd">    :return: Array of FC expectation values for each occupied orbital.</span>
+<span class="sd">    :rtype: numpy.ndarray (real), shape (nocc,)</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        mol = gto.Mole()</span>
+<span class="sd">        # Setup mol with geometry and basis set...</span>
+<span class="sd">        mf = scf.DHF(mol)</span>
+<span class="sd">        mf.kernel()</span>
+<span class="sd">        atom_index = 0</span>
+<span class="sd">        fc_expval_per_orbital = fc_expval(mol, mf, atom_index)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n4c</span><span class="p">,</span> <span class="n">nmo</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">n2c</span> <span class="o">=</span> <span class="n">n4c</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">nocc</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span>
+    <span class="n">expval_perorb</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nocc</span><span class="p">)</span>
+
+    <span class="n">mo_pos_l</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="n">nmo</span> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]</span>
+    <span class="n">mo_pos_s</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="n">nmo</span> <span class="o">//</span> <span class="mi">2</span> <span class="p">:]</span>
+
+    <span class="n">Lo</span> <span class="o">=</span> <span class="n">mo_pos_l</span><span class="p">[:,</span> <span class="p">:</span><span class="n">nocc</span><span class="p">]</span>
+    <span class="n">So</span> <span class="o">=</span> <span class="n">mo_pos_s</span><span class="p">[:,</span> <span class="p">:</span><span class="n">nocc</span><span class="p">]</span>
+
+    <span class="n">fac</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">3</span>
+    <span class="n">fc_ao</span> <span class="o">=</span> <span class="n">fc_integrals</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+
+    <span class="c1"># Split the fc_integrals matrix into LL and SS blocks</span>
+    <span class="n">fc_ao_LL</span> <span class="o">=</span> <span class="n">fc_ao</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">]</span>
+    <span class="n">fc_ao_SS</span> <span class="o">=</span> <span class="n">fc_ao</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="n">n2c</span><span class="p">:]</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nocc</span><span class="p">):</span>
+        <span class="n">expval_LL_k</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i,ij,j-&gt;&quot;</span><span class="p">,</span> <span class="n">Lo</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="n">fc_ao_LL</span><span class="p">,</span> <span class="n">Lo</span><span class="p">[:,</span> <span class="n">k</span><span class="p">])</span>
+        <span class="n">expval_SS_k</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i,ij,j-&gt;&quot;</span><span class="p">,</span> <span class="n">So</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="n">fc_ao_SS</span><span class="p">,</span> <span class="n">So</span><span class="p">[:,</span> <span class="n">k</span><span class="p">])</span>
+
+        <span class="n">expval_perorb</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">expval_LL_k</span> <span class="o">+</span> <span class="n">expval_SS_k</span>
+
+    <span class="k">return</span> <span class="n">fac</span> <span class="o">*</span> <span class="n">expval_perorb</span><span class="o">.</span><span class="n">real</span></div>
+
+
+
+<div class="viewcode-block" id="Epv_atom">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.pyscf_fc.Epv_atom">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Epv_atom</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">dm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the parity-violating (PV) contribution to energy.</span>
+
+<span class="sd">    Computed for a given atom in a molecule. The function supports:</span>
+<span class="sd">    - orbital expectation values from DHF orbitals</span>
+<span class="sd">    - density matrix contraction in AO or MO basis</span>
+
+<span class="sd">    For a one-electron operator:</span>
+<span class="sd">        E_PV = Tr(D * h_PV)</span>
+
+<span class="sd">    If dm is provided:</span>
+<span class="sd">        - AO density matrices are transformed to MO basis</span>
+<span class="sd">        - MO density matrices (e.g. MP2/CCSD PySCF densities) are used directly</span>
+
+
+<span class="sd">    It then returns the contributions from each occupied orbital.</span>
+<span class="sd">    (First term of Eq. 4 -  https://doi.org/10.1002/wcms.1396)</span>
+
+<span class="sd">    :param mol: Molecule object containing information about the molecular system.</span>
+<span class="sd">    :type mol: pyscf.gto.Mole</span>
+<span class="sd">    :param mf: Mean-field object, obtained from a Dirac-Hartree-Fock (DHF) calculation.</span>
+<span class="sd">    :type mf: pyscf.scf.hf.SCF</span>
+<span class="sd">    :param atom_index: Index of the atom for which the PV contribution is computed.</span>
+<span class="sd">    :type atom_index: int</span>
+<span class="sd">    :return: Array of PV expectation values for each occupied orbital.</span>
+<span class="sd">    :rtype: numpy.ndarray (real), shape (nocc,)</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        mol = gto.Mole()</span>
+<span class="sd">        # Setup mol with geometry and basis set...</span>
+<span class="sd">        mf = scf.DHF(mol)</span>
+<span class="sd">        mf.kernel()</span>
+<span class="sd">        atom_index = 0</span>
+<span class="sd">        pv_values = Epv_atom(mol, mf, atom_index)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n4c</span><span class="p">,</span> <span class="n">nmo</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">n2c</span> <span class="o">=</span> <span class="n">n4c</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="c1"># Molecular orbitals of negative energy</span>
+    <span class="n">nNeg</span> <span class="o">=</span> <span class="n">nmo</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="c1"># Number of occupied electrons</span>
+    <span class="n">nocc</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span>
+
+    <span class="c1"># ------------------------------------------------------------</span>
+    <span class="c1"># Nuclear weak charge prefactor</span>
+    <span class="c1"># ------------------------------------------------------------</span>
+
+    <span class="c1"># Atom masses and atomic numbers</span>
+    <span class="n">masses</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">atom_mass_list</span><span class="p">(</span><span class="n">isotope_avg</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">atomic_numbers</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">atom_charges</span><span class="p">()</span>
+
+    <span class="c1"># Neutrons per atom</span>
+    <span class="n">neutrons</span> <span class="o">=</span> <span class="n">masses</span> <span class="o">-</span> <span class="n">atomic_numbers</span>
+
+    <span class="n">S2THETAW</span> <span class="o">=</span> <span class="mf">0.23122</span>  <span class="c1"># (CODATA 2018)</span>
+
+    <span class="c1"># Weak charge of the nucleus of the selected atom</span>
+    <span class="n">QW</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">S2THETAW</span><span class="p">)</span> <span class="o">*</span> <span class="n">atomic_numbers</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">-</span> <span class="n">neutrons</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span>
+
+    <span class="c1"># Prefactor</span>
+    <span class="n">fac</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.2225</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">14</span><span class="p">)</span> <span class="o">*</span> <span class="n">QW</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">dm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># ------------------------------------------------------------</span>
+        <span class="c1"># PV operator in AO basis</span>
+        <span class="c1"># ------------------------------------------------------------</span>
+
+        <span class="c1"># Get the Fermi Contact integrals for the selected atom</span>
+        <span class="n">fc_ao</span> <span class="o">=</span> <span class="n">fc_integrals</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">)</span>
+
+        <span class="c1"># ------------------------------------------------------------</span>
+        <span class="c1"># Orbital expectation values (4c-DHF or 4c-DFT reference)</span>
+        <span class="c1"># ------------------------------------------------------------</span>
+
+        <span class="c1"># Get the positive components of the MO spinors</span>
+        <span class="n">Lo</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="n">nNeg</span> <span class="p">:</span> <span class="n">nNeg</span> <span class="o">+</span> <span class="n">nocc</span><span class="p">]</span>
+        <span class="n">So</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="n">nNeg</span> <span class="p">:</span> <span class="n">nNeg</span> <span class="o">+</span> <span class="n">nocc</span><span class="p">]</span>
+
+        <span class="c1"># Expectation values</span>
+        <span class="n">expval_LS</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,ji-&gt;i&quot;</span><span class="p">,</span> <span class="n">Lo</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">fc_ao</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="n">n2c</span><span class="p">:],</span> <span class="n">So</span><span class="p">)</span>
+        <span class="n">expval_SL</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,ji-&gt;i&quot;</span><span class="p">,</span> <span class="n">So</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">fc_ao</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">],</span> <span class="n">Lo</span><span class="p">)</span>
+        <span class="n">expval_perorb</span> <span class="o">=</span> <span class="n">expval_LS</span> <span class="o">+</span> <span class="n">expval_SL</span>
+
+    <span class="c1"># ------------------------------------------------------------</span>
+    <span class="c1"># Density matrix contraction</span>
+    <span class="c1"># ------------------------------------------------------------</span>
+
+    <span class="k">if</span> <span class="n">dm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="c1"># Positive-energy MO coefficient matrix</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[:,</span> <span class="n">nNeg</span><span class="p">:]</span>
+
+        <span class="n">nmo_pos</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Get the Gamma5 Fermi-Contact integrals for the selected atom (in AO basis)</span>
+        <span class="n">gamma5_fc_ao</span> <span class="o">=</span> <span class="n">gamma5_fc_integrals</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">atom_index</span><span class="p">)</span>
+
+        <span class="c1"># Transform operator AO -&gt; MO</span>
+        <span class="c1"># Operator transformation:</span>
+        <span class="c1">#</span>
+        <span class="c1"># hᴹᴼ = C† hᴬᴼ C</span>
+        <span class="c1">#</span>
+        <span class="c1"># where:</span>
+        <span class="c1">#   C   : MO coefficient matrix</span>
+        <span class="c1">#   hᴬᴼ : operator matrix in AO basis</span>
+        <span class="c1">#   hᴹᴼ : operator matrix in MO basis</span>
+        <span class="n">gamma5_fc_mo</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">gamma5_fc_ao</span> <span class="o">@</span> <span class="n">C</span>
+
+        <span class="c1"># --------------------------------------------------------</span>
+        <span class="c1"># Determine density matrix representation</span>
+        <span class="c1"># --------------------------------------------------------</span>
+
+        <span class="k">if</span> <span class="n">dm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">n4c</span><span class="p">:</span>
+            <span class="c1"># Transform AO density matrix to MO</span>
+            <span class="c1"># 𝑫ᴹᴼ = C† S 𝑫ᴬᴼ S C</span>
+            <span class="c1">#</span>
+            <span class="c1"># where:</span>
+            <span class="c1">#   C  : MO coefficient matrix</span>
+            <span class="c1">#   S  : AO overlap matrix</span>
+            <span class="c1">#   𝑫  : one-particle density matrix</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">get_ovlp</span><span class="p">()</span>
+            <span class="n">dm_mo</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">S</span> <span class="o">@</span> <span class="n">dm</span> <span class="o">@</span> <span class="n">S</span> <span class="o">@</span> <span class="n">C</span>
+
+        <span class="k">elif</span> <span class="n">dm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nmo_pos</span><span class="p">:</span>
+            <span class="c1"># Density already in MO basis</span>
+            <span class="c1"># (MP2/CCSD densities)</span>
+            <span class="n">dm_mo</span> <span class="o">=</span> <span class="n">dm</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Density matrix dimension does not match AO or positive-energy MO space&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Total expectation value</span>
+        <span class="c1"># E = Tr(𝑫 h)</span>
+        <span class="c1"># expval_dm = numpy.trace(dm_mo @ gamma5_fc_mo)</span>
+
+        <span class="c1"># Orbital decomposition in MO basis</span>
+        <span class="c1"># For correlated densities (MP2/CCSD), the orbital decomposition</span>
+        <span class="c1"># is representation-dependent. Only the total trace is invariant.</span>
+        <span class="n">expval_perorb</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,ji-&gt;i&quot;</span><span class="p">,</span> <span class="n">gamma5_fc_mo</span><span class="p">,</span> <span class="n">dm_mo</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------</span>
+    <span class="c1"># Return</span>
+    <span class="c1"># ------------------------------------------------------------</span>
+
+    <span class="k">return</span> <span class="n">fac</span> <span class="o">*</span> <span class="n">expval_perorb</span><span class="o">.</span><span class="n">real</span></div>
+
+
+
+<div class="viewcode-block" id="Epv_molecule">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.pyscf_fc.Epv_molecule">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">Epv_molecule</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">dm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the weak charge parity-violating (PV) contributions.</span>
+
+<span class="sd">    Computed for all atoms in the molecule within a punctual nuclear charge</span>
+<span class="sd">    distribution model. This function iterates over all atoms in the</span>
+<span class="sd">    molecule and computes the PV contributions for each atom.</span>
+
+<span class="sd">    If dm is None:</span>
+<span class="sd">        returns orbital contributions from the reference DHF/DFT orbitals.</span>
+
+<span class="sd">    If dm is provided:</span>
+<span class="sd">        returns contributions obtained by contracting the PV operator with</span>
+<span class="sd">        the supplied density matrix (AO or MO representation).</span>
+
+
+<span class="sd">    :param mol: Molecule object containing information about the molecular system.</span>
+<span class="sd">    :type mol: pyscf.gto.Mole</span>
+<span class="sd">    :param mf: Mean-field object, typically obtained from a</span>
+<span class="sd">               Dirac-Hartree-Fock (DHF) calculation.</span>
+<span class="sd">    :type mf: pyscf.scf.hf.SCF</span>
+<span class="sd">    :return: A 2D array where each row corresponds to an atom</span>
+<span class="sd">             and each column contains the PV contributions</span>
+<span class="sd">             for the occupied orbitals of that atom.</span>
+<span class="sd">    :rtype: numpy.ndarray (real), shape (n_atoms, n_occ)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">natm</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">natm</span>
+
+    <span class="c1"># Determine output size from the calculation type</span>
+    <span class="k">if</span> <span class="n">dm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n4c</span><span class="p">,</span> <span class="n">nmo</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">nocc</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelectron</span>
+        <span class="n">ncol</span> <span class="o">=</span> <span class="n">nocc</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n4c</span><span class="p">,</span> <span class="n">nmo</span> <span class="o">=</span> <span class="n">mf</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">nNeg</span> <span class="o">=</span> <span class="n">nmo</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">nmo_pos</span> <span class="o">=</span> <span class="n">nmo</span> <span class="o">-</span> <span class="n">nNeg</span>
+
+        <span class="c1"># AO or MO density</span>
+        <span class="k">if</span> <span class="n">dm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">n4c</span> <span class="ow">or</span> <span class="n">dm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nmo_pos</span><span class="p">:</span>
+            <span class="n">ncol</span> <span class="o">=</span> <span class="n">nmo_pos</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Density matrix dimension does not match AO &quot;</span>
+                <span class="s2">&quot;or positive-energy MO space&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">natm</span><span class="p">,</span> <span class="n">ncol</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">natm</span><span class="p">):</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">Epv_atom</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mf</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">dm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="c1"># To modify https://pyscf.org/_modules/pyscf/scf/dhf.html#get_ovlp</span>
+<div class="viewcode-block" id="get_ovlp_AUCAR">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.pyscf_fc.get_ovlp_AUCAR">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ovlp_AUCAR</span><span class="p">(</span><span class="n">mol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build the four-component overlap matrix in the DHF spinor basis.</span>
+
+<span class="sd">    :param mol: molecule for which the overlap matrix is built</span>
+<span class="sd">    :type mol: pyscf.gto.Mole</span>
+<span class="sd">    :return: overlap matrix, shape (n4c, n4c)</span>
+<span class="sd">    :rtype: numpy.ndarray (complex128)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n2c</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">nao_2c</span><span class="p">()</span>
+    <span class="n">n4c</span> <span class="o">=</span> <span class="n">n2c</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">LIGHT_SPEED</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp_spinor&quot;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s2">&quot;int1e_spsp_spinor&quot;</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">intor_symmetric</span><span class="p">(</span><span class="s2">&quot;int1e_sp_spinor&quot;</span><span class="p">)</span>
+    <span class="n">s1e</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n4c</span><span class="p">,</span> <span class="n">n4c</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">s1e</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+    <span class="n">s1e</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="n">n2c</span><span class="p">:]</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">s1e</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="n">n2c</span><span class="p">:]</span> <span class="o">=</span> <span class="n">u</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span>  <span class="c1"># Small (ket) over large (bra)</span>
+    <span class="n">s1e</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span>  <span class="c1"># Large (ket) over small (bra)</span>
+    <span class="k">return</span> <span class="n">s1e</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Juan José Aucar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

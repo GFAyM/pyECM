@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyECM.pyscf_wf &mdash; ECM 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/Chirality_with_hands.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Basic Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">ECM API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../support.html">Support</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ECM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyECM.pyscf_wf</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyECM.pyscf_wf</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Wave-function calculations (NR/X2C/4c) via pySCF.</span>
+
+<span class="sd">Each function gets gto.Mole and returns the results within a tuple. They dont directly</span>
+<span class="sd">read neither write attributes from the molecule class. The molecule class is supposed to</span>
+<span class="sd">select in which of their own attributes will save each result.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">matmul</span> <span class="k">as</span> <span class="n">mm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpose</span> <span class="k">as</span> <span class="n">tp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="n">lib</span><span class="p">,</span> <span class="n">scf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyscf.lib.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">light_speed</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyECM.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">debug_timed</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyECM.pyscf_fc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ovlp_AUCAR</span>
+
+
+<div class="viewcode-block" id="compute_NR_WF">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.pyscf_wf.compute_NR_WF">[docs]</a>
+<span class="nd">@debug_timed</span><span class="p">(</span><span class="s2">&quot;NR&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_NR_WF</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">,</span> <span class="n">DFT</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the non-relativistic wave function.</span>
+
+<span class="sd">    Runs RHF, or RKS if a DFT functional is given.</span>
+
+<span class="sd">    :param mol_chiral: molecule (already built) for which the WF is computed</span>
+<span class="sd">    :type mol_chiral: pyscf.gto.Mole</span>
+<span class="sd">    :param DFT: DFT functional name (e.g. &quot;b3lyp&quot;). If False, runs RHF instead</span>
+<span class="sd">    :type DFT: str or False, optional</span>
+<span class="sd">    :param debug: verbosity level; prints timing and norm diagnostics if &gt; 0</span>
+<span class="sd">    :type debug: int, optional</span>
+<span class="sd">    :return: (Noccupied_MO_alpha, Noccupied_MO_beta, all_MO, occupied_MO, mf_chiral,</span>
+<span class="sd">        AO_number)</span>
+<span class="sd">    :rtype: tuple(int, int, numpy.ndarray, tuple, pyscf.scf.hf.SCF, int)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">DFT</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">mf_chiral</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">RHF</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">)</span>
+        <span class="n">mf_chiral</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="n">dft</span>
+
+        <span class="n">mf_chiral</span> <span class="o">=</span> <span class="n">dft</span><span class="o">.</span><span class="n">RKS</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">)</span>
+        <span class="n">mf_chiral</span><span class="o">.</span><span class="n">xc</span> <span class="o">=</span> <span class="n">DFT</span>
+        <span class="n">mf_chiral</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
+
+    <span class="n">overlap_chiral</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp&quot;</span><span class="p">)</span>
+    <span class="n">AO_number</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">nao</span>
+
+    <span class="n">nelec_alpha</span> <span class="o">=</span> <span class="n">mf_chiral</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nelec_beta</span> <span class="o">=</span> <span class="n">mf_chiral</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">all_mo_coef</span> <span class="o">=</span> <span class="n">mf_chiral</span><span class="o">.</span><span class="n">mo_coeff</span>
+    <span class="n">ocupp_mo_coeff_alpha</span> <span class="o">=</span> <span class="n">mf_chiral</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">AO_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">nelec_alpha</span><span class="p">]</span>
+    <span class="n">ocupp_mo_coeff_beta</span> <span class="o">=</span> <span class="n">mf_chiral</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">AO_number</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">nelec_beta</span><span class="p">]</span>
+
+    <span class="n">norma_alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+        <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">ocupp_mo_coeff_alpha</span><span class="p">),</span> <span class="n">overlap_chiral</span><span class="p">),</span> <span class="n">ocupp_mo_coeff_alpha</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">norma_beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+        <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">ocupp_mo_coeff_beta</span><span class="p">),</span> <span class="n">overlap_chiral</span><span class="p">),</span> <span class="n">ocupp_mo_coeff_beta</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">norma</span> <span class="o">=</span> <span class="n">norma_alpha</span> <span class="o">+</span> <span class="n">norma_beta</span>
+
+    <span class="k">if</span> <span class="n">debug</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;naos_cart:&quot;</span><span class="p">,</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">nao</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MO occupation&quot;</span><span class="p">,</span> <span class="n">mf_chiral</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelec</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;norma WF (original molecule):&quot;</span><span class="p">,</span> <span class="n">norma</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NR energy&quot;</span><span class="p">,</span> <span class="n">mf_chiral</span><span class="o">.</span><span class="n">e_tot</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">nelec_alpha</span><span class="p">,</span>
+        <span class="n">nelec_beta</span><span class="p">,</span>
+        <span class="n">all_mo_coef</span><span class="p">,</span>
+        <span class="n">mf_chiral</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelec</span><span class="p">,</span>
+        <span class="n">mf_chiral</span><span class="p">,</span>
+        <span class="n">AO_number</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_X2C_WF">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.pyscf_wf.compute_X2C_WF">[docs]</a>
+<span class="nd">@debug_timed</span><span class="p">(</span><span class="s2">&quot;X2C&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_X2C_WF</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">,</span> <span class="n">DFT</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the X2C (exact two-component) relativistic wave function.</span>
+
+<span class="sd">    :param mol_chiral: molecule (already built) for which the WF is computed</span>
+<span class="sd">    :type mol_chiral: pyscf.gto.Mole</span>
+<span class="sd">    :param DFT: DFT functional name (e.g. &quot;b3lyp&quot;). If False, runs X2C-UHF instead</span>
+<span class="sd">    :type DFT: str or False, optional</span>
+<span class="sd">    :param debug: verbosity level; prints timing and norm diagnostics if &gt; 0</span>
+<span class="sd">    :type debug: int, optional</span>
+<span class="sd">    :return: (x2c_MO, x2c_occup_MO, Nalphaoccupied_MO, Nbetaoccupied_MO, x2c_energy,</span>
+<span class="sd">        AO_number)</span>
+<span class="sd">    :rtype: tuple(numpy.ndarray, numpy.ndarray, int, int, float, int)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">DFT</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">mf_chiral_x2c</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">X2C</span><span class="p">()</span>
+        <span class="n">mf_chiral_x2c</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pyscf.x2c</span><span class="w"> </span><span class="kn">import</span> <span class="n">dft</span> <span class="k">as</span> <span class="n">x2c_dft</span>
+
+        <span class="n">mf_chiral_x2c</span> <span class="o">=</span> <span class="n">x2c_dft</span><span class="o">.</span><span class="n">UKS</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">)</span>
+        <span class="n">mf_chiral_x2c</span><span class="o">.</span><span class="n">xc</span> <span class="o">=</span> <span class="n">DFT</span>
+        <span class="n">mf_chiral_x2c</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
+
+    <span class="n">overlap_chiral_x2c</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">intor</span><span class="p">(</span><span class="s2">&quot;int1e_ovlp_spinor&quot;</span><span class="p">)</span>
+    <span class="n">AO_number</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">nao</span>
+
+    <span class="n">all_mo_coef_x2c</span> <span class="o">=</span> <span class="n">mf_chiral_x2c</span><span class="o">.</span><span class="n">mo_coeff</span>
+    <span class="n">nelec_alpha</span> <span class="o">=</span> <span class="n">mf_chiral_x2c</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nelec_beta</span> <span class="o">=</span> <span class="n">mf_chiral_x2c</span><span class="o">.</span><span class="n">mol</span><span class="o">.</span><span class="n">nelec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">norm_x2c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+        <span class="n">mm</span><span class="p">(</span>
+            <span class="n">mm</span><span class="p">(</span>
+                <span class="n">tp</span><span class="p">(</span><span class="n">all_mo_coef_x2c</span><span class="p">[:,</span> <span class="p">:</span> <span class="n">nelec_alpha</span> <span class="o">+</span> <span class="n">nelec_beta</span><span class="p">])</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span>
+                <span class="n">overlap_chiral_x2c</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">all_mo_coef_x2c</span><span class="p">[:,</span> <span class="p">:</span> <span class="n">nelec_alpha</span> <span class="o">+</span> <span class="n">nelec_beta</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Extracted from https://github.com/pyscf/pyscf/blob/</span>
+    <span class="c1">#                master/examples/x2c/03-x2c_ghf.py</span>
+    <span class="c1"># Using the j-adapted results to construct initial</span>
+    <span class="c1"># guess for X2C-GHF, SCF can be converged to the</span>
+    <span class="c1"># correct result in one iteration.</span>
+
+    <span class="c1"># Attributes for GHF method</span>
+    <span class="c1"># GHF orbital coefficients are 2D array.</span>
+    <span class="c1"># Let nao be the number of spatial AOs, mo_coeff[:nao]</span>
+    <span class="c1"># are the coefficients of AO with alpha spin; mo_coeff[nao:nao*2]</span>
+    <span class="c1"># are the coefficients of AO with beta spin</span>
+
+    <span class="c1"># I couldn&#39;t yet get the right norm in this way. JJA 2024.</span>
+
+    <span class="c1"># The transformation from spin orbital basis to spinor basis</span>
+    <span class="c1"># c = np.vstack(mol_chiral.sph2spinor_coeff())</span>
+    <span class="c1"># Construct new initial guess from the spinor basis solution</span>
+    <span class="c1"># mo1 = c.dot(mf_chiral_x2c.mo_coeff)</span>
+    <span class="c1"># dm = mf_chiral_x2c.make_rdm1(mo1, mf_chiral_x2c.mo_occ)</span>
+
+    <span class="c1"># x2c_ghf_mf = mol_chiral.GHF().x2c1e()</span>
+    <span class="c1"># x2c_ghf.verbose = 4</span>
+    <span class="c1"># x2c_ghf_mf.max_cycle = 10</span>
+    <span class="c1"># x2c_ghf_mf.kernel(dm0=dm)</span>
+
+    <span class="k">if</span> <span class="n">debug</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X2C WF NORM (original molecule):&quot;</span><span class="p">,</span> <span class="n">norm_x2c</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X2C energy&quot;</span><span class="p">,</span> <span class="n">mf_chiral_x2c</span><span class="o">.</span><span class="n">e_tot</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Electrones alpha y beta:&quot;</span><span class="p">,</span> <span class="n">nelec_alpha</span><span class="p">,</span> <span class="n">nelec_beta</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">x2c_occup_MO</span> <span class="o">=</span> <span class="n">all_mo_coef_x2c</span><span class="p">[:,</span> <span class="p">:</span> <span class="n">nelec_alpha</span> <span class="o">+</span> <span class="n">nelec_beta</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">all_mo_coef_x2c</span><span class="p">,</span>
+        <span class="n">x2c_occup_MO</span><span class="p">,</span>
+        <span class="n">nelec_alpha</span><span class="p">,</span>
+        <span class="n">nelec_beta</span><span class="p">,</span>
+        <span class="n">mf_chiral_x2c</span><span class="o">.</span><span class="n">e_tot</span><span class="p">,</span>
+        <span class="n">AO_number</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_4c_WF">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.pyscf_wf.compute_4c_WF">[docs]</a>
+<span class="nd">@debug_timed</span><span class="p">(</span><span class="s2">&quot;4c&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_4c_WF</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">,</span> <span class="n">cvalue</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the four-component relativistic wave function (DHF).</span>
+
+<span class="sd">    :param mol_chiral: molecule (already built) for which the WF is computed</span>
+<span class="sd">    :type mol_chiral: pyscf.gto.Mole</span>
+<span class="sd">    :param cvalue: speed of light value used for the DHF calculation</span>
+<span class="sd">    :type cvalue: float</span>
+<span class="sd">    :param debug: verbosity level; prints timing and norm diagnostics if &gt; 0</span>
+<span class="sd">    :type debug: int, optional</span>
+<span class="sd">    :return: (n4c, rel_nmo, Lo, So, Noccupied_MO, rel_energy, mf_chiral_rel, AO_number)</span>
+<span class="sd">    :rtype: tuple(int, int, numpy.ndarray, numpy.ndarray, int, float, pyscf.scf.dhf.DHF,</span>
+<span class="sd">        int)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">light_speed</span><span class="p">(</span><span class="n">cvalue</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">LIGHT_SPEED</span>
+
+        <span class="n">mf_chiral_rel</span> <span class="o">=</span> <span class="n">scf</span><span class="o">.</span><span class="n">DHF</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">)</span>
+        <span class="n">mf_chiral_rel</span><span class="o">.</span><span class="n">kernel</span><span class="p">()</span>
+
+        <span class="n">n4c</span><span class="p">,</span> <span class="n">nmo</span> <span class="o">=</span> <span class="n">mf_chiral_rel</span><span class="o">.</span><span class="n">mo_coeff</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">n2c</span> <span class="o">=</span> <span class="n">n4c</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">nNeg</span> <span class="o">=</span> <span class="n">nmo</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">nocc</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">nelectron</span>
+        <span class="n">mo_pos_l</span> <span class="o">=</span> <span class="n">mf_chiral_rel</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="n">nNeg</span><span class="p">:]</span>
+        <span class="n">mo_pos_s</span> <span class="o">=</span> <span class="n">mf_chiral_rel</span><span class="o">.</span><span class="n">mo_coeff</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="n">nNeg</span><span class="p">:]</span>
+        <span class="n">Lo</span> <span class="o">=</span> <span class="n">mo_pos_l</span><span class="p">[:,</span> <span class="p">:</span><span class="n">nocc</span><span class="p">]</span>
+        <span class="n">So</span> <span class="o">=</span> <span class="n">mo_pos_s</span><span class="p">[:,</span> <span class="p">:</span><span class="n">nocc</span><span class="p">]</span>
+
+        <span class="n">overlap_chiral_4c</span> <span class="o">=</span> <span class="n">get_ovlp_AUCAR</span><span class="p">(</span><span class="n">mol_chiral</span><span class="p">)</span>
+        <span class="n">overlap_chiral_large</span> <span class="o">=</span> <span class="n">overlap_chiral_4c</span><span class="p">[:</span><span class="n">n2c</span><span class="p">,</span> <span class="p">:</span><span class="n">n2c</span><span class="p">]</span>
+        <span class="n">overlap_chiral_small</span> <span class="o">=</span> <span class="n">overlap_chiral_4c</span><span class="p">[</span><span class="n">n2c</span><span class="p">:,</span> <span class="n">n2c</span><span class="p">:]</span>
+
+        <span class="n">AO_number</span> <span class="o">=</span> <span class="n">mol_chiral</span><span class="o">.</span><span class="n">nao</span>
+
+        <span class="n">LoLo_chiral_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+            <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">Lo</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_chiral_large</span><span class="p">),</span> <span class="n">Lo</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">SoSo_chiral_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+            <span class="n">mm</span><span class="p">(</span><span class="n">mm</span><span class="p">(</span><span class="n">tp</span><span class="p">(</span><span class="n">So</span><span class="p">)</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(),</span> <span class="n">overlap_chiral_small</span><span class="p">),</span> <span class="n">So</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">chiral_norm</span> <span class="o">=</span> <span class="n">LoLo_chiral_norm</span> <span class="o">+</span> <span class="n">SoSo_chiral_norm</span>
+
+        <span class="k">if</span> <span class="n">debug</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LoLo Norm:&quot;</span><span class="p">,</span> <span class="n">LoLo_chiral_norm</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SoSo Norm:&quot;</span><span class="p">,</span> <span class="n">SoSo_chiral_norm</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total (chiral) Norm:&quot;</span><span class="p">,</span> <span class="n">chiral_norm</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cvalue&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4c energy&quot;</span><span class="p">,</span> <span class="n">mf_chiral_rel</span><span class="o">.</span><span class="n">e_tot</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">n4c</span><span class="p">,</span> <span class="n">nmo</span><span class="p">,</span> <span class="n">Lo</span><span class="p">,</span> <span class="n">So</span><span class="p">,</span> <span class="n">nocc</span><span class="p">,</span> <span class="n">mf_chiral_rel</span><span class="o">.</span><span class="n">e_tot</span><span class="p">,</span> <span class="n">mf_chiral_rel</span><span class="p">,</span> <span class="n">AO_number</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Juan José Aucar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

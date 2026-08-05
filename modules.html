@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyECM &mdash; ECM 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=fc837d61"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pyECM package" href="pyECM.html" />
+    <link rel="prev" title="Installation" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/Chirality_with_hands.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Basic Example</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ECM API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html">pyECM package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ECM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pyECM</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyecm">
+<h1>pyECM<a class="headerlink" href="#pyecm" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyECM.html">pyECM package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.data.html">pyECM.data package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.data.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.data.html#module-pyECM.data.moleculas">pyECM.data.moleculas module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.data.html#module-pyECM.data">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.ccm_metrics">pyECM.ccm_metrics module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.ccm_metrics.ccm"><code class="docutils literal notranslate"><span class="pre">ccm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.data_management">pyECM.data_management module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.data_management.download_CSM_zip"><code class="docutils literal notranslate"><span class="pre">download_CSM_zip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.data_management.obtain_nearest_structure"><code class="docutils literal notranslate"><span class="pre">obtain_nearest_structure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.data_management.split_output"><code class="docutils literal notranslate"><span class="pre">split_output()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.decorators">pyECM.decorators module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.decorators.debug_timed"><code class="docutils literal notranslate"><span class="pre">debug_timed()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.ecm_metric">pyECM.ecm_metric module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.ecm_metric.compute_ECM_4c"><code class="docutils literal notranslate"><span class="pre">compute_ECM_4c()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.ecm_metric.compute_ECM_NR"><code class="docutils literal notranslate"><span class="pre">compute_ECM_NR()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.ecm_metric.compute_ECM_X2C"><code class="docutils literal notranslate"><span class="pre">compute_ECM_X2C()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.gamma5">pyECM.gamma5 module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.gamma5.compute_gamma5"><code class="docutils literal notranslate"><span class="pre">compute_gamma5()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.geometric_figures">pyECM.geometric_figures module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometric_figures.define_plane"><code class="docutils literal notranslate"><span class="pre">define_plane()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometric_figures.define_sphere"><code class="docutils literal notranslate"><span class="pre">define_sphere()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometric_figures.pathpatch_2d_to_3d"><code class="docutils literal notranslate"><span class="pre">pathpatch_2d_to_3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometric_figures.pathpatch_translate"><code class="docutils literal notranslate"><span class="pre">pathpatch_translate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometric_figures.plot_vector"><code class="docutils literal notranslate"><span class="pre">plot_vector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometric_figures.rotation_matrix"><code class="docutils literal notranslate"><span class="pre">rotation_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometric_figures.rotation_matrix_from_vectors"><code class="docutils literal notranslate"><span class="pre">rotation_matrix_from_vectors()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.geometry">pyECM.geometry module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometry.build_atom_list"><code class="docutils literal notranslate"><span class="pre">build_atom_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometry.build_positions"><code class="docutils literal notranslate"><span class="pre">build_positions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometry.central_point_from_origin"><code class="docutils literal notranslate"><span class="pre">central_point_from_origin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.geometry.shift_positions_to_origin"><code class="docutils literal notranslate"><span class="pre">shift_positions_to_origin()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.molecule_class">pyECM.molecule_class module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula"><code class="docutils literal notranslate"><span class="pre">molecula</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.CCM"><code class="docutils literal notranslate"><span class="pre">molecula.CCM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.CCM_on_path"><code class="docutils literal notranslate"><span class="pre">molecula.CCM_on_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.ECM"><code class="docutils literal notranslate"><span class="pre">molecula.ECM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.ECM_on_path"><code class="docutils literal notranslate"><span class="pre">molecula.ECM_on_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.Epv"><code class="docutils literal notranslate"><span class="pre">molecula.Epv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.atoms_positions"><code class="docutils literal notranslate"><span class="pre">molecula.atoms_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.export_xyz"><code class="docutils literal notranslate"><span class="pre">molecula.export_xyz()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.gamma5"><code class="docutils literal notranslate"><span class="pre">molecula.gamma5()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.load_from_xyz"><code class="docutils literal notranslate"><span class="pre">molecula.load_from_xyz()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.origin_on_atom"><code class="docutils literal notranslate"><span class="pre">molecula.origin_on_atom()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.plot_bonds"><code class="docutils literal notranslate"><span class="pre">molecula.plot_bonds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.plot_dipole"><code class="docutils literal notranslate"><span class="pre">molecula.plot_dipole()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.plot_options"><code class="docutils literal notranslate"><span class="pre">molecula.plot_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.plot_plane"><code class="docutils literal notranslate"><span class="pre">molecula.plot_plane()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.plot_sphere"><code class="docutils literal notranslate"><span class="pre">molecula.plot_sphere()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.pySCF_WF"><code class="docutils literal notranslate"><span class="pre">molecula.pySCF_WF()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.reference_coordinate"><code class="docutils literal notranslate"><span class="pre">molecula.reference_coordinate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.rotate_to_align_with_z"><code class="docutils literal notranslate"><span class="pre">molecula.rotate_to_align_with_z()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.save_xyz"><code class="docutils literal notranslate"><span class="pre">molecula.save_xyz()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyECM.html#pyECM.molecule_class.molecula.xyz_mirror_path"><code class="docutils literal notranslate"><span class="pre">molecula.xyz_mirror_path()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.plotting">pyECM.plotting module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.plotting.plot_bonds"><code class="docutils literal notranslate"><span class="pre">plot_bonds()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.plotting.plot_dipole"><code class="docutils literal notranslate"><span class="pre">plot_dipole()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.plotting.plot_options"><code class="docutils literal notranslate"><span class="pre">plot_options()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.plotting.plot_plane"><code class="docutils literal notranslate"><span class="pre">plot_plane()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.plotting.plot_sphere"><code class="docutils literal notranslate"><span class="pre">plot_sphere()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.pyscf_fc">pyECM.pyscf_fc module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.pyscf_fc.Epv_atom"><code class="docutils literal notranslate"><span class="pre">Epv_atom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.pyscf_fc.Epv_molecule"><code class="docutils literal notranslate"><span class="pre">Epv_molecule()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.pyscf_fc.fc_expval"><code class="docutils literal notranslate"><span class="pre">fc_expval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.pyscf_fc.fc_integrals"><code class="docutils literal notranslate"><span class="pre">fc_integrals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.pyscf_fc.gamma5_fc_integrals"><code class="docutils literal notranslate"><span class="pre">gamma5_fc_integrals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.pyscf_fc.get_ovlp_AUCAR"><code class="docutils literal notranslate"><span class="pre">get_ovlp_AUCAR()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.pyscf_wf">pyECM.pyscf_wf module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.pyscf_wf.compute_4c_WF"><code class="docutils literal notranslate"><span class="pre">compute_4c_WF()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.pyscf_wf.compute_NR_WF"><code class="docutils literal notranslate"><span class="pre">compute_NR_WF()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.pyscf_wf.compute_X2C_WF"><code class="docutils literal notranslate"><span class="pre">compute_X2C_WF()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.vectors">pyECM.vectors module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.vectors.normalize_vector"><code class="docutils literal notranslate"><span class="pre">normalize_vector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.vectors.remove_zeros"><code class="docutils literal notranslate"><span class="pre">remove_zeros()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM.xyz_io">pyECM.xyz_io module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.xyz_io.atom_symbol"><code class="docutils literal notranslate"><span class="pre">atom_symbol()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.xyz_io.read_xyz"><code class="docutils literal notranslate"><span class="pre">read_xyz()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.xyz_io.write_dirac_mol"><code class="docutils literal notranslate"><span class="pre">write_dirac_mol()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyECM.html#pyECM.xyz_io.write_xyz"><code class="docutils literal notranslate"><span class="pre">write_xyz()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyECM.html#module-pyECM">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyECM.html" class="btn btn-neutral float-right" title="pyECM package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Juan José Aucar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

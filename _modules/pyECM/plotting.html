@@ -1,0 +1,225 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyECM.plotting &mdash; ECM 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/Chirality_with_hands.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Basic Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">ECM API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../support.html">Support</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ECM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyECM.plotting</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyECM.plotting</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Plotting utilities for pyECM.molecula objects.</span>
+
+<span class="sd">Each function receives the mol object  as a parameter, so that they can be tested</span>
+<span class="sd">independently from the mol class. They all assume that mol.fig was provided.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyECM.geometric_figures</span><span class="w"> </span><span class="kn">import</span> <span class="n">define_plane</span><span class="p">,</span> <span class="n">define_sphere</span><span class="p">,</span> <span class="n">plot_vector</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_axes</span><span class="p">(</span><span class="n">mol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current 3D axes of mol.fig, creating them if needed.</span>
+
+<span class="sd">    :param mol: molecule whose figure&#39;s axes are retrieved (or created)</span>
+<span class="sd">    :type mol: pyECM.molecule_class.molecula</span>
+<span class="sd">    :return: existing or newly created 3D axes of mol.fig</span>
+<span class="sd">    :rtype: mpl_toolkits.mplot3d.axes3d.Axes3D</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mol</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">mol</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">mol</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="plot_dipole">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.plotting.plot_dipole">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_dipole</span><span class="p">(</span><span class="n">mol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the molecule dipole as a vector from the origin.</span>
+
+<span class="sd">    If mol.direction was replaced by the molecule&#39;s actual dipole moment, plots that;</span>
+<span class="sd">    otherwise plots whatever vector mol.direction currently holds.</span>
+
+<span class="sd">    :param mol: molecule whose direction/dipole vector is plotted</span>
+<span class="sd">    :type mol: pyECM.molecule_class.molecula</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">dipolo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mol</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mol</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mol</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+    <span class="n">plot_vector</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">fig</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">dipolo</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="plot_plane">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.plotting.plot_plane">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_plane</span><span class="p">(</span><span class="n">mol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the plane normal to the molecule direction, centered at the origin.</span>
+
+<span class="sd">    :param mol: molecule whose direction defines the plane&#39;s normal vector</span>
+<span class="sd">    :type mol: pyECM.molecule_class.molecula</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+    <span class="n">dipolo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mol</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mol</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mol</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">_get_axes</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+    <span class="n">define_plane</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">dipolo</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="plot_sphere">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.plotting.plot_sphere">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_sphere</span><span class="p">(</span><span class="n">mol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot each nucleus of the molecule as a small wireframe sphere.</span>
+
+<span class="sd">    Colored according to mol.atoms[3] (the atom color list).</span>
+
+<span class="sd">    :param mol: molecule whose nuclei are plotted</span>
+<span class="sd">    :type mol: pyECM.molecule_class.molecula</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="mf">0.05</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">_get_axes</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">):</span>
+        <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span> <span class="o">=</span> <span class="n">define_sphere</span><span class="p">(</span>
+            <span class="n">mol</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">mol</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">mol</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">r</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot_wireframe</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="plot_bonds">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.plotting.plot_bonds">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_bonds</span><span class="p">(</span><span class="n">mol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the molecule bonds as straight lines.</span>
+
+<span class="sd">    Drawn between the bonded atoms listed in mol.bonds.</span>
+
+<span class="sd">    :param mol: molecule whose bonds are plotted. Requires mol.bonds, an (n_bonds, 2)</span>
+<span class="sd">        array of atom index pairs</span>
+<span class="sd">    :type mol: pyECM.molecule_class.molecula</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">_get_axes</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">bonds</span><span class="p">)):</span>
+        <span class="n">Ax</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">positions</span><span class="p">)[</span><span class="n">mol</span><span class="o">.</span><span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">Ay</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">positions</span><span class="p">)[</span><span class="n">mol</span><span class="o">.</span><span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">Az</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">positions</span><span class="p">)[</span><span class="n">mol</span><span class="o">.</span><span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">Bx</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">positions</span><span class="p">)[</span><span class="n">mol</span><span class="o">.</span><span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">By</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">positions</span><span class="p">)[</span><span class="n">mol</span><span class="o">.</span><span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">Bz</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">positions</span><span class="p">)[</span><span class="n">mol</span><span class="o">.</span><span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">Ax</span><span class="p">,</span> <span class="n">Bx</span><span class="p">],</span> <span class="p">[</span><span class="n">Ay</span><span class="p">,</span> <span class="n">By</span><span class="p">],</span> <span class="n">zs</span><span class="o">=</span><span class="p">[</span><span class="n">Az</span><span class="p">,</span> <span class="n">Bz</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="plot_options">
+<a class="viewcode-back" href="../../pyECM.html#pyECM.plotting.plot_options">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_options</span><span class="p">(</span><span class="n">mol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply arbitrary matplotlib customization code stored in mol.options.</span>
+
+<span class="sd">    E.g. axis labels, title. Each value in mol.options is a string of Python code,</span>
+<span class="sd">    executed with a restricted namespace exposing only &#39;ax&#39; (the current axes), &#39;self&#39;</span>
+<span class="sd">    (mol, kept for backward compatibility with strings referencing &#39;self.fig&#39;, etc.) and</span>
+<span class="sd">    &#39;np&#39;; builtins are disabled to avoid arbitrary code execution (e.g. file access,</span>
+<span class="sd">    imports) through this mechanism.</span>
+
+<span class="sd">    :param mol: molecule whose mol.options dict of code strings is executed</span>
+<span class="sd">    :type mol: pyECM.molecule_class.molecula</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">_get_axes</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_on</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+        <span class="n">exec</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;ax&quot;</span><span class="p">:</span> <span class="n">ax</span><span class="p">,</span> <span class="s2">&quot;self&quot;</span><span class="p">:</span> <span class="n">mol</span><span class="p">,</span> <span class="s2">&quot;np&quot;</span><span class="p">:</span> <span class="n">np</span><span class="p">,</span> <span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="p">{}})</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Juan José Aucar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
