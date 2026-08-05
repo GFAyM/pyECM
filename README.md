@@ -47,39 +47,6 @@ pyECM is a **Python 3.10** package
 
 5. Run pyECM (check some examples below)
 
-<br/><br/>
-
-For developers,
-
-1. Install pyECM in editable mode and developers dependencies:
-
-      ```pip install -e .```
-
-      ```pip install -r requirements_dev.txt```
-
-2. Run all test:
-
-      ``tox``
-
-3. To update requirements.txt and requierements_dev.txt dependencies, 
-
-      ``pip-compile requirements.in``
-
-      ``pip-compile requirements_dev.in``
-
-4. To update rst files,
-
-      ``sphinx-apidoc -f -o docs/source pyECM/``
-
-<br/><br/>
-To create local html pages,
-
-1. Get into "docs" folder
-
-2. Create html pages
-
-      ```make html```
-
 ## Usage
 A detailed workflow is provided in the `workflow` directory. It has a list of Jupyter notebooks with detailed examples about pyECM tools and capabilities.
 

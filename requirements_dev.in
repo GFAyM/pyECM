@@ -12,14 +12,10 @@ flake8-bugbear
 flake8-docstrings
 flake8-isort
 mypy
-myst-parser
 nbmake
 pip-tools
 pytest
 pytest-cov
 pytest-mpl
-sphinx
-sphinx-rtd-theme
-sphinxcontrib-bibtex
 tox
 wheel
