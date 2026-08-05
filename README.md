@@ -51,9 +51,11 @@ pyECM is a **Python 3.10** package
 
 For developers,
 
-1. Install dependencies:
+1. Install pyECM in editable mode and developers dependencies:
 
-      ```pip install -r requirements.txt -r requirements_dev.txt```
+      ```pip install -e .```
+
+      ```pip install -r requirements_dev.txt```
 
 2. Run all test:
 
@@ -65,6 +67,9 @@ For developers,
 
       ``pip-compile requirements_dev.in``
 
+4. To update rst files,
+
+      ``sphinx-apidoc -f -o docs/source pyECM/``
 
 <br/><br/>
 To create local html pages,
