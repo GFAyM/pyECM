@@ -76,6 +76,11 @@ master_doc = "index"
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+# Mock selenium as it is only used in execution time
+autodoc_mock_imports = [
+    "selenium",
+]
+
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 

@@ -1,6 +1,7 @@
 name: Docs
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
   schedule:
@@ -11,22 +12,21 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-      - name: Install dependencies
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install tox
         run: |
-          pip install --upgrade setuptools
-          pip install sphinx sphinx_rtd_theme sphinxcontrib.bibtex
-          python --version
-          pip list
-      - name: Sphinx build
-        run: |
-          sphinx-build docs/source _build
+          python -m pip install --upgrade pip
+          pip install tox
+      - name: Build documentation
+        run: tox -e docs
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _build/
+          publish_dir: .tox/docs_out
           force_orphan: true
